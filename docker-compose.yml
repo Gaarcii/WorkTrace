@@ -1,13 +1,12 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgis/postgis:16-3.4
     container_name: postgres_work_trace
     environment:
-      POSTGRES_DB: work_trace
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5432:5432"
     volumes:

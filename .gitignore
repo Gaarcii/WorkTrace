@@ -19,6 +19,7 @@ Thumbs.db
 *.iml
 *.iws
 *.ipr
+out/
 
 # VS Code
 .vscode/
@@ -26,12 +27,12 @@ Thumbs.db
 ####################################
 # JAVA / SPRING / GRADLE
 ####################################
-backend/build/
-backend/.gradle/
-backend/out/
-backend/.classpath
-backend/.project
-backend/.settings/
+worktrace-backend/build/
+worktrace-backend/.gradle/
+worktrace-backend/out/
+worktrace-backend/.classpath
+worktrace-backend/.project
+worktrace-backend/.settings/
 
 ####################################
 # NODE / ANGULAR
@@ -53,10 +54,6 @@ logs/
 docker-data/
 postgres-data/
 
-####################################
-# n8n
-####################################
-n8n/.n8n/
 
 ####################################
 # TESTS / COVERAGE
