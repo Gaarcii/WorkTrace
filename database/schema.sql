@@ -113,7 +113,6 @@ create table if not exists time_entries (
     )
 );
 
-known_ips
 create table if not exists daily_closures (
     work_date date primary key not null,
     records_count integer not null,
