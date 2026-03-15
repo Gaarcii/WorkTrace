@@ -33,6 +33,7 @@ worktrace-backend/out/
 worktrace-backend/.classpath
 worktrace-backend/.project
 worktrace-backend/.settings/
+worktrace-backend/bin/
 
 ####################################
 # NODE / ANGULAR
