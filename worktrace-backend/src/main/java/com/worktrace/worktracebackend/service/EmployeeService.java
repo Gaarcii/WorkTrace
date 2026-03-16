@@ -1,12 +1,14 @@
 package com.worktrace.worktracebackend.service;
 
 import com.worktrace.worktracebackend.dto.EmployeeRequestDto;
+import com.worktrace.worktracebackend.exception.NotFoundException;
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.Profile;
 import com.worktrace.worktracebackend.model.Role;
 import com.worktrace.worktracebackend.model.User;
 import com.worktrace.worktracebackend.repository.ProfileRepository;
 import com.worktrace.worktracebackend.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -23,9 +24,19 @@ public class EmployeeService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void registerEmployee(EmployeeRequestDto requestDto) {
-        String adminEmail = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-        User admin = userRepository.findByEmail(adminEmail).orElseThrow();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new NotFoundException("No se ha encontrado el administrador (no autenticado)");
+        }
+
+        String adminEmail = authentication.getName();
+
+        User admin = userRepository.findByEmail(adminEmail)
+                .orElseThrow(() ->
+                        new NotFoundException("No se ha encontrado el administrador con email: " + adminEmail));
         Company company = admin.getCompany();
 
         String password = generarPasswordSegura();
