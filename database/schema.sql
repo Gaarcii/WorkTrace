@@ -3,8 +3,8 @@ create extension if not exists pgcrypto;
 -- Tabla de empresas (La raíz del SaaS)
 create table if not exists companies (
     id uuid primary key default gen_random_uuid (),
-    company_name text not null,
-    cif text not null,
+    company_name text unique not null,
+    cif text unique not null,
     logo_url text null,
     updated_at timestamp with time zone not null default now()
 );
@@ -30,7 +30,7 @@ create table if not exists users (
 create table if not exists profiles (
     user_id uuid primary key,
     full_name text not null,
-    employee_code text not null,
+    employee_code text unique not null,
     is_active boolean not null default true,
     phone text not null,
     avatar_url text null,
