@@ -1,6 +1,6 @@
-package com.worktrace.worktracebackend.controller;
+package com.worktrace.worktracebackend.controller.files;
 
-import com.worktrace.worktracebackend.service.StorageService;
+import com.worktrace.worktracebackend.service.storage.StorageService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;

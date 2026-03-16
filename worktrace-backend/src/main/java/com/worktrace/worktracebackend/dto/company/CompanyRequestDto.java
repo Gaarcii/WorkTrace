@@ -1,5 +1,6 @@
-package com.worktrace.worktracebackend.dto;
+package com.worktrace.worktracebackend.dto.company;
 
+import com.worktrace.worktracebackend.dto.user.AdminRequestDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

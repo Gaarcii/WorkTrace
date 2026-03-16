@@ -1,8 +1,8 @@
-package com.worktrace.worktracebackend.service;
+package com.worktrace.worktracebackend.service.auth;
 
-import com.worktrace.worktracebackend.dto.AuthRequestDto;
-import com.worktrace.worktracebackend.dto.AuthResponseDto;
-import com.worktrace.worktracebackend.dto.CompanyRequestDto;
+import com.worktrace.worktracebackend.dto.auth.AuthRequestDto;
+import com.worktrace.worktracebackend.dto.auth.AuthResponseDto;
+import com.worktrace.worktracebackend.dto.company.CompanyRequestDto;
 import com.worktrace.worktracebackend.exception.InvalidCredentialsException;
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.Profile;

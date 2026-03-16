@@ -1,9 +1,10 @@
-package com.worktrace.worktracebackend.service;
+package com.worktrace.worktracebackend.service.company;
 
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.User;
 import com.worktrace.worktracebackend.repository.CompanyRepository;
 import com.worktrace.worktracebackend.repository.UserRepository;
+import com.worktrace.worktracebackend.service.storage.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.dto;
+package com.worktrace.worktracebackend.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

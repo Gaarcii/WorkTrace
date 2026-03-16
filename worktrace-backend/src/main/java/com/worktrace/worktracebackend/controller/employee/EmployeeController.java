@@ -1,7 +1,7 @@
-package com.worktrace.worktracebackend.controller;
+package com.worktrace.worktracebackend.controller.employee;
 
-import com.worktrace.worktracebackend.dto.EmployeeRequestDto;
-import com.worktrace.worktracebackend.service.EmployeeService;
+import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
+import com.worktrace.worktracebackend.service.auth.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

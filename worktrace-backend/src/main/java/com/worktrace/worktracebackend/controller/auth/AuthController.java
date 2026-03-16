@@ -1,9 +1,9 @@
-package com.worktrace.worktracebackend.controller;
+package com.worktrace.worktracebackend.controller.auth;
 
-import com.worktrace.worktracebackend.dto.AuthRequestDto;
-import com.worktrace.worktracebackend.dto.AuthResponseDto;
-import com.worktrace.worktracebackend.dto.CompanyRequestDto;
-import com.worktrace.worktracebackend.service.AuthenticationService;
+import com.worktrace.worktracebackend.dto.auth.AuthRequestDto;
+import com.worktrace.worktracebackend.dto.auth.AuthResponseDto;
+import com.worktrace.worktracebackend.dto.company.CompanyRequestDto;
+import com.worktrace.worktracebackend.service.auth.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

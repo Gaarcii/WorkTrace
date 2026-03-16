@@ -1,6 +1,6 @@
-package com.worktrace.worktracebackend.service;
+package com.worktrace.worktracebackend.service.storage;
 
-import com.worktrace.worktracebackend.controller.FilesController;
+import com.worktrace.worktracebackend.controller.files.FilesController;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

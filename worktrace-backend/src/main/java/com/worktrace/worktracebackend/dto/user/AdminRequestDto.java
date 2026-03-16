@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.dto;
+package com.worktrace.worktracebackend.dto.user;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;

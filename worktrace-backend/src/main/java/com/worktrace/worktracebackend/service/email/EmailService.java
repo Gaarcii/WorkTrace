@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.service;
+package com.worktrace.worktracebackend.service.email;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

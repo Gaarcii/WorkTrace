@@ -1,6 +1,6 @@
 package com.worktrace.worktracebackend.security;
 
-import com.worktrace.worktracebackend.service.UserService;
+import com.worktrace.worktracebackend.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

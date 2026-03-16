@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.service;
+package com.worktrace.worktracebackend.service.auth;
 
 import com.worktrace.worktracebackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

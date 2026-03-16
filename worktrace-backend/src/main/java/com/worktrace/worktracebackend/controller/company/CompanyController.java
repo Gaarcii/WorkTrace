@@ -1,6 +1,6 @@
-package com.worktrace.worktracebackend.controller;
+package com.worktrace.worktracebackend.controller.company;
 
-import com.worktrace.worktracebackend.service.CompanyService;
+import com.worktrace.worktracebackend.service.company.CompanyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
-package com.worktrace.worktracebackend.service;
+package com.worktrace.worktracebackend.service.auth;
 
-import com.worktrace.worktracebackend.dto.EmployeeRequestDto;
+import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
 import com.worktrace.worktracebackend.exception.NotFoundException;
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.Profile;
@@ -8,6 +8,7 @@ import com.worktrace.worktracebackend.model.Role;
 import com.worktrace.worktracebackend.model.User;
 import com.worktrace.worktracebackend.repository.ProfileRepository;
 import com.worktrace.worktracebackend.repository.UserRepository;
+import com.worktrace.worktracebackend.service.email.EmailService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.RandomStringGenerator;
