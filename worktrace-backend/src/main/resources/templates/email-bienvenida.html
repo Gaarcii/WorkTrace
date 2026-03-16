@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .content {
+            color: #333333;
+            line-height: 1.6;
+        }
+
+        .credentials {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #777777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="header">Bienvenido a Worktrace</h2>
+
+    <div class="content">
+        <p>Hola <strong th:text="${nombre}">Empleado</strong>,</p>
+
+        <p>Tu cuenta ha sido creada con éxito. Aquí tienes tus datos de acceso temporales:</p>
+
+        <div class="credentials">
+            <p><strong>Email:</strong> <span th:text="${email}">correo@empresa.com</span></p>
+            <p><strong>Contraseña:</strong> <span th:text="${password}"
+                                                  style="font-family: monospace; font-size: 16px;">123456</span></p>
+        </div>
+
+        <p>Por motivos de seguridad, el sistema te pedirá que cambies esta contraseña en tu primer inicio de sesión.</p>
+    </div>
+
+    <div class="footer">
+        <p>Este es un correo automático, por favor no respondas a este mensaje.</p>
+        <p>&copy; 2026 Worktrace App.</p>
+    </div>
+</div>
+</body>
+</html>

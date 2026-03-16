@@ -3,6 +3,7 @@ package com.worktrace.worktracebackend.service;
 import com.worktrace.worktracebackend.dto.AuthRequestDto;
 import com.worktrace.worktracebackend.dto.AuthResponseDto;
 import com.worktrace.worktracebackend.dto.CompanyRequestDto;
+import com.worktrace.worktracebackend.exception.InvalidCredentialsException;
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.Profile;
 import com.worktrace.worktracebackend.model.Role;
@@ -14,6 +15,7 @@ import com.worktrace.worktracebackend.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,11 +68,15 @@ public class AuthenticationService {
     }
 
     public AuthResponseDto signIn(AuthRequestDto requestDto) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(requestDto.getEmail(), requestDto.getPassword())
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(requestDto.getEmail(), requestDto.getPassword())
+            );
+        } catch (AuthenticationException ex) {
+            throw new InvalidCredentialsException("Email o contraseña inválidos");
+        }
         User user = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Email o contraseña inválidos"));
+                .orElseThrow(() -> new InvalidCredentialsException("Email o contraseña inválidos"));
 
         String jwt = jwtService.generateToken(user);
         return new AuthResponseDto(jwt);

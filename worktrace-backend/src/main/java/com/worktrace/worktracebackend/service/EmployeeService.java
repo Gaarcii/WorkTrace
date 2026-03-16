@@ -23,6 +23,7 @@ public class EmployeeService {
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Transactional
     public void registerEmployee(EmployeeRequestDto requestDto) {
@@ -40,8 +41,6 @@ public class EmployeeService {
         Company company = admin.getCompany();
 
         String password = generarPasswordSegura();
-
-        System.out.println("DEBUG: Contraseña generada para " + requestDto.getEmail() + " es: " + password);
 
         User employee = User.builder()
                 .email(requestDto.getEmail())
@@ -63,6 +62,12 @@ public class EmployeeService {
                 .user(employee)
                 .build();
         profileRepository.save(profile);
+
+        emailService.sendNewEmployeePassword(
+                requestDto.getEmail(),
+                requestDto.getProfile().getFullName(),
+                password
+        );
     }
 
     private String generarPasswordSegura() {
