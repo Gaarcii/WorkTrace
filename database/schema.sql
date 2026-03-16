@@ -96,6 +96,7 @@ create table if not exists time_entries (
     delete_reason text null,
     created_at timestamp with time zone not null default now(),
     created_by uuid not null,
+    updated_at timestamp with time zone null,
     modification_reason text null,
     company_id uuid not null,
     check (status in ('OPEN', 'CLOSED')),

@@ -60,3 +60,8 @@ postgres-data/
 # TESTS / COVERAGE
 ####################################
 coverage/
+
+####################################
+# Cambios
+####################################
+CambiosSupabaseAJava.md

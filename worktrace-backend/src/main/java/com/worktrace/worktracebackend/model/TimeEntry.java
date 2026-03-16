@@ -1,8 +1,11 @@
 package com.worktrace.worktracebackend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
@@ -17,6 +20,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE time_entries SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class TimeEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -86,6 +91,7 @@ public class TimeEntry {
     @JoinColumn(name = "deleted_by")
     private User deletedBy;
 
+    @NotBlank(message = "El motivo es obligatorio")
     @Column(name = "delete_reason")
     private String deleteReason;
 
@@ -95,6 +101,9 @@ public class TimeEntry {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
+
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private OffsetDateTime updatedAt;
 
     @Column(name = "modification_reason")
     private String modificationReason;
