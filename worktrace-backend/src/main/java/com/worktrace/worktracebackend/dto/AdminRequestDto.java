@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRequestDto {
+public class AdminRequestDto {
 
     @NotBlank(message = "El email es obligatorio")
     @Size(max = 250, message = "El email debe tener 250 caracteres máximo")

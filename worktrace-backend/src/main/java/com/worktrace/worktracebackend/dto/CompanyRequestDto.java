@@ -24,5 +24,5 @@ public class CompanyRequestDto {
 
     @Valid
     @NotNull(message = "Los datos del administrador son obligatorios")
-    private UserRequestDto admin;
+    private AdminRequestDto admin;
 }
