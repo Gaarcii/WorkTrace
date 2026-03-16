@@ -63,10 +63,14 @@ public class EmployeeService {
                 .build();
         profileRepository.save(profile);
 
-        emailService.sendNewEmployeePassword(
+        emailService.sendNewEmployeeWelcomeEmail(
                 requestDto.getEmail(),
                 requestDto.getProfile().getFullName(),
-                password
+                password,
+                company.getLogoUrl(),
+                company.getCompanyName(),
+                admin.getProfile().getFullName(),
+                "https://app.worktrace.com/login" //CAMBIAR A URL DEL DOMINIO
         );
     }
 

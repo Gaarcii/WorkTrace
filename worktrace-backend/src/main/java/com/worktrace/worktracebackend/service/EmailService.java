@@ -21,7 +21,15 @@ public class EmailService {
     private String senderEmail;
 
     @Async
-    public void sendNewEmployeePassword(String toEmail, String employeeName, String plainPassword) {
+    public void sendNewEmployeeWelcomeEmail(
+            String toEmail,
+            String employeeName,
+            String plainPassword,
+            String empresaLogoUrl,
+            String empresaNombre,
+            String nombreAdmin,
+            String urlAccesoApp
+    ) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -34,6 +42,10 @@ public class EmailService {
             context.setVariable("nombre", employeeName);
             context.setVariable("email", toEmail);
             context.setVariable("password", plainPassword);
+            context.setVariable("empresaLogoUrl", empresaLogoUrl);
+            context.setVariable("empresaNombre", empresaNombre);
+            context.setVariable("nombreAdmin", nombreAdmin);
+            context.setVariable("urlAccesoApp", urlAccesoApp);
 
             String htmlContent = templateEngine.process("email-bienvenida", context);
 

@@ -19,10 +19,6 @@ spring:
       hibernate:
         format_sql: true
 
-  jwt:
-    secret: ${JWT_SECRET}
-    expiration: ${JWT_EXPIRATION}
-
   mail:
     host: smtp.gmail.com
     port: 587
@@ -34,3 +30,16 @@ spring:
           auth: true
           starttls:
             enable: true
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+upload:
+  root-location: "uploads/logos"
+  delete: "false"
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}

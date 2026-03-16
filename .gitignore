@@ -34,6 +34,7 @@ worktrace-backend/.classpath
 worktrace-backend/.project
 worktrace-backend/.settings/
 worktrace-backend/bin/
+worktrace-backend/uploads/
 
 ####################################
 # NODE / ANGULAR
