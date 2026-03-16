@@ -4,7 +4,7 @@ create extension if not exists pgcrypto;
 create table if not exists companies (
     id uuid primary key default gen_random_uuid (),
     company_name text not null,
-    cif text null,
+    cif text not null,
     logo_url text null,
     updated_at timestamp with time zone not null default now()
 );
@@ -32,7 +32,7 @@ create table if not exists profiles (
     full_name text not null,
     employee_code text not null,
     is_active boolean not null default true,
-    phone text null,
+    phone text not null,
     avatar_url text null,
     is_first_login boolean not null default true,
     updated_at timestamp with time zone not null default now(),
