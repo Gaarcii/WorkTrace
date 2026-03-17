@@ -1,7 +1,6 @@
 package com.worktrace.worktracebackend.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.SQLDelete;
@@ -91,7 +90,6 @@ public class TimeEntry {
     @JoinColumn(name = "deleted_by")
     private User deletedBy;
 
-    @NotBlank(message = "El motivo es obligatorio")
     @Column(name = "delete_reason")
     private String deleteReason;
 

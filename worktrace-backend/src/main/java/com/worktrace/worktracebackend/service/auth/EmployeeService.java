@@ -1,7 +1,6 @@
 package com.worktrace.worktracebackend.service.auth;
 
 import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
-import com.worktrace.worktracebackend.exception.NotFoundException;
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.Profile;
 import com.worktrace.worktracebackend.model.Role;
@@ -12,7 +11,6 @@ import com.worktrace.worktracebackend.service.email.EmailService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.RandomStringGenerator;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,23 +20,14 @@ import java.time.OffsetDateTime;
 @RequiredArgsConstructor
 public class EmployeeService {
     private final ProfileRepository profileRepository;
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Transactional
     public void registerEmployee(EmployeeRequestDto requestDto) {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new NotFoundException("No se ha encontrado el administrador (no autenticado)");
-        }
-
-        String adminEmail = authentication.getName();
-
-        User admin = userRepository.findByEmail(adminEmail)
-                .orElseThrow(() ->
-                        new NotFoundException("No se ha encontrado el administrador con email: " + adminEmail));
+        User admin = userService.getAuthenticatedUser();
         Company company = admin.getCompany();
 
         String password = generarPasswordSegura();

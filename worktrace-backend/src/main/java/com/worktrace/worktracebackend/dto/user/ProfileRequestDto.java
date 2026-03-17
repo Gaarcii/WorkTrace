@@ -34,6 +34,4 @@ public class ProfileRequestDto {
     private BigDecimal weeklyHours;
 
     private UUID position;
-
-
 }
