@@ -172,7 +172,6 @@ create table if not exists incidence_types (
 create table if not exists known_ips (
     ip inet primary key,
     geoip_data jsonb not null,
-    company_id uuid not null,
     created_at timestamp with time zone not null default now()
 );
 
@@ -203,8 +202,6 @@ add constraint fk_inc_types_company foreign key (company_id) references companie
 alter table daily_closures
 add constraint fk_closures_company foreign key (company_id) references companies (id);
 
-alter table known_ips
-add constraint fk_known_ips_company foreign key (company_id) references companies (id);
 
 alter table profiles
 add constraint fk_profiles_user foreign key (user_id) references users (id) on delete cascade;

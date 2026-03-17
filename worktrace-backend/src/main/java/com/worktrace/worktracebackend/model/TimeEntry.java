@@ -2,6 +2,7 @@ package com.worktrace.worktracebackend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -59,9 +60,11 @@ public class TimeEntry {
     private Integer endAccuracyM;
 
     @Column(name = "start_ip", nullable = false, columnDefinition = "inet")
+    @ColumnTransformer(write = "?::inet")
     private String startIp;
 
     @Column(name = "end_ip", columnDefinition = "inet")
+    @ColumnTransformer(write = "?::inet")
     private String endIp;
 
     @Column(name = "start_user_agent", nullable = false)
@@ -70,18 +73,21 @@ public class TimeEntry {
     @Column(name = "end_user_agent")
     private String endUserAgent;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "start_geoip", columnDefinition = "jsonb")
-    private String startGeoip;
+    private java.util.Map<String, Object> startGeoip;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "end_geoip", columnDefinition = "jsonb")
-    private String endGeoip;
+    private java.util.Map<String, Object> endGeoip;
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(name = "flags", columnDefinition = "text[]")
     private java.util.List<String> flags;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private Status status;
 
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;

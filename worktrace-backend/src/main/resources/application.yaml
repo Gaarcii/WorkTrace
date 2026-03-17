@@ -43,3 +43,6 @@ upload:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
+
+abstract:
+  api-key: ${ABSTRACT_API_KEY}

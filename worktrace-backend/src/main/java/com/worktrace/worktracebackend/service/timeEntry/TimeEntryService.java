@@ -1,0 +1,100 @@
+package com.worktrace.worktracebackend.service.timeEntry;
+
+import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRequestDto;
+import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryResponseDto;
+import com.worktrace.worktracebackend.model.*;
+import com.worktrace.worktracebackend.repository.TimeEntryRepository;
+import com.worktrace.worktracebackend.service.auth.UserService;
+import com.worktrace.worktracebackend.service.ip.IpDetectionService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class TimeEntryService {
+
+    private final TimeEntryRepository timeEntryRepository;
+    private final UserService userService;
+    private final IpDetectionService ipDetectionService;
+
+
+    @Transactional
+    public TimeEntryResponseDto procesarFichaje(TimeEntryRequestDto requestDto, String ip, String userAgent) {
+        User user = userService.getAuthenticatedUser();
+        Company company = user.getCompany();
+        Profile profile = user.getProfile();
+
+        Optional<TimeEntry> turnoAbiertoOpt = timeEntryRepository.
+                findByEmployee_UserIdAndEndAtIsNullAndStatus(profile.getUserId(), Status.OPEN);
+
+        IpDetectionService.IpAnalysisResult ipResult = ipDetectionService.analyzeIpWithDetails(ip);
+
+        List<String> flags = new ArrayList<>();
+        if (requestDto.getAccuracyMeters() != null && requestDto.getAccuracyMeters() > 200) {
+            flags.add("LOW_GPS_ACCURACY");
+        }
+        if (ipResult.flags() != null) {
+            flags.addAll(ipResult.flags());
+        }
+
+        TimeEntry fichajeGuardado;
+
+        if (turnoAbiertoOpt.isPresent()) {
+            TimeEntry turnoAbierto = turnoAbiertoOpt.get();
+
+            turnoAbierto.setEndAt(OffsetDateTime.now());
+            turnoAbierto.setEndLat(requestDto.getLat());
+            turnoAbierto.setEndLng(requestDto.getLng());
+            turnoAbierto.setEndAccuracyM(requestDto.getAccuracyMeters());
+            turnoAbierto.setEndIp(ip);
+            turnoAbierto.setEndUserAgent(userAgent);
+            turnoAbierto.setEndGeoip(ipResult.geoIpMap());
+
+            if (turnoAbierto.getFlags() != null) {
+                turnoAbierto.getFlags().addAll(flags);
+            } else {
+                turnoAbierto.setFlags(flags);
+            }
+
+            turnoAbierto.setStatus(Status.CLOSED);
+            fichajeGuardado = timeEntryRepository.save(turnoAbierto);
+
+        } else {
+            TimeEntry nuevoFichaje = new TimeEntry();
+            nuevoFichaje.setEmployee(profile);
+            nuevoFichaje.setCompany(company);
+            nuevoFichaje.setCreatedBy(user);
+
+            nuevoFichaje.setWorkDate(LocalDate.now());
+            nuevoFichaje.setStartAt(OffsetDateTime.now());
+            nuevoFichaje.setCreatedAt(OffsetDateTime.now());
+
+            nuevoFichaje.setStartLat(requestDto.getLat());
+            nuevoFichaje.setStartLng(requestDto.getLng());
+            nuevoFichaje.setStartAccuracyM(requestDto.getAccuracyMeters());
+            nuevoFichaje.setStartIp(ip);
+            nuevoFichaje.setStartUserAgent(userAgent);
+            nuevoFichaje.setStartGeoip(ipResult.geoIpMap());
+
+            nuevoFichaje.setFlags(flags);
+            nuevoFichaje.setStatus(Status.OPEN);
+
+            fichajeGuardado = timeEntryRepository.save(nuevoFichaje);
+        }
+
+        TimeEntryResponseDto response = new TimeEntryResponseDto();
+        response.setId(fichajeGuardado.getId());
+        response.setStartAt(fichajeGuardado.getStartAt());
+        response.setEndAt(fichajeGuardado.getEndAt());
+        response.setStatus(fichajeGuardado.getStatus().name());
+
+        return response;
+    }
+}
