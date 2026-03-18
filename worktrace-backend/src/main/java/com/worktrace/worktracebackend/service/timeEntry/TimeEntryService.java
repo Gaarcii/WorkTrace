@@ -3,6 +3,7 @@ package com.worktrace.worktracebackend.service.timeEntry;
 import com.worktrace.worktracebackend.dto.timeEntry.ResumenDiarioResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRequestDto;
 import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryResponseDto;
+import com.worktrace.worktracebackend.dto.timeEntry.UltimosFichajesResponseDto;
 import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
@@ -118,15 +119,12 @@ public class TimeEntryService {
         LocalDate hoy = LocalDate.now();
         DayOfWeek diaSemana = hoy.getDayOfWeek();
 
-        // 1. Buscamos el fichaje abierto para el chip de la UI
         Optional<TimeEntry> fichajeActual = timeEntryRepository.
                 findByEmployee_UserIdAndEndAtIsNullAndStatus(user.getId(), Status.OPEN);
 
-        // 2. Calculamos minutos acumulados (vivos)
         Long minutosAcumulados = timeEntryRepository.
                 getWorkedMinutesByEmployeeAndDate(user.getId(), hoy);
 
-        // 3. Obtenemos el objetivo del horario
         Optional<WorkSchedule> horario = workScheduleRepository
                 .findByEmployee_UserIdAndDayOfWeek(profile.getUserId(), diaSemana);
 
@@ -144,10 +142,32 @@ public class TimeEntryService {
             objetivoMin = Duration.ofMinutes(0);
         }
 
+        List<TimeEntry> ultimosTurnos = timeEntryRepository.
+                findTop5ByEmployee_UserIdOrderByStartAtDesc(user.getId());
+
+        List<UltimosFichajesResponseDto> eventosSueltos = new ArrayList<>();
+
+        for (TimeEntry turno : ultimosTurnos) {
+            eventosSueltos.add(new UltimosFichajesResponseDto(
+                    turno.getId(), "Entrada", turno.getStartAt()));
+
+            if (turno.getEndAt() != null) {
+                eventosSueltos.add(new UltimosFichajesResponseDto(
+                        turno.getId(), "Salida", turno.getEndAt()));
+            }
+        }
+
+        List<UltimosFichajesResponseDto> ultimos5Fichajes = eventosSueltos.stream()
+                .sorted((e1, e2)
+                        -> e2.getFecha().compareTo(e1.getFecha()))
+                .limit(5)
+                .toList();
+
         ResumenDiarioResponseDto dto = new ResumenDiarioResponseDto();
         dto.setHoraEntrada(fichajeActual.map(TimeEntry::getStartAt).orElse(null));
         dto.setMinutosAcumulados(minutosAcumulados);
         dto.setMinutosObjetivo(objetivoMin.toMinutes());
+        dto.setUltimosFichajes(ultimos5Fichajes);
 
         return dto;
     }

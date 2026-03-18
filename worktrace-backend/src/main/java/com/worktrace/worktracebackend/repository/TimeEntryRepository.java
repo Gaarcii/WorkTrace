@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,4 +33,6 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
             @Param("userId") UUID userId,
             @Param("date") LocalDate date
     );
+
+    List<TimeEntry> findTop5ByEmployee_UserIdOrderByStartAtDesc(UUID userId);
 }
