@@ -1,17 +1,18 @@
 package com.worktrace.worktracebackend.service.timeEntry;
 
+import com.worktrace.worktracebackend.dto.timeEntry.ResumenDiarioResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRequestDto;
 import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryResponseDto;
 import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
+import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.ip.IpDetectionService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,18 +24,28 @@ public class TimeEntryService {
     private final TimeEntryRepository timeEntryRepository;
     private final UserService userService;
     private final IpDetectionService ipDetectionService;
+    private final WorkScheduleRepository workScheduleRepository;
 
-
-    @Transactional
-    public TimeEntryResponseDto procesarFichaje(TimeEntryRequestDto requestDto, String ip, String userAgent) {
+    private UsuarioYCompaniaInfo extraerUsuarioYCompania() {
+        assert userService != null;
         User user = userService.getAuthenticatedUser();
         Company company = user.getCompany();
         Profile profile = user.getProfile();
+        return new UsuarioYCompaniaInfo(user, company, profile);
+    }
+
+    @Transactional
+    public TimeEntryResponseDto procesarFichaje(TimeEntryRequestDto requestDto, String ip, String userAgent) {
+        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+        User user = info.getUser();
+        Company company = info.getCompany();
+        Profile profile = info.getProfile();
 
         Optional<TimeEntry> turnoAbiertoOpt = timeEntryRepository.
                 findByEmployee_UserIdAndEndAtIsNullAndStatus(profile.getUserId(), Status.OPEN);
 
-        IpDetectionService.IpAnalysisResult ipResult = ipDetectionService.analyzeIpWithDetails(ip);
+        IpDetectionService.IpAnalysisResult ipResult = ipDetectionService.
+                analyzeIpWithDetails(ip);
 
         List<String> flags = new ArrayList<>();
         if (requestDto.getAccuracyMeters() != null && requestDto.getAccuracyMeters() > 200) {
@@ -96,5 +107,48 @@ public class TimeEntryService {
         response.setStatus(fichajeGuardado.getStatus().name());
 
         return response;
+    }
+
+    @Transactional(readOnly = true)
+    public ResumenDiarioResponseDto getResumenDiario() {
+        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+        User user = info.getUser();
+        Profile profile = info.getProfile();
+
+        LocalDate hoy = LocalDate.now();
+        DayOfWeek diaSemana = hoy.getDayOfWeek();
+
+        // 1. Buscamos el fichaje abierto para el chip de la UI
+        Optional<TimeEntry> fichajeActual = timeEntryRepository.
+                findByEmployee_UserIdAndEndAtIsNullAndStatus(user.getId(), Status.OPEN);
+
+        // 2. Calculamos minutos acumulados (vivos)
+        Long minutosAcumulados = timeEntryRepository.
+                getWorkedMinutesByEmployeeAndDate(user.getId(), hoy);
+
+        // 3. Obtenemos el objetivo del horario
+        Optional<WorkSchedule> horario = workScheduleRepository
+                .findByEmployee_UserIdAndDayOfWeek(profile.getUserId(), diaSemana);
+
+        Duration objetivoMin;
+        if (horario.isPresent()) {
+            LocalTime start = horario.get().getStartTime();
+            LocalTime end = horario.get().getEndTime();
+
+            objetivoMin = Duration.between(start, end);
+
+            if (objetivoMin.isNegative()) {
+                objetivoMin = objetivoMin.plusDays(1);
+            }
+        } else {
+            objetivoMin = Duration.ofMinutes(0);
+        }
+
+        ResumenDiarioResponseDto dto = new ResumenDiarioResponseDto();
+        dto.setHoraEntrada(fichajeActual.map(TimeEntry::getStartAt).orElse(null));
+        dto.setMinutosAcumulados(minutosAcumulados);
+        dto.setMinutosObjetivo(objetivoMin.toMinutes());
+
+        return dto;
     }
 }

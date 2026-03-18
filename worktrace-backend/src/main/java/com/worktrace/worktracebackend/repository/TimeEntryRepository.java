@@ -3,12 +3,33 @@ package com.worktrace.worktracebackend.repository;
 import com.worktrace.worktracebackend.model.Status;
 import com.worktrace.worktracebackend.model.TimeEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
     Optional<TimeEntry> findByEmployee_UserIdAndEndAtIsNullAndStatus(UUID userId, Status status);
+
+    @Query(value = """
+            SELECT COALESCE(SUM(
+                CASE
+                    WHEN t.status = 'CLOSED' THEN EXTRACT(EPOCH FROM (t.end_at - t.start_at)) / 60
+                    WHEN t.status = 'OPEN' THEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.start_at)) / 60
+                    ELSE 0
+                END
+            ), 0)
+            FROM time_entries t
+            WHERE t.employee_id = :userId
+              AND t.work_date = :date
+              AND t.deleted_at IS NULL
+            """, nativeQuery = true)
+    Long getWorkedMinutesByEmployeeAndDate(
+            @Param("userId") UUID userId,
+            @Param("date") LocalDate date
+    );
 }

@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.controller.timeEntry;
 
+import com.worktrace.worktracebackend.dto.timeEntry.ResumenDiarioResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRequestDto;
 import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryResponseDto;
 import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
@@ -8,10 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/time-entries")
@@ -22,7 +20,7 @@ public class TimeEntryController {
 
     @PostMapping("/fichar")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<TimeEntryResponseDto> toggleCheckIn(
+    public ResponseEntity<TimeEntryResponseDto> fichar(
             @Valid @RequestBody TimeEntryRequestDto requestDto,
             HttpServletRequest httpRequest) {
 
@@ -33,4 +31,13 @@ public class TimeEntryController {
         TimeEntryResponseDto response = timeEntryService.procesarFichaje(requestDto, ipReal, userAgent);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/resumenDiario")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ResumenDiarioResponseDto> resumenDiario() {
+        ResumenDiarioResponseDto responseDto = timeEntryService.getResumenDiario();
+        return ResponseEntity.ok(responseDto);
+    }
+
+
 }

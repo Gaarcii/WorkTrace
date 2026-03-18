@@ -3,6 +3,7 @@ package com.worktrace.worktracebackend.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -28,8 +29,9 @@ public class WorkSchedule {
     @JoinColumn(name = "site_id", nullable = false)
     private WorkSite site;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "day_of_week", nullable = false)
-    private Integer dayOfWeek;
+    private DayOfWeek dayOfWeek;
 
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;

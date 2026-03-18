@@ -4,7 +4,8 @@ spring:
 
   config:
     import: optional:file:../.env
-
+  jackson:
+    time-zone: Europe/Madrid
   datasource:
     url: jdbc:postgresql://localhost:5432/${DB_NAME}
     username: ${DB_USER}

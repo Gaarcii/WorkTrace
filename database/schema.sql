@@ -61,13 +61,13 @@ create table if not exists work_schedules (
     id uuid primary key default gen_random_uuid (),
     employee_id uuid not null,
     site_id uuid not null,
-    day_of_week integer not null,
+    day_of_week varchar not null,
     start_time time without time zone not null,
     end_time time without time zone not null,
     created_at timestamp with time zone not null default now(),
     updated_at timestamp with time zone not null default now(),
     company_id uuid not null,
-    check (day_of_week between 0 and 6)
+    CHECK (day_of_week IN ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'))
 );
 
 --Sistema de fichajes
@@ -132,7 +132,7 @@ create table if not exists audit_time_entries (
     old_data jsonb,
     new_data jsonb,
     created_at timestamp with time zone not null default now(),
-    company_id uuid not null, -- Faltaba esto
+    company_id uuid not null,
     check (
         action in ('ADMIN_ADJUST', 'SOFT_DELETE')
     )
