@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +43,7 @@ public class TimeEntryController {
     }
 
     @GetMapping("/historial")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<HistorialResponseDto> getHistorial(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
         HistorialResponseDto historial = timeEntryService.getHistorial(fecha);
@@ -48,6 +51,7 @@ public class TimeEntryController {
     }
 
     @GetMapping("/estadisticas")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<EstadisticasResponseDto> getEstadisticas(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
@@ -55,4 +59,31 @@ public class TimeEntryController {
         return ResponseEntity.ok(estadisticas);
     }
 
+    @GetMapping("/estadisticas/exportar")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<byte[]> descargarInformePdf(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+
+        if (fechaFin == null) {
+            fechaFin = LocalDate.now();
+        }
+
+        if (fechaInicio == null) {
+            fechaInicio = timeEntryService.primerFichaje();
+        }
+
+        byte[] pdfBytes = timeEntryService.exportarHistorialPdf(fechaInicio, fechaFin);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+
+        String nombreArchivo = "fichajes_" + fechaInicio + "_al_" + fechaFin + ".pdf";
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"");
+        headers.setContentLength(pdfBytes.length);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+    }
 }

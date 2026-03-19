@@ -79,4 +79,13 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
             @Param("fechaInicio") LocalDate fechaInicio,
             @Param("fechaFin") LocalDate fechaFin
     );
+
+    List<TimeEntry> findTimeEntriesByEmployee_UserIdAndWorkDateBetweenOrderByWorkDateDesc(
+            UUID userId,
+            LocalDate fechaInicio,
+            LocalDate fechaFin
+    );
+
+    @Query("SELECT MIN(t.workDate) FROM TimeEntry t WHERE t.employee.userId = :userId")
+    LocalDate findFirstWorkDateByEmployee(@Param("userId") UUID userId);
 }

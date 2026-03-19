@@ -7,6 +7,7 @@ import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.ip.IpDetectionService;
+import com.worktrace.worktracebackend.service.pdf.EmployeePdfGeneratorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class TimeEntryService {
     private final IpDetectionService ipDetectionService;
     private final WorkScheduleRepository workScheduleRepository;
     private final IncidentRepository incidentRepository;
+    private final EmployeePdfGeneratorService employeePdfGeneratorService;
 
     private UsuarioYCompaniaInfo extraerUsuarioYCompania() {
         assert userService != null;
@@ -271,5 +273,31 @@ public class TimeEntryService {
         responseDto.setResumenDiario(resumenesDiarios);
 
         return responseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] exportarHistorialPdf(LocalDate fechaInicio, LocalDate fechaFin) {
+        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+
+        List<TimeEntry> fichajes = timeEntryRepository
+                .findTimeEntriesByEmployee_UserIdAndWorkDateBetweenOrderByWorkDateDesc(
+                        info.getProfile().getUserId(),
+                        fechaInicio,
+                        fechaFin
+                );
+
+        return employeePdfGeneratorService.generarPDFFichajes(
+                info.getProfile(),
+                info.getUser(),
+                fichajes,
+                fechaInicio,
+                fechaFin
+        );
+    }
+
+    public LocalDate primerFichaje() {
+        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+        LocalDate primeraFecha = timeEntryRepository.findFirstWorkDateByEmployee(info.getProfile().getUserId());
+        return primeraFecha != null ? primeraFecha : LocalDate.now();
     }
 }

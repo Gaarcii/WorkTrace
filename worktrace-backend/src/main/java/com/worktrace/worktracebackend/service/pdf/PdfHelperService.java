@@ -1,0 +1,137 @@
+package com.worktrace.worktracebackend.service.pdf;
+
+import com.worktrace.worktracebackend.model.Company;
+import org.openpdf.text.*;
+import org.openpdf.text.pdf.*;
+import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+@Service
+public class PdfHelperService {
+
+    public String generarHashSha256(String rawData) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(rawData.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (Exception e) {
+            return "ERROR_HASH_GENERATION";
+        }
+    }
+
+    public void addCompanyHeader(Document document, Company company, String reportTitle) throws DocumentException {
+        PdfPTable headerTable = new PdfPTable(2);
+        headerTable.setWidthPercentage(100);
+        headerTable.setWidths(new float[]{1, 2});
+
+        PdfPCell logoCell = new PdfPCell();
+        logoCell.setBorder(Rectangle.NO_BORDER);
+        logoCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+
+        if (company != null && company.getLogoUrl() != null && !company.getLogoUrl().isBlank()) {
+            try {
+                Image logo = Image.getInstance(java.net.URI.create(company.getLogoUrl()).toURL());
+                logo.scaleToFit(85, 85);
+                logoCell.addElement(logo);
+            } catch (Exception e) {
+                System.out.println("⚠️ No se pudo cargar el logo desde: " + company.getLogoUrl());
+                logoCell.addElement(new Phrase(" "));
+            }
+        } else {
+            logoCell.addElement(new Phrase(" "));
+        }
+        headerTable.addCell(logoCell);
+
+        PdfPCell companyCell = new PdfPCell();
+        companyCell.setBorder(Rectangle.NO_BORDER);
+        companyCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+        Font fontEmpresa = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, new java.awt.Color(0, 0, 38));
+        Font fontGris = FontFactory.getFont(FontFactory.HELVETICA, 10, java.awt.Color.GRAY);
+
+        Paragraph pName = new Paragraph(company != null ? company.getCompanyName() : "Mi Empresa", fontEmpresa);
+        pName.setAlignment(Element.ALIGN_RIGHT);
+        companyCell.addElement(pName);
+
+        if (company != null && company.getCif() != null) {
+            Paragraph pCif = new Paragraph("CIF: " + company.getCif(), fontGris);
+            pCif.setAlignment(Element.ALIGN_RIGHT);
+            companyCell.addElement(pCif);
+        }
+
+        DateTimeFormatter dtfText = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy");
+        Paragraph pFecha = new Paragraph("Emitido: " + LocalDate.now().format(dtfText), fontGris);
+        pFecha.setAlignment(Element.ALIGN_RIGHT);
+        companyCell.addElement(pFecha);
+
+        headerTable.addCell(companyCell);
+        document.add(headerTable);
+
+        Font fontTitulo = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, new java.awt.Color(0, 0, 38));
+        Paragraph titulo = new Paragraph(reportTitle, fontTitulo);
+        titulo.setAlignment(Element.ALIGN_CENTER);
+        titulo.setSpacingBefore(15);
+        titulo.setSpacingAfter(10);
+        document.add(titulo);
+
+        document.add(new org.openpdf.text.pdf.draw.LineSeparator(0.5f, 100, java.awt.Color.LIGHT_GRAY, Element.ALIGN_CENTER, -5));
+    }
+
+    public static class StandardFooterEvent extends PdfPageEventHelper {
+        private final String hashSeguridad;
+
+        public StandardFooterEvent(String hashSeguridad) {
+            this.hashSeguridad = hashSeguridad;
+        }
+
+        @Override
+        public void onEndPage(PdfWriter writer, Document document) {
+            PdfContentByte cb = writer.getDirectContent();
+            float x = document.left();
+            float y = document.bottom() - 10;
+
+            // Línea separadora
+            cb.setLineWidth(0.3f);
+            cb.setColorStroke(java.awt.Color.LIGHT_GRAY);
+            cb.moveTo(x, y);
+            cb.lineTo(document.right(), y);
+            cb.stroke();
+
+            try {
+                y -= 15;
+                ColumnText.showTextAligned(cb, Element.ALIGN_LEFT,
+                        new Phrase("Documento generado automáticamente. Validez sujeta a verificación.", FontFactory.getFont(FontFactory.HELVETICA, 8, java.awt.Color.GRAY)),
+                        x, y, 0);
+
+                if (hashSeguridad != null && !hashSeguridad.isEmpty()) {
+                    y -= 10;
+                    ColumnText.showTextAligned(cb, Element.ALIGN_LEFT,
+                            new Phrase("Huella Digital (SHA-256) de integridad de datos:", FontFactory.getFont(FontFactory.HELVETICA, 8, java.awt.Color.GRAY)),
+                            x, y, 0);
+
+                    y -= 10;
+                    ColumnText.showTextAligned(cb, Element.ALIGN_LEFT,
+                            new Phrase(hashSeguridad, FontFactory.getFont(FontFactory.COURIER, 7, java.awt.Color.BLACK)),
+                            x, y, 0);
+                }
+
+                String pageText = "Página " + writer.getPageNumber();
+                ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT,
+                        new Phrase(pageText, FontFactory.getFont(FontFactory.HELVETICA, 9, java.awt.Color.GRAY)),
+                        document.right(), y + 20, 0);
+
+            } catch (Exception ignored) {
+            }
+        }
+    }
+}
