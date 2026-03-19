@@ -1,9 +1,6 @@
 package com.worktrace.worktracebackend.service.timeEntry;
 
-import com.worktrace.worktracebackend.dto.timeEntry.ResumenDiarioResponseDto;
-import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRequestDto;
-import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryResponseDto;
-import com.worktrace.worktracebackend.dto.timeEntry.UltimosFichajesResponseDto;
+import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
@@ -113,17 +110,71 @@ public class TimeEntryService {
     @Transactional(readOnly = true)
     public ResumenDiarioResponseDto getResumenDiario() {
         UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
-        User user = info.getUser();
-        Profile profile = info.getProfile();
 
-        LocalDate hoy = LocalDate.now();
-        DayOfWeek diaSemana = hoy.getDayOfWeek();
+        ResumenDiarioResponseDto dto = calcularDatosDelDia(info.getUser(), info.getProfile(), LocalDate.now());
+
+        List<TimeEntry> ultimosTurnos = timeEntryRepository.findTop5ByEmployee_UserIdOrderByStartAtDesc(info.getUser().getId());
+        List<UltimosFichajesResponseDto> ultimos5Fichajes = mapTimeEntriesToEventos(ultimosTurnos).stream()
+                .sorted((e1, e2) -> e2.getFecha().compareTo(e1.getFecha()))
+                .limit(5)
+                .toList();
+        dto.setUltimosFichajes(ultimos5Fichajes);
+
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public HistorialResponseDto getHistorial(LocalDate fecha) {
+        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+        ResumenDiarioResponseDto resumenDiario = calcularDatosDelDia(info.getUser(), info.getProfile(), fecha);
+
+        List<TimeEntry> fichajesDia = timeEntryRepository.
+                findTimeEntriesByEmployee_UserIdAndWorkDate(info.getUser().getId(), fecha);
+
+        LocalDate fechaInicio = fecha.with(DayOfWeek.MONDAY);
+        LocalDate fechaFin = fecha.with(DayOfWeek.SUNDAY);
+
+        Long minutosTrabajadosSemanales = timeEntryRepository.
+                getWorkedMinutesByEmployeeAndDateRange(info.getProfile().getUserId(), fechaInicio, fechaFin);
+
+        Long minutosSemanales = info.getProfile().getWeeklyHours() != null
+                ? info.getProfile().getWeeklyHours().multiply(java.math.BigDecimal.valueOf(60)).longValue()
+                : 0L;
+
+        List<UltimosFichajesResponseDto> registrosDia = mapTimeEntriesToEventos(fichajesDia).stream()
+                .sorted((e1, e2) -> e2.getFecha().compareTo(e1.getFecha()))
+                .toList();
+        HistorialResponseDto historialResponseDto = new HistorialResponseDto();
+        historialResponseDto.setMinutosObjetivoDia(resumenDiario.getMinutosObjetivo());
+        historialResponseDto.setMinutosTrabajadosDia(resumenDiario.getMinutosAcumulados());
+        historialResponseDto.setRegistrosDia(registrosDia);
+        historialResponseDto.setMinutosObjetivoSemana(minutosSemanales);
+        historialResponseDto.setMinutosTrabajadosSemana(minutosTrabajadosSemanales);
+        return historialResponseDto;
+    }
+
+
+    private List<UltimosFichajesResponseDto> mapTimeEntriesToEventos(List<TimeEntry> turnos) {
+        List<UltimosFichajesResponseDto> eventos = new ArrayList<>();
+        for (TimeEntry turno : turnos) {
+            eventos.add(new UltimosFichajesResponseDto(
+                    turno.getId(), "Entrada", turno.getStartAt()));
+            if (turno.getEndAt() != null) {
+                eventos.add(new UltimosFichajesResponseDto(
+                        turno.getId(), "Salida", turno.getEndAt()));
+            }
+        }
+        return eventos;
+    }
+
+    private ResumenDiarioResponseDto calcularDatosDelDia(User user, Profile profile, LocalDate fecha) {
+        DayOfWeek diaSemana = fecha.getDayOfWeek();
 
         Optional<TimeEntry> fichajeActual = timeEntryRepository.
                 findByEmployee_UserIdAndEndAtIsNullAndStatus(user.getId(), Status.OPEN);
 
         Long minutosAcumulados = timeEntryRepository.
-                getWorkedMinutesByEmployeeAndDate(user.getId(), hoy);
+                getWorkedMinutesByEmployeeAndDate(user.getId(), fecha);
 
         Optional<WorkSchedule> horario = workScheduleRepository
                 .findByEmployee_UserIdAndDayOfWeek(profile.getUserId(), diaSemana);
@@ -142,33 +193,11 @@ public class TimeEntryService {
             objetivoMin = Duration.ofMinutes(0);
         }
 
-        List<TimeEntry> ultimosTurnos = timeEntryRepository.
-                findTop5ByEmployee_UserIdOrderByStartAtDesc(user.getId());
+        ResumenDiarioResponseDto dtoInfoDia = new ResumenDiarioResponseDto();
+        dtoInfoDia.setHoraEntrada(fichajeActual.map(TimeEntry::getStartAt).orElse(null));
+        dtoInfoDia.setMinutosAcumulados(minutosAcumulados);
+        dtoInfoDia.setMinutosObjetivo(objetivoMin.toMinutes());
 
-        List<UltimosFichajesResponseDto> eventosSueltos = new ArrayList<>();
-
-        for (TimeEntry turno : ultimosTurnos) {
-            eventosSueltos.add(new UltimosFichajesResponseDto(
-                    turno.getId(), "Entrada", turno.getStartAt()));
-
-            if (turno.getEndAt() != null) {
-                eventosSueltos.add(new UltimosFichajesResponseDto(
-                        turno.getId(), "Salida", turno.getEndAt()));
-            }
-        }
-
-        List<UltimosFichajesResponseDto> ultimos5Fichajes = eventosSueltos.stream()
-                .sorted((e1, e2)
-                        -> e2.getFecha().compareTo(e1.getFecha()))
-                .limit(5)
-                .toList();
-
-        ResumenDiarioResponseDto dto = new ResumenDiarioResponseDto();
-        dto.setHoraEntrada(fichajeActual.map(TimeEntry::getStartAt).orElse(null));
-        dto.setMinutosAcumulados(minutosAcumulados);
-        dto.setMinutosObjetivo(objetivoMin.toMinutes());
-        dto.setUltimosFichajes(ultimos5Fichajes);
-
-        return dto;
+        return dtoInfoDia;
     }
 }

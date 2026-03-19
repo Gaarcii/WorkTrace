@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.controller.timeEntry;
 
+import com.worktrace.worktracebackend.dto.timeEntry.HistorialResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.ResumenDiarioResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRequestDto;
 import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryResponseDto;
@@ -7,9 +8,12 @@ import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/time-entries")
@@ -39,5 +43,11 @@ public class TimeEntryController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @GetMapping("/historial")
+    public ResponseEntity<HistorialResponseDto> getHistorial(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        HistorialResponseDto historial = timeEntryService.getHistorial(fecha);
+        return ResponseEntity.ok(historial);
+    }
 
 }
