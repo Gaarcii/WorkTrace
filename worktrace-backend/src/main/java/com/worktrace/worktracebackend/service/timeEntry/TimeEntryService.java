@@ -2,6 +2,7 @@ package com.worktrace.worktracebackend.service.timeEntry;
 
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.model.*;
+import com.worktrace.worktracebackend.repository.IncidentRepository;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
@@ -11,9 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +23,7 @@ public class TimeEntryService {
     private final UserService userService;
     private final IpDetectionService ipDetectionService;
     private final WorkScheduleRepository workScheduleRepository;
+    private final IncidentRepository incidentRepository;
 
     private UsuarioYCompaniaInfo extraerUsuarioYCompania() {
         assert userService != null;
@@ -199,5 +200,76 @@ public class TimeEntryService {
         dtoInfoDia.setMinutosObjetivo(objetivoMin.toMinutes());
 
         return dtoInfoDia;
+    }
+
+    public EstadisticasResponseDto getEstadisticas(LocalDate fechaInicio, LocalDate fechaFin) {
+        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+        EstadisticasResponseDto responseDto = new EstadisticasResponseDto();
+
+        List<WorkSchedule> horariosList = workScheduleRepository
+                .findByEmployee_UserId(info.getProfile().getUserId());
+
+        Map<DayOfWeek, Long> objetivoPorDia = new EnumMap<>(DayOfWeek.class);
+        for (WorkSchedule h : horariosList) {
+            Duration duracion = Duration.between(h.getStartTime(), h.getEndTime());
+            if (duracion.isNegative()) {
+                duracion = duracion.plusDays(1);
+            }
+            objetivoPorDia.put(DayOfWeek.valueOf(
+                    h.getDayOfWeek().toString()), duracion.toMinutes());
+        }
+
+        List<EstadisticaDiariaProjection> registrosAgrupados = timeEntryRepository
+                .getEstadisticasDiariasAgrupadas(info.getProfile().getUserId(), fechaInicio, fechaFin);
+
+        Map<LocalDate, Long> mapaTrabajadoPorDia = registrosAgrupados.stream()
+                .collect(Collectors.toMap(
+                        EstadisticaDiariaProjection::getFecha,
+                        EstadisticaDiariaProjection::getMinutosTrabajados
+                ));
+
+        long totalTrabajados = 0L;
+        long balanceTotal = 0L;
+        int jornadasIncompletas = 0;
+
+        LocalDate diaActual = fechaInicio;
+        List<EstadisticaDiariaDto> resumenesDiarios = new ArrayList<>();
+
+        while (!diaActual.isAfter(fechaFin)) {
+            long minutosPrevistos = objetivoPorDia.getOrDefault(
+                    diaActual.getDayOfWeek(), 0L);
+            long minutosTrabajados = mapaTrabajadoPorDia.getOrDefault(
+                    diaActual, 0L);
+
+            EstadisticaDiariaDto diariaDto = new EstadisticaDiariaDto();
+            diariaDto.setFecha(diaActual);
+            diariaDto.setMinutosPrevistos(minutosPrevistos);
+            diariaDto.setMinutosTrabajados(minutosTrabajados);
+
+            totalTrabajados += minutosTrabajados;
+            balanceTotal += (minutosTrabajados - minutosPrevistos);
+
+            if (minutosPrevistos > 0 && minutosTrabajados < minutosPrevistos) {
+                jornadasIncompletas++;
+            }
+
+            resumenesDiarios.add(diariaDto);
+
+            diaActual = diaActual.plusDays(1);
+        }
+
+        int totalIncidencias = incidentRepository.countIncidentsByUsuarioYFechas(
+                info.getUser().getId(),
+                fechaInicio,
+                fechaFin
+        );
+
+        responseDto.setMinutosTrabajadosTotal(totalTrabajados);
+        responseDto.setBalanceMinutos(balanceTotal);
+        responseDto.setJornadasIncompletas(jornadasIncompletas);
+        responseDto.setIncidencias(totalIncidencias);
+        responseDto.setResumenDiario(resumenesDiarios);
+
+        return responseDto;
     }
 }

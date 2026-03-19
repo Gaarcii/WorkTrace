@@ -1,9 +1,6 @@
 package com.worktrace.worktracebackend.controller.timeEntry;
 
-import com.worktrace.worktracebackend.dto.timeEntry.HistorialResponseDto;
-import com.worktrace.worktracebackend.dto.timeEntry.ResumenDiarioResponseDto;
-import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRequestDto;
-import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryResponseDto;
+import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -48,6 +45,14 @@ public class TimeEntryController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
         HistorialResponseDto historial = timeEntryService.getHistorial(fecha);
         return ResponseEntity.ok(historial);
+    }
+
+    @GetMapping("/estadisticas")
+    public ResponseEntity<EstadisticasResponseDto> getEstadisticas(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+        EstadisticasResponseDto estadisticas = timeEntryService.getEstadisticas(fechaInicio, fechaFin);
+        return ResponseEntity.ok(estadisticas);
     }
 
 }
