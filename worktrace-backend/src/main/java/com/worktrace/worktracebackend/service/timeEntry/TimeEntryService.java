@@ -6,6 +6,7 @@ import com.worktrace.worktracebackend.repository.IncidentRepository;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
+import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
 import com.worktrace.worktracebackend.service.ip.IpDetectionService;
 import com.worktrace.worktracebackend.service.pdf.EmployeePdfGeneratorService;
 import lombok.RequiredArgsConstructor;
@@ -27,17 +28,9 @@ public class TimeEntryService {
     private final IncidentRepository incidentRepository;
     private final EmployeePdfGeneratorService employeePdfGeneratorService;
 
-    private UsuarioYCompaniaInfo extraerUsuarioYCompania() {
-        assert userService != null;
-        User user = userService.getAuthenticatedUser();
-        Company company = user.getCompany();
-        Profile profile = user.getProfile();
-        return new UsuarioYCompaniaInfo(user, company, profile);
-    }
-
     @Transactional
     public TimeEntryResponseDto procesarFichaje(TimeEntryRequestDto requestDto, String ip, String userAgent) {
-        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         User user = info.getUser();
         Company company = info.getCompany();
         Profile profile = info.getProfile();
@@ -112,7 +105,7 @@ public class TimeEntryService {
 
     @Transactional(readOnly = true)
     public ResumenDiarioResponseDto getResumenDiario() {
-        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
 
         ResumenDiarioResponseDto dto = calcularDatosDelDia(info.getUser(), info.getProfile(), LocalDate.now());
 
@@ -128,7 +121,7 @@ public class TimeEntryService {
 
     @Transactional(readOnly = true)
     public HistorialResponseDto getHistorial(LocalDate fecha) {
-        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         ResumenDiarioResponseDto resumenDiario = calcularDatosDelDia(info.getUser(), info.getProfile(), fecha);
 
         List<TimeEntry> fichajesDia = timeEntryRepository.
@@ -205,7 +198,7 @@ public class TimeEntryService {
     }
 
     public EstadisticasResponseDto getEstadisticas(LocalDate fechaInicio, LocalDate fechaFin) {
-        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         EstadisticasResponseDto responseDto = new EstadisticasResponseDto();
 
         List<WorkSchedule> horariosList = workScheduleRepository
@@ -277,7 +270,7 @@ public class TimeEntryService {
 
     @Transactional(readOnly = true)
     public byte[] exportarHistorialPdf(LocalDate fechaInicio, LocalDate fechaFin) {
-        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
 
         List<TimeEntry> fichajes = timeEntryRepository
                 .findTimeEntriesByEmployee_UserIdAndWorkDateBetweenOrderByWorkDateDesc(
@@ -296,7 +289,7 @@ public class TimeEntryService {
     }
 
     public LocalDate primerFichaje() {
-        UsuarioYCompaniaInfo info = extraerUsuarioYCompania();
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         LocalDate primeraFecha = timeEntryRepository.findFirstWorkDateByEmployee(info.getProfile().getUserId());
         return primeraFecha != null ? primeraFecha : LocalDate.now();
     }

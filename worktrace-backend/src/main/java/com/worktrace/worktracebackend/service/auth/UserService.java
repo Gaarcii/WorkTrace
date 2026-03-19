@@ -1,6 +1,8 @@
 package com.worktrace.worktracebackend.service.auth;
 
 import com.worktrace.worktracebackend.exception.NotFoundException;
+import com.worktrace.worktracebackend.model.Company;
+import com.worktrace.worktracebackend.model.Profile;
 import com.worktrace.worktracebackend.model.User;
 import com.worktrace.worktracebackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +28,13 @@ public class UserService {
         String email = authentication.getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado con email: " + email));
+    }
+
+    public UsuarioYCompaniaInfo extraerUsuarioYCompania() {
+        User user = this.getAuthenticatedUser();
+        Company company = user.getCompany();
+        Profile profile = user.getProfile();
+
+        return new UsuarioYCompaniaInfo(user, company, profile);
     }
 }

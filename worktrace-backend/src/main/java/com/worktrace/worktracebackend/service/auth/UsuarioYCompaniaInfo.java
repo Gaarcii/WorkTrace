@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.service.timeEntry;
+package com.worktrace.worktracebackend.service.auth;
 
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.Profile;
