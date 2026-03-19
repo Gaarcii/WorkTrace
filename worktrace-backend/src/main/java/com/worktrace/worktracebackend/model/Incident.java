@@ -31,8 +31,9 @@ public class Incident {
     @Column(name = "comment", nullable = false)
     private String comment;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private EstadoIncidencia status;
 
     @Column(name = "admin_response")
     private String adminResponse;

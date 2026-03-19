@@ -36,7 +36,7 @@ public class TimeEntryService {
         Profile profile = info.getProfile();
 
         Optional<TimeEntry> turnoAbiertoOpt = timeEntryRepository.
-                findByEmployee_UserIdAndEndAtIsNullAndStatus(profile.getUserId(), Status.OPEN);
+                findByEmployee_UserIdAndEndAtIsNullAndEstadoFichaje(profile.getUserId(), EstadoFichaje.OPEN);
 
         IpDetectionService.IpAnalysisResult ipResult = ipDetectionService.
                 analyzeIpWithDetails(ip);
@@ -68,7 +68,7 @@ public class TimeEntryService {
                 turnoAbierto.setFlags(flags);
             }
 
-            turnoAbierto.setStatus(Status.CLOSED);
+            turnoAbierto.setEstadoFichaje(EstadoFichaje.CLOSED);
             fichajeGuardado = timeEntryRepository.save(turnoAbierto);
 
         } else {
@@ -89,7 +89,7 @@ public class TimeEntryService {
             nuevoFichaje.setStartGeoip(ipResult.geoIpMap());
 
             nuevoFichaje.setFlags(flags);
-            nuevoFichaje.setStatus(Status.OPEN);
+            nuevoFichaje.setEstadoFichaje(EstadoFichaje.OPEN);
 
             fichajeGuardado = timeEntryRepository.save(nuevoFichaje);
         }
@@ -98,7 +98,7 @@ public class TimeEntryService {
         response.setId(fichajeGuardado.getId());
         response.setStartAt(fichajeGuardado.getStartAt());
         response.setEndAt(fichajeGuardado.getEndAt());
-        response.setStatus(fichajeGuardado.getStatus().name());
+        response.setStatus(fichajeGuardado.getEstadoFichaje().name());
 
         return response;
     }
@@ -167,7 +167,7 @@ public class TimeEntryService {
         DayOfWeek diaSemana = fecha.getDayOfWeek();
 
         Optional<TimeEntry> fichajeActual = timeEntryRepository.
-                findByEmployee_UserIdAndEndAtIsNullAndStatus(user.getId(), Status.OPEN);
+                findByEmployee_UserIdAndEndAtIsNullAndEstadoFichaje(user.getId(), EstadoFichaje.OPEN);
 
         Long minutosAcumulados = timeEntryRepository.
                 getWorkedMinutesByEmployeeAndDate(user.getId(), fecha);
