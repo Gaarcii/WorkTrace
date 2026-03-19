@@ -8,9 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/files")
@@ -19,14 +21,17 @@ public class FilesController {
 
     private final StorageService storageService;
 
-    @GetMapping(value = "/{filename:.+}")
+    @GetMapping(value = "/{directory}/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request) {
-        Resource file = storageService.loadAsResource(filename);
+    public ResponseEntity<Resource> serveFile(
+            @PathVariable String directory,
+            @PathVariable String filename) {
+        Resource file = storageService.loadAsResource(filename, directory);
         String contentType;
         try {
+            HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
             contentType = request.getServletContext().getMimeType(file.getFile().getAbsolutePath());
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede determinar el tipo de fichero");
         }
         if (contentType == null) {

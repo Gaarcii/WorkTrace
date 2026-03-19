@@ -38,15 +38,19 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public String store(MultipartFile file) {
+    public String store(MultipartFile file, String directory) {
         try {
             if (file.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fichero vacío");
             }
+
+            Path targetLocation = this.rootLocation.resolve(directory);
+            Files.createDirectories(targetLocation);
+
             String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
             String storedFilename = UUID.randomUUID() + "." + extension;
 
-            Files.copy(file.getInputStream(), this.rootLocation.resolve(storedFilename), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(file.getInputStream(), targetLocation.resolve(storedFilename), StandardCopyOption.REPLACE_EXISTING);
             return storedFilename;
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Fallo al almacenar el fichero", e);
@@ -54,9 +58,9 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public Resource loadAsResource(String filename) {
+    public Resource loadAsResource(String filename, String directory) {
         try {
-            Path file = rootLocation.resolve(filename);
+            Path file = rootLocation.resolve(directory).resolve(filename).normalize();
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
@@ -69,9 +73,9 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public String getUrl(String filename) {
+    public String getUrl(String filename, String directory) {
         return MvcUriComponentsBuilder
-                .fromMethodName(FilesController.class, "serveFile", filename, new Object())
+                .fromMethodName(FilesController.class, "serveFile", directory, filename)
                 .build().toUriString();
     }
 
@@ -81,13 +85,11 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void delete(String filename) {
+    public void delete(String filename, String directory) {
         try {
-            Path file = rootLocation.resolve(filename);
+            Path file = rootLocation.resolve(directory).resolve(filename);
             Files.deleteIfExists(file);
         } catch (IOException e) {
-            // Siendo realistas, si falla el borrado del archivo viejo no queremos
-            // que explote la petición de subida del nuevo, solo avisamos por consola.
             System.err.println("No se pudo borrar el archivo antiguo: " + filename);
         }
     }

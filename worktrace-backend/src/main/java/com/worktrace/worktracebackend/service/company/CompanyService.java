@@ -30,8 +30,8 @@ public class CompanyService {
         if (myCompany == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este administrador no tiene ninguna empresa asignada");
         }
-        String newFilename = storageService.store(file);
-        String newLogoUrl = storageService.getUrl(newFilename);
+        String newFilename = storageService.store(file, "logos");
+        String newLogoUrl = storageService.getUrl(newFilename, "logos");
 
         String oldLogoUrl = myCompany.getLogoUrl();
 
@@ -40,7 +40,7 @@ public class CompanyService {
 
         if (oldLogoUrl != null && !oldLogoUrl.isEmpty()) {
             String oldFilename = oldLogoUrl.substring(oldLogoUrl.lastIndexOf("/") + 1);
-            storageService.delete(oldFilename);
+            storageService.delete(oldFilename, "logos");
         }
 
         return newLogoUrl;
