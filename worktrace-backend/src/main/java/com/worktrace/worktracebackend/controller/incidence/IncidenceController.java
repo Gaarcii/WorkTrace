@@ -27,7 +27,7 @@ public class IncidenceController {
     }
 
     @PostMapping()
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('WORKER')")
     public ResponseEntity<IncidenceResponseDto> postIncidencia(
             @Valid @RequestBody IncidenceRequestDto requestDto) {
         IncidenceResponseDto responseDto = incidenceService.postIncidence(requestDto);

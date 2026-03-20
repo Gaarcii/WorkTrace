@@ -1,6 +1,5 @@
 package com.worktrace.worktracebackend.controller.worker;
 
-import com.worktrace.worktracebackend.dto.worker.PasswordChangeRequestDto;
 import com.worktrace.worktracebackend.dto.worker.WorkerRequestDto;
 import com.worktrace.worktracebackend.dto.worker.WorkerResponseDto;
 import com.worktrace.worktracebackend.service.worker.WorkerService;
@@ -19,13 +18,14 @@ public class WorkerController {
     private final WorkerService workerService;
 
     @GetMapping("/profile")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('WORKER')")
     public ResponseEntity<WorkerResponseDto> getWorker() {
         WorkerResponseDto responseDto = workerService.getProfile();
         return ResponseEntity.ok(responseDto);
     }
 
-    @PatchMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(consumes = org.springframework.http.MediaType
+            .MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<WorkerResponseDto> actualizarWorker(
             @Valid @ModelAttribute WorkerRequestDto requestDto) {
@@ -34,10 +34,4 @@ public class WorkerController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PatchMapping("/password")
-    @PreAuthorize("isAuthenticated()")
-    public void actualizarContrasena(
-            @Valid @RequestBody PasswordChangeRequestDto requestDto) {
-        workerService.cambiarContrasena(requestDto);
-    }
 }

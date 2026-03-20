@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.dto.auth;
 
+import com.worktrace.worktracebackend.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,4 +13,5 @@ import lombok.Setter;
 public class AuthResponseDto {
     private String token;
     private Boolean firstLogin;
+    private Role role;
 }

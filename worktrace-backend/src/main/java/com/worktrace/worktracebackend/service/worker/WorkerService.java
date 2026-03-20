@@ -1,7 +1,6 @@
 package com.worktrace.worktracebackend.service.worker;
 
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleResponseDto;
-import com.worktrace.worktracebackend.dto.worker.PasswordChangeRequestDto;
 import com.worktrace.worktracebackend.dto.worker.WorkerRequestDto;
 import com.worktrace.worktracebackend.dto.worker.WorkerResponseDto;
 import com.worktrace.worktracebackend.model.Profile;
@@ -83,21 +82,6 @@ public class WorkerService {
         WorkerResponseDto responseDto = construirWorkerResponseDto(profile, user);
         responseDto.setTokenActualizado(nuevoToken);
         return responseDto;
-    }
-
-    @Transactional
-    public void cambiarContrasena(PasswordChangeRequestDto requestDto) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
-        User user = info.getUser();
-
-        boolean comprobarActual = passwordEncoder.matches(requestDto.getActual(), user.getPasswordHash());
-        boolean comprobarNueva = requestDto.getNueva().equals(requestDto.getRepetir());
-
-        if (!comprobarActual || !comprobarNueva) {
-            throw new IllegalArgumentException("Contraseña incorrecta o las contraseñas no coinciden");
-        }
-
-        user.setPasswordHash(passwordEncoder.encode(requestDto.getNueva()));
     }
 
     private WorkerResponseDto construirWorkerResponseDto(Profile profile, User user) {

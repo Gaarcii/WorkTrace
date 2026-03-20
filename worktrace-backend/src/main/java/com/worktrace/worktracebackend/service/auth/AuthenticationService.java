@@ -3,6 +3,8 @@ package com.worktrace.worktracebackend.service.auth;
 import com.worktrace.worktracebackend.dto.auth.AuthRequestDto;
 import com.worktrace.worktracebackend.dto.auth.AuthResponseDto;
 import com.worktrace.worktracebackend.dto.company.CompanyRequestDto;
+import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
+import com.worktrace.worktracebackend.dto.worker.PasswordChangeRequestDto;
 import com.worktrace.worktracebackend.exception.InvalidCredentialsException;
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.Profile;
@@ -12,7 +14,9 @@ import com.worktrace.worktracebackend.repository.CompanyRepository;
 import com.worktrace.worktracebackend.repository.ProfileRepository;
 import com.worktrace.worktracebackend.repository.UserRepository;
 import com.worktrace.worktracebackend.security.JwtService;
+import com.worktrace.worktracebackend.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -31,6 +35,9 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final EmailService emailService;
+
 
     @Transactional
     public AuthResponseDto registerCompany(CompanyRequestDto requestDto) {
@@ -65,7 +72,8 @@ public class AuthenticationService {
         String jwt = jwtService.generateToken(admin);
 
         Boolean firstLogin = profile.getIsFirstLogin();
-        return new AuthResponseDto(jwt, firstLogin);
+        Role role = admin.getRole();
+        return new AuthResponseDto(jwt, firstLogin, role);
     }
 
     public AuthResponseDto signIn(AuthRequestDto requestDto) {
@@ -81,6 +89,71 @@ public class AuthenticationService {
 
         String jwt = jwtService.generateToken(user);
         Boolean firstLogin = user.getProfile().getIsFirstLogin();
-        return new AuthResponseDto(jwt, firstLogin);
+        Role role = user.getRole();
+        return new AuthResponseDto(jwt, firstLogin, role);
+    }
+
+    @Transactional
+    public void cambiarContrasena(PasswordChangeRequestDto requestDto) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        User user = info.getUser();
+
+        boolean comprobarActual = passwordEncoder.matches(requestDto.getActual(), user.getPasswordHash());
+        boolean comprobarNueva = requestDto.getNueva().equals(requestDto.getRepetir());
+
+        if (!comprobarActual || !comprobarNueva) {
+            throw new IllegalArgumentException("La contraseña actual es incorrecta o las nuevas no coinciden.");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(requestDto.getNueva()));
+
+        user.getProfile().setIsFirstLogin(false);
+    }
+
+    @jakarta.transaction.Transactional
+    public void registerEmployee(EmployeeRequestDto requestDto) {
+        User admin = userService.getAuthenticatedUser();
+        Company company = admin.getCompany();
+
+        String password = generarPasswordSegura();
+
+        User employee = User.builder()
+                .email(requestDto.getEmail())
+                .passwordHash(passwordEncoder.encode(password))
+                .role(Role.WORKER)
+                .isEnabled(true)
+                .createdAt(OffsetDateTime.now())
+                .company(company)
+                .build();
+        userRepository.save(employee);
+
+        Profile profile = Profile.builder()
+                .fullName(requestDto.getProfile().getFullName())
+                .employeeCode(requestDto.getProfile().getEmployeeCode())
+                .phone(requestDto.getProfile().getPhone())
+                .isFirstLogin(true)
+                .isActive(true)
+                .updatedAt(OffsetDateTime.now())
+                .user(employee)
+                .build();
+        profileRepository.save(profile);
+
+        emailService.sendNewEmployeeWelcomeEmail(
+                requestDto.getEmail(),
+                requestDto.getProfile().getFullName(),
+                password,
+                company.getLogoUrl(),
+                company.getCompanyName(),
+                admin.getProfile().getFullName(),
+                "https://app.worktrace.com/login" //CAMBIAR A URL DEL DOMINIO
+        );
+    }
+
+    private String generarPasswordSegura() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                .withinRange('0', 'z')
+                .filteredBy(Character::isLetterOrDigit).get();
+
+        return generator.generate(10);
     }
 }

@@ -22,7 +22,7 @@ public class TimeEntryController {
     private final TimeEntryService timeEntryService;
 
     @PostMapping("/fichar")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('WORKER')")
     public ResponseEntity<TimeEntryResponseDto> fichar(
             @Valid @RequestBody TimeEntryRequestDto requestDto,
             HttpServletRequest httpRequest) {
@@ -36,14 +36,14 @@ public class TimeEntryController {
     }
 
     @GetMapping("/resumenDiario")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('WORKER')")
     public ResponseEntity<ResumenDiarioResponseDto> resumenDiario() {
         ResumenDiarioResponseDto responseDto = timeEntryService.getResumenDiario();
         return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping("/historial")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('WORKER')")
     public ResponseEntity<HistorialResponseDto> getHistorial(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
         HistorialResponseDto historial = timeEntryService.getHistorial(fecha);
@@ -51,7 +51,7 @@ public class TimeEntryController {
     }
 
     @GetMapping("/estadisticas")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('WORKER')")
     public ResponseEntity<EstadisticasResponseDto> getEstadisticas(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
@@ -60,7 +60,7 @@ public class TimeEntryController {
     }
 
     @GetMapping("/estadisticas/exportar")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('WORKER')")
     public ResponseEntity<byte[]> descargarInformePdf(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
