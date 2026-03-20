@@ -4,7 +4,7 @@ import com.worktrace.worktracebackend.dto.auth.AuthRequestDto;
 import com.worktrace.worktracebackend.dto.auth.AuthResponseDto;
 import com.worktrace.worktracebackend.dto.company.CompanyRequestDto;
 import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
-import com.worktrace.worktracebackend.dto.worker.PasswordChangeRequestDto;
+import com.worktrace.worktracebackend.dto.user.PasswordChangeRequestDto;
 import com.worktrace.worktracebackend.service.auth.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

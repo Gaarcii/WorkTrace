@@ -1,8 +1,8 @@
-package com.worktrace.worktracebackend.service.worker;
+package com.worktrace.worktracebackend.service.user;
 
+import com.worktrace.worktracebackend.dto.user.UserRequestDto;
+import com.worktrace.worktracebackend.dto.user.UserResponseDto;
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleResponseDto;
-import com.worktrace.worktracebackend.dto.worker.WorkerRequestDto;
-import com.worktrace.worktracebackend.dto.worker.WorkerResponseDto;
 import com.worktrace.worktracebackend.model.Profile;
 import com.worktrace.worktracebackend.model.User;
 import com.worktrace.worktracebackend.security.JwtService;
@@ -21,21 +21,20 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class WorkerService {
-
+public class UserProfileService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final StorageService storageService;
 
     @Transactional(readOnly = true)
-    public WorkerResponseDto getProfile() {
+    public UserResponseDto getProfile() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
-        return construirWorkerResponseDto(info.getProfile(), info.getUser());
+        return construirUserResponseDto(info.getProfile(), info.getUser());
     }
 
     @Transactional
-    public WorkerResponseDto putProfile(WorkerRequestDto requestDto) {
+    public UserResponseDto putProfile(UserRequestDto requestDto) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Profile profile = info.getProfile();
         User user = info.getUser();
@@ -79,12 +78,12 @@ public class WorkerService {
             nuevoToken = jwtService.generateToken(user);
         }
 
-        WorkerResponseDto responseDto = construirWorkerResponseDto(profile, user);
+        UserResponseDto responseDto = construirUserResponseDto(profile, user);
         responseDto.setTokenActualizado(nuevoToken);
         return responseDto;
     }
 
-    private WorkerResponseDto construirWorkerResponseDto(Profile profile, User user) {
+    private UserResponseDto construirUserResponseDto(Profile profile, User user) {
         List<WorkScheduleResponseDto> horario = profile.getWorkSchedules().stream()
                 .map(h -> {
                     LocalTime start = h.getStartTime();
@@ -104,7 +103,7 @@ public class WorkerService {
                 })
                 .toList();
 
-        WorkerResponseDto responseDto = new WorkerResponseDto();
+        UserResponseDto responseDto = new UserResponseDto();
         responseDto.setNombreCompleto(profile.getFullName());
         responseDto.setAvatarUrl(profile.getAvatarUrl());
         responseDto.setPuestoTrabajo(profile.getPosition() != null ? profile.getPosition().getTitle() : "Sin asignar");
@@ -114,4 +113,6 @@ public class WorkerService {
 
         return responseDto;
     }
+
 }
+

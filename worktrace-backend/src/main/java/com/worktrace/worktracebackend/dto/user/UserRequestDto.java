@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.dto.worker;
+package com.worktrace.worktracebackend.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class WorkerRequestDto {
+public class UserRequestDto {
     private MultipartFile avatar;
     private String email;
     private String telefono;

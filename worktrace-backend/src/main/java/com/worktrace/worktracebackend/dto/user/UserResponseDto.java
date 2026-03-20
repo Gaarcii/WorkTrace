@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.dto.worker;
+package com.worktrace.worktracebackend.dto.user;
 
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleResponseDto;
 import lombok.AllArgsConstructor;
@@ -12,8 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class WorkerResponseDto {
-
+public class UserResponseDto {
     private String nombreCompleto;
     private String avatarUrl;
     private String puestoTrabajo;
@@ -22,3 +21,4 @@ public class WorkerResponseDto {
     private List<WorkScheduleResponseDto> horario;
     private String tokenActualizado;
 }
+

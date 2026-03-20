@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.dto.worker;
+package com.worktrace.worktracebackend.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
