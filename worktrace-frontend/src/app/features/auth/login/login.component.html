@@ -1,0 +1,70 @@
+<div class="split-layout">
+  <div class="brand-panel">
+    <div class="brand-content">
+      <img src="logo.webp" alt="Logo WorkTrace" class="brand-logo" />
+      <h1>WorkTrace</h1>
+      <p>Gestión horaria inteligente para equipos de alto rendimiento.</p>
+    </div>
+  </div>
+
+  <div class="form-panel">
+    <div class="form-wrapper">
+      <div class="form-header">
+        <h2>Bienvenido de nuevo</h2>
+        <p>Por favor, ingresa tus credenciales para acceder.</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Correo electrónico</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="ejemplo@empresa.com"
+            autocomplete="username"
+          />
+          <mat-icon matPrefix>email</mat-icon>
+          @if (loginForm.get('email')?.hasError('email')) {
+            <mat-error>El formato del email no es válido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input
+            matInput
+            formControlName="password"
+            [type]="hidePassword() ? 'password' : 'text'"
+            autocomplete="current-password"
+          />
+          <mat-icon matPrefix>lock</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="togglePassword()">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        @if (errorMessage()) {
+          <div class="error-box">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="loginForm.invalid || isSubmitting()"
+          class="submit-btn"
+        >
+          @if (isSubmitting()) {
+            <mat-spinner diameter="24"></mat-spinner>
+          } @else {
+            Entrar a mi cuenta
+          }
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
