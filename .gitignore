@@ -39,10 +39,17 @@ worktrace-backend/uploads/
 ####################################
 # NODE / ANGULAR
 ####################################
-frontend/node_modules/
-frontend/dist/
-frontend/.angular/
-frontend/.cache/
+worktrace-frontend/node_modules/
+worktrace-frontend/dist/
+worktrace-frontend/.angular/
+worktrace-frontend/.cache/
+worktrace-frontend/out-tsc/
+
+worktrace-frontend/npm-debug.log*
+worktrace-frontend/yarn-debug.log*
+worktrace-frontend/yarn-error.log*
+worktrace-frontend/pnpm-debug.log*
+worktrace-frontend/coverage/
 
 ####################################
 # LOGS
@@ -55,12 +62,6 @@ logs/
 ####################################
 docker-data/
 postgres-data/
-
-
-####################################
-# TESTS / COVERAGE
-####################################
-coverage/
 
 ####################################
 # Cambios
