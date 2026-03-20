@@ -64,7 +64,8 @@ public class AuthenticationService {
 
         String jwt = jwtService.generateToken(admin);
 
-        return new AuthResponseDto(jwt);
+        Boolean firstLogin = profile.getIsFirstLogin();
+        return new AuthResponseDto(jwt, firstLogin);
     }
 
     public AuthResponseDto signIn(AuthRequestDto requestDto) {
@@ -79,6 +80,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new InvalidCredentialsException("Email o contraseña inválidos"));
 
         String jwt = jwtService.generateToken(user);
-        return new AuthResponseDto(jwt);
+        Boolean firstLogin = user.getProfile().getIsFirstLogin();
+        return new AuthResponseDto(jwt, firstLogin);
     }
 }
