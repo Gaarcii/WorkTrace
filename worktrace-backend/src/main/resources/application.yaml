@@ -37,13 +37,17 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
 
-upload:
-  root-location: "uploads"
-  delete: "false"
-
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
 
 abstract:
   api-key: ${ABSTRACT_API_KEY}
+
+storage:
+  r2:
+    endpoint: ${R2_ENDPOINT}
+    access-key: ${R2_ACCESS_KEY}
+    secret-key: ${R2_SECRET_KEY}
+    bucket: ${R2_BUCKET}
+    public-url: ${R2_PUBLIC_URL}
