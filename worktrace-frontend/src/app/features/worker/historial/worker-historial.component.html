@@ -1,0 +1,97 @@
+<div class="page-container">
+  <div class="main-content">
+    <div class="calendar-header">
+      <div class="month-year">{{ rangoSemana() }}</div>
+
+      <div class="nav-buttons">
+        <button mat-icon-button class="nav-btn" (click)="semanaAnterior()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-icon-button class="nav-btn" (click)="abrirSelector()">
+          <mat-icon>calendar_today</mat-icon>
+        </button>
+        <button mat-icon-button class="nav-btn" (click)="semanaSiguiente()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+      <input type="date" #datePicker style="display: none" (change)="onDateChange($event)" />
+    </div>
+
+    <div class="days-container">
+      @for (dia of diasSemana(); track dia.fecha) {
+        <div
+          class="day-card"
+          [class.day-selected]="dia.seleccionado"
+          (click)="seleccionarDia(dia)"
+          matRipple
+        >
+          <div class="day-name">{{ dia.nombre }}</div>
+          <div class="day-number">{{ dia.numero }}</div>
+        </div>
+      }
+    </div>
+
+    <div class="resumen-section">
+      <div class="resumen-title">RESUMEN DE LA SEMANA</div>
+      <div class="resumen-stats semana-stats">
+        <div class="stat-card semana-card">
+          <div class="stat-content">
+            <div class="stat-label">Horas trabajadas</div>
+            <div class="stat-value">{{ estadisticasSemana().horas }}</div>
+          </div>
+        </div>
+        <div class="stat-card semana-card">
+          <div class="stat-content">
+            <div class="stat-label">Cómputo semanal</div>
+            <div class="stat-extra" [class.stat-negative]="!estadisticasSemana().isPositive">
+              {{ estadisticasSemana().balance }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="resumen-title">RESUMEN DEL DÍA</div>
+      <div class="resumen-stats">
+        <div class="stat-card">
+          <div class="stat-content">
+            <div class="stat-label">Horas trabajadas</div>
+            <div class="stat-value">{{ estadisticasDia().horas }}</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-content">
+            <div class="stat-label">Cómputo diario</div>
+            <div class="stat-extra" [class.stat-negative]="!estadisticasDia().isPositive">
+              {{ estadisticasDia().balance }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="resumen-title registros-title">REGISTROS DEL DÍA</div>
+
+      @if (fichajesDelDia().length === 0) {
+        <div class="no-registros">No hay registros para este día</div>
+      } @else {
+        @for (
+          registro of fichajesDelDia();
+          track registro.timeEntryId + '-' + registro.tipoEvento
+        ) {
+          <div class="resumen-card">
+            <div class="resumen-left">
+              <div class="icon-container">
+                <mat-icon color="primary" class="resumen-icon">{{ registro.icono }}</mat-icon>
+              </div>
+              <div class="resumen-info">
+                <div class="resumen-tipo">{{ registro.tipoStr }}</div>
+                <div class="resumen-fecha">{{ registro.fechaStr }}</div>
+              </div>
+            </div>
+            <div class="resumen-hora">{{ registro.horaStr }}</div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>

@@ -23,3 +23,11 @@ export interface UltimosFichajes {
   tipoEvento: string;
   fecha: string;
 }
+
+export interface HistorialResponse {
+  minutosTrabajadosSemana: string;
+  minutosObjetivoSemana: string;
+  registrosDia: UltimosFichajes[];
+  minutosTrabajadosDia: number;
+  minutosObjetivoDia: number;
+}

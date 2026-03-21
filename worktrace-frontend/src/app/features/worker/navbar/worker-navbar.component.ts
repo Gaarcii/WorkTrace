@@ -42,7 +42,7 @@ export class WorkerBottomNavComponent implements OnInit {
   private updateActiveTab(url: string) {
     if (url.includes('/worker/home')) {
       this.activeTab.set('home');
-    } else if (url.includes('/worker/home')) {
+    } else if (url.includes('/worker/historial')) {
       this.activeTab.set('history');
     } else if (url.includes('/worker/home')) {
       this.activeTab.set('stats');

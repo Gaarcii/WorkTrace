@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { HeaderBarComponent } from './shared/components/header-bar/header-bar.component';
-import { WorkerBottomNavComponent } from './features/worker/worker-navbar/worker-navbar.component';
+import { WorkerBottomNavComponent } from './features/worker/navbar/worker-navbar.component';
 import { TokenStorageService } from './core/auth/token-storage.service';
 
 @Component({
