@@ -1,0 +1,85 @@
+.header-bar {
+  height: 64px;
+  background-color: #000026;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.header-spacer {
+  height: 64px;
+  width: 100%;
+}
+
+.avatar-container {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.avatar-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f0f0f0;
+}
+
+.avatar-icon {
+  font-size: 42px;
+  color: #757575;
+  background: #f0f0f0;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user-name {
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.user-role {
+  color: white;
+  font-size: 12px;
+  font-weight: 300;
+  font-style: italic;
+  opacity: 0.9;
+  line-height: 1.2;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  min-width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-btn {
+  min-width: auto;
+  margin-left: 8px;
+}

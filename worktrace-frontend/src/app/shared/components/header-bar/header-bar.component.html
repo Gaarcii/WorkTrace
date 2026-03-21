@@ -1,0 +1,26 @@
+<div class="header-bar">
+  <div class="avatar-container">
+    @if (userAvatar()) {
+      <img [src]="userAvatar()" alt="Avatar" class="avatar-img" />
+    } @else {
+      <span class="material-icons avatar-icon">account_circle</span>
+    }
+  </div>
+
+  <div class="user-info">
+    <div class="user-name">{{ userName() }}</div>
+    <div class="user-role">{{ userRole() }}</div>
+  </div>
+
+  <span class="spacer"></span>
+  <button
+    type="button"
+    class="icon-btn logout-btn"
+    aria-label="Cerrar sesión"
+    (click)="handleLogout()"
+  >
+    <span class="material-icons">logout</span>
+  </button>
+</div>
+
+<div class="header-spacer"></div>

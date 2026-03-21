@@ -35,38 +35,32 @@ export class LoginComponent {
   private router = inject(Router);
   private readonly tokenStorage = inject(TokenStorageService);
 
-  // Transformamos el estado a Signals
-  errorMessage = signal<string | null>(null);
-  hidePassword = signal(true);
-  isSubmitting = signal(false);
+   readonly errorMessage = signal<string | null>(null);
+  readonly hidePassword = signal(true);
+    readonly isSubmitting = signal(false);
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  // Método limpio para alternar el ojito de la contraseña
   togglePassword() {
     this.hidePassword.update((v) => !v);
   }
 
   onSubmit() {
-    // 1. Bloqueo de envíos si el formulario es inválido o ya está cargando
     if (this.loginForm.invalid || this.isSubmitting()) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    // 2. Reinicio del estado visual
     this.errorMessage.set(null);
     this.isSubmitting.set(true);
 
-    // 3. Petición HTTP reactiva
     this.authService
       .login(this.loginForm.getRawValue())
       .pipe(
         take(1),
-        // Finalize apaga el spinner automáticamente al terminar (éxito o error)
         finalize(() => this.isSubmitting.set(false)),
       )
       .subscribe({
