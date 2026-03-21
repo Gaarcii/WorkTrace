@@ -42,13 +42,13 @@ export class WorkerBottomNavComponent implements OnInit {
   private updateActiveTab(url: string) {
     if (url.includes('/worker/home')) {
       this.activeTab.set('home');
-    } else if (url.includes('/historial')) {
+    } else if (url.includes('/worker/home')) {
       this.activeTab.set('history');
-    } else if (url.includes('/estadisticas')) {
+    } else if (url.includes('/worker/home')) {
       this.activeTab.set('stats');
-    } else if (url.includes('/incidencias')) {
-      this.activeTab.set('calendar');
-    } else if (url.includes('/perfil')) {
+    } else if (url.includes('/worker/home')) {
+      this.activeTab.set('/worker/home');
+    } else if (url.includes('/worker/home')) {
       this.activeTab.set('user');
     } else {
       this.activeTab.set('home');

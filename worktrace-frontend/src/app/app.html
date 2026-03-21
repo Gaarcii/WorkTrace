@@ -3,7 +3,9 @@
 
   @if (userRole() === 'ROLE_WORKER' || userRole() === 'WORKER') {
     <app-worker-bottom-nav />
-  } 
   }
+}
 
-<router-outlet />
+<main [class.layout-with-nav]="showHeader()">
+  <router-outlet />
+</main>

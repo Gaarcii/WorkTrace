@@ -8,20 +8,17 @@ import { API_CONFIG } from '../../core/api/api.config';
   providedIn: 'root',
 })
 export class ProfileService {
+  private readonly BASE_URL = API_CONFIG.baseUrl;
 
-      private readonly BASE_URL = API_CONFIG.baseUrl;
+  private readonly http = inject(HttpClient);
 
-    private http = inject(HttpClient);
+  readonly currentUser = signal<ProfileResponse | null>(null);
 
-    currentUser = signal<ProfileResponse | null>(null);
-
-    fetchMyProfile(): Observable<ProfileResponse> {
-
+  fetchMyProfile(): Observable<ProfileResponse> {
     return this.http.get<ProfileResponse>(`${this.BASE_URL}user/profile`).pipe(
       tap((profile) => {
         this.currentUser.set(profile);
-      })
+      }),
     );
   }
-
 }
