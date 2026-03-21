@@ -1,4 +1,9 @@
 @if (showHeader()) {
   <app-header-bar />
-}
+
+  @if (userRole() === 'ROLE_WORKER' || userRole() === 'WORKER') {
+    <app-worker-bottom-nav />
+  } 
+  }
+
 <router-outlet />

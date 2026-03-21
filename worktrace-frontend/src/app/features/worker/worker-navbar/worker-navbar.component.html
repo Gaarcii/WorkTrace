@@ -1,0 +1,36 @@
+<nav class="bottom-nav">
+  <a routerLink="/worker/home" class="nav-btn" [class.active]="activeTab() === 'home'" matRipple>
+    <mat-icon>home</mat-icon>
+  </a>
+
+  <a
+    routerLink="/worker/historial"
+    class="nav-btn"
+    [class.active]="activeTab() === 'history'"
+    matRipple
+  >
+    <mat-icon>history</mat-icon>
+  </a>
+
+  <a
+    routerLink="/worker/estadisticas"
+    class="nav-btn"
+    [class.active]="activeTab() === 'stats'"
+    matRipple
+  >
+    <mat-icon>insights</mat-icon>
+  </a>
+
+  <a
+    routerLink="/worker/incidencias"
+    class="nav-btn"
+    [class.active]="activeTab() === 'calendar'"
+    matRipple
+  >
+    <mat-icon>warning_amber</mat-icon>
+  </a>
+
+  <a routerLink="/perfil" class="nav-btn" [class.active]="activeTab() === 'user'" matRipple>
+    <mat-icon>person</mat-icon>
+  </a>
+</nav>
