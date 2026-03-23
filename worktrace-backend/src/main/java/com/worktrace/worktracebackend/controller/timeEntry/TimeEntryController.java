@@ -53,8 +53,15 @@ public class TimeEntryController {
     @GetMapping("/estadisticas")
     @PreAuthorize("hasRole('WORKER')")
     public ResponseEntity<EstadisticasResponseDto> getEstadisticas(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+
+        if (fechaFin == null) {
+            fechaFin = LocalDate.now();
+        }
+        if (fechaInicio == null) {
+            fechaInicio = timeEntryService.primerFichaje();
+        }
         EstadisticasResponseDto estadisticas = timeEntryService.getEstadisticas(fechaInicio, fechaFin);
         return ResponseEntity.ok(estadisticas);
     }

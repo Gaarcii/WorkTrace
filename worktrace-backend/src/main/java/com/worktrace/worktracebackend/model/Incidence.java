@@ -9,13 +9,13 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "incidents")
+@Table(name = "incidences")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Incident {
+public class Incidence {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, updatable = false)
@@ -52,8 +52,8 @@ public class Incident {
     @JoinColumn(name = "type_id", nullable = false)
     private IncidenceType type;
 
-    @Column(name = "incident_time", nullable = false)
-    private LocalTime incidentTime;
+    @Column(name = "incidence_time", nullable = false)
+    private LocalTime incidenceTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)

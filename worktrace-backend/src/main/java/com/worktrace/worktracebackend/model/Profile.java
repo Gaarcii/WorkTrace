@@ -59,5 +59,5 @@ public class Profile {
     private java.util.List<TimeEntry> timeEntries;
 
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
-    private java.util.List<Incident> incidents;
+    private java.util.List<Incidence> incidences;
 }

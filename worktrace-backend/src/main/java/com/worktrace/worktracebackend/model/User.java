@@ -54,7 +54,7 @@ public class User implements UserDetails {
     private java.util.List<TimeEntry> deletedTimeEntries;
 
     @OneToMany(mappedBy = "resolvedBy", fetch = FetchType.LAZY)
-    private java.util.List<Incident> resolvedIncidents;
+    private java.util.List<Incidence> resolvedIncidences;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

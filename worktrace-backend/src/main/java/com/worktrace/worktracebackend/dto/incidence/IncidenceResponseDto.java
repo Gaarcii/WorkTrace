@@ -15,18 +15,11 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IncidenceResponseDto {
-
-    //Tipo de incidencia
     private String tipoIncidencia;
-    //Fecha
     private LocalDate fecha;
-    //Hora
     private LocalTime hora;
-    //mensaje
     private String comentario;
-    //Estado
     private EstadoIncidencia estado;
-    //Cuando se ha creado ( no tiene que ver con los otros campos)
     private OffsetDateTime creacion;
 
 }

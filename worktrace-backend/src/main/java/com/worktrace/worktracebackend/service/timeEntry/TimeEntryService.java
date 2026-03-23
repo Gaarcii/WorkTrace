@@ -1,12 +1,14 @@
 package com.worktrace.worktracebackend.service.timeEntry;
 
+import com.worktrace.worktracebackend.dto.incidence.IncidenceResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.model.*;
-import com.worktrace.worktracebackend.repository.IncidentRepository;
+import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
+import com.worktrace.worktracebackend.service.incidence.IncidenceService;
 import com.worktrace.worktracebackend.service.ip.IpDetectionService;
 import com.worktrace.worktracebackend.service.pdf.EmployeePdfGeneratorService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +27,9 @@ public class TimeEntryService {
     private final UserService userService;
     private final IpDetectionService ipDetectionService;
     private final WorkScheduleRepository workScheduleRepository;
-    private final IncidentRepository incidentRepository;
+    private final IncidenceRepository incidentRepository;
     private final EmployeePdfGeneratorService employeePdfGeneratorService;
+    private final IncidenceService incidenceService;
 
     @Transactional
     public TimeEntryResponseDto procesarFichaje(TimeEntryRequestDto requestDto, String ip, String userAgent) {
@@ -223,6 +226,9 @@ public class TimeEntryService {
                         EstadisticaDiariaProjection::getMinutosTrabajados
                 ));
 
+        List<IncidenceResponseDto> incidencias = incidenceService
+                .getIncidenciaPorFechas(fechaInicio, fechaFin);
+
         long totalTrabajados = 0L;
         long balanceTotal = 0L;
         int jornadasIncompletas = 0;
@@ -264,6 +270,7 @@ public class TimeEntryService {
         responseDto.setJornadasIncompletas(jornadasIncompletas);
         responseDto.setIncidencias(totalIncidencias);
         responseDto.setResumenDiario(resumenesDiarios);
+        responseDto.setIncidenciasList(incidencias);
 
         return responseDto;
     }

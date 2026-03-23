@@ -3,8 +3,8 @@ package com.worktrace.worktracebackend.service.incidence;
 import com.worktrace.worktracebackend.dto.incidence.IncidenceRequestDto;
 import com.worktrace.worktracebackend.dto.incidence.IncidenceResponseDto;
 import com.worktrace.worktracebackend.model.EstadoIncidencia;
+import com.worktrace.worktracebackend.model.Incidence;
 import com.worktrace.worktracebackend.model.IncidenceType;
-import com.worktrace.worktracebackend.model.Incident;
 import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.IncidenceTypeRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -28,19 +29,10 @@ public class IncidenceService {
     public List<IncidenceResponseDto> getIncidenciasByUserID() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
 
-        List<Incident> incidentList = incidenceRepository
+        List<Incidence> incidenceList = incidenceRepository
                 .findByProfile_UserId(info.getUser().getId());
 
-        return incidentList.stream()
-                .map(incident -> new IncidenceResponseDto(
-                        incident.getType().getName(),
-                        incident.getDate(),
-                        incident.getIncidentTime(),
-                        incident.getComment(),
-                        (incident.getStatus()),
-                        incident.getCreatedAt()
-                ))
-                .toList();
+        return mapearAIncidenceResponse(incidenceList);
     }
 
     @Transactional
@@ -48,25 +40,50 @@ public class IncidenceService {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         IncidenceType tipoRef = incidenceTypeRepository.getReferenceById(requestDto.getTypeId());
 
-        Incident incident = new Incident();
-        incident.setProfile(info.getProfile());
-        incident.setDate(requestDto.getFechaAfectada());
-        incident.setComment(requestDto.getComentario());
-        incident.setStatus(EstadoIncidencia.PENDING);
-        incident.setCreatedAt(OffsetDateTime.now());
-        incident.setType(tipoRef);
-        incident.setIncidentTime(requestDto.getHora());
-        incident.setCompany(info.getCompany());
-        incident.setUpdatedAt(OffsetDateTime.now());
+        Incidence incidence = new Incidence();
+        incidence.setProfile(info.getProfile());
+        incidence.setDate(requestDto.getFechaAfectada());
+        incidence.setComment(requestDto.getComentario());
+        incidence.setStatus(EstadoIncidencia.PENDING);
+        incidence.setCreatedAt(OffsetDateTime.now());
+        incidence.setType(tipoRef);
+        incidence.setIncidenceTime(requestDto.getHora());
+        incidence.setCompany(info.getCompany());
+        incidence.setUpdatedAt(OffsetDateTime.now());
 
-        incident = incidenceRepository.save(incident);
+        incidence = incidenceRepository.save(incidence);
         return new IncidenceResponseDto(
-                incident.getType().getName(),
-                incident.getDate(),
-                incident.getIncidentTime(),
-                incident.getComment(),
-                incident.getStatus(),
-                incident.getCreatedAt()
+                incidence.getType().getName(),
+                incidence.getDate(),
+                incidence.getIncidenceTime(),
+                incidence.getComment(),
+                incidence.getStatus(),
+                incidence.getCreatedAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<IncidenceResponseDto> getIncidenciaPorFechas(LocalDate fechaInicio, LocalDate fechaFin) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+
+        List<Incidence> incidenceList = incidenceRepository
+                .getIncidencesByProfile_UserIdAndDateBetween(
+                        info.getUser().getId(),
+                        fechaInicio, fechaFin);
+
+        return mapearAIncidenceResponse(incidenceList);
+    }
+
+    private List<IncidenceResponseDto> mapearAIncidenceResponse(List<Incidence> incidenceList) {
+        return incidenceList.stream()
+                .map(incident -> new IncidenceResponseDto(
+                        incident.getType().getName(),
+                        incident.getDate(),
+                        incident.getIncidenceTime(),
+                        incident.getComment(),
+                        (incident.getStatus()),
+                        incident.getCreatedAt()
+                ))
+                .toList();
     }
 }

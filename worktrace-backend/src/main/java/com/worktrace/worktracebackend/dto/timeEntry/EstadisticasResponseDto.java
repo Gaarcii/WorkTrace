@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.dto.timeEntry;
 
+import com.worktrace.worktracebackend.dto.incidence.IncidenceResponseDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,4 +14,5 @@ public class EstadisticasResponseDto {
     private int jornadasIncompletas;
     private int incidencias;
     private List<EstadisticaDiariaDto> resumenDiario;
+    private List<IncidenceResponseDto> incidenciasList;
 }

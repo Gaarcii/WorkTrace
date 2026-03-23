@@ -33,5 +33,5 @@ public class IncidenceType {
     private Company company;
 
     @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
-    private java.util.List<Incident> incidents;
+    private java.util.List<Incidence> incidences;
 }
