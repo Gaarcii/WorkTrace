@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { WorkerHistoryService } from '../../../shared/services/worker/worker-historial.service';
+import { ActivatedRoute } from '@angular/router';
 
 interface DiaSemana {
   fecha: string;
@@ -31,6 +32,7 @@ interface DiaSemana {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkerHistoryComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
   // Inyecciones
   private readonly historyService = inject(WorkerHistoryService);
 
@@ -125,7 +127,19 @@ export class WorkerHistoryComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.cargarHistorial(this.fechaSeleccionada());
+    this.route.queryParamMap.subscribe((params) => {
+      const fechaParam = params.get('fecha');
+      if (fechaParam) {
+        // fechaParam viene en formato yyyy-MM-dd
+        const [year, month, day] = fechaParam.split('-').map(Number);
+        const fecha = new Date(year, month - 1, day);
+        this.fechaSeleccionada.set(fecha);
+        this.semanaActual.set(this.getStartOfWeek(fecha));
+        this.cargarHistorial(fecha);
+      } else {
+        this.cargarHistorial(this.fechaSeleccionada());
+      }
+    });
   }
 
   semanaAnterior(): void {

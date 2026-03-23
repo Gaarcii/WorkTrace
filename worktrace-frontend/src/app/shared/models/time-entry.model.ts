@@ -1,3 +1,5 @@
+import { IncidenceResponse } from './incidence.model';
+
 export interface ResumenResponse {
   minutosAcumulados: number;
   minutosObjetivo: number;
@@ -30,4 +32,19 @@ export interface HistorialResponse {
   registrosDia: UltimosFichajes[];
   minutosTrabajadosDia: number;
   minutosObjetivoDia: number;
+}
+
+export interface EstadisticaDiariaResponse {
+  fecha: string;
+  minutosTrabajados: number;
+  minutosPrevistos: number;
+}
+
+export interface EstadisticasResponse {
+  minutosTrabajadosTotal: number;
+  balanceMinutos: number;
+  jornadasIncompletas: number;
+  incidencias: number;
+  resumenDiario: EstadisticaDiariaResponse[];
+  incidenciasList: IncidenceResponse[];
 }

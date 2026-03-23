@@ -1,0 +1,199 @@
+<div class="page-container">
+  <div class="main-content">
+    <div class="estadisticas-header">
+      <div class="estadisticas-title-row">
+        <div class="estadisticas-title">Estadísticas</div>
+        <button
+          mat-icon-button
+          class="filter-btn"
+          [class.filter-active]="mostrarFiltroFechas()"
+          (click)="toggleFiltro()"
+        >
+          <mat-icon>filter_list</mat-icon>
+        </button>
+      </div>
+
+      <div class="periodo-container">
+        <mat-button-toggle-group
+          class="periodo-selector"
+          [value]="periodoSeleccionado()"
+          (change)="cambiarPeriodo($event.value)"
+        >
+          <mat-button-toggle value="semana">Últ. Semana</mat-button-toggle>
+          <mat-button-toggle value="mes">Últ. Mes</mat-button-toggle>
+          <mat-button-toggle value="todo">Todo</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
+
+    @if (mostrarFiltroFechas()) {
+      <div class="filtro-fechas-card card-surface">
+        <form
+          [formGroup]="filterForm"
+          (ngSubmit)="aplicarFiltroPersonalizado()"
+          class="filtro-fechas-container"
+        >
+          <div class="fechas-inputs">
+            <div class="input-group">
+              <label>Fecha inicio</label>
+              <input type="date" formControlName="fechaInicio" class="native-date-input" />
+            </div>
+            <div class="input-group">
+              <label>Fecha fin</label>
+              <input type="date" formControlName="fechaFin" class="native-date-input" />
+            </div>
+          </div>
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="filterForm.invalid"
+            class="aplicar-filtro-btn"
+          >
+            Aplicar
+          </button>
+        </form>
+      </div>
+    }
+
+    <div class="resumen-cards">
+      <div class="resumen-card card-surface">
+        <mat-icon color="primary" class="card-icon">schedule</mat-icon>
+        <div class="card-label">Horas trabajadas</div>
+        <div class="card-value">{{ horasTrabajadas() }}</div>
+      </div>
+      <div class="resumen-card card-surface">
+        <mat-icon color="primary" class="card-icon">balance</mat-icon>
+        <div class="card-label">Balance horario</div>
+        <div class="card-value" [ngClass]="balanceClass()">{{ balanceHorario() }}</div>
+      </div>
+      <div class="resumen-card card-surface">
+        <mat-icon color="warn" class="card-icon">warning_amber</mat-icon>
+        <div class="card-label">Jornadas Incomp.</div>
+        <div class="card-value">{{ jornadasIncompletas() }}</div>
+      </div>
+      <div class="resumen-card card-surface">
+        <mat-icon color="primary" class="card-icon">error_outline</mat-icon>
+        <div class="card-label">Incidencias</div>
+        <div class="card-value">{{ totalIncidencias() }}</div>
+      </div>
+    </div>
+
+    <div class="grafico-card card-surface">
+      <div class="grafico-title-row">
+        <div class="grafico-title">Horas trabajadas por día</div>
+        @if (historialPaginado().length > 1) {
+          <div class="semana-navigation-bar">
+            <button
+              mat-icon-button
+              (click)="prevWeek()"
+              [disabled]="currentWeekIndex() === historialPaginado().length - 1"
+            >
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <span class="semana-label">{{ semanaVisible().rangoTexto }}</span>
+
+            <button mat-icon-button (click)="nextWeek()" [disabled]="currentWeekIndex() === 0">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+      <div class="grafico-container">
+        @for (dia of semanaVisible().dias; track $index) {
+          <div class="barra-container" (click)="mostrarTooltip(dia)">
+            <div class="barra-wrapper">
+              <div class="barra" [style.height.%]="dia.altura"></div>
+            </div>
+            <div class="barra-label">{{ dia.dia }}</div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="balance-card card-surface">
+      <div class="balance-header">
+        <div class="balance-title">Balance acumulado</div>
+        <div
+          class="balance-indicador"
+          [class.balance-favor]="balanceClass() === 'balance-positivo'"
+          [class.balance-contra]="balanceClass() === 'balance-negativo'"
+        >
+          <mat-icon>{{
+            balanceClass() === 'balance-positivo' ? 'check_circle' : 'error'
+          }}</mat-icon>
+        </div>
+      </div>
+      <div class="balance-value" [ngClass]="balanceClass()">{{ balanceHorario() }}</div>
+      <div class="balance-desc">Diferencia entre horas trabajadas y horas previstas</div>
+    </div>
+
+    <div class="dias-section">
+      <div class="section-title">Detalle de la semana</div>
+      @for (dia of semanaVisible().resumenDias; track $index) {
+        <div class="dia-card card-surface" (click)="verDetalleDia(dia)" matRipple>
+          <div class="dia-header">
+            <div class="dia-fecha">
+              <mat-icon class="mr-2">calendar_today</mat-icon>{{ dia.fecha }}
+            </div>
+            <span class="estado-chip" [ngClass]="'chip-' + dia.estadoColor">{{ dia.estado }}</span>
+          </div>
+          <div class="dia-stats">
+            <div class="dia-stat">
+              <span class="dia-stat-label">Total:</span
+              ><span class="dia-stat-value">{{ dia.total }}</span>
+            </div>
+            <div class="dia-stat">
+              <span class="dia-stat-label">Balance:</span
+              ><span class="dia-stat-value" [ngClass]="dia.balanceClass">{{ dia.balance }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (incidenciasPeriodo().length > 0) {
+      <div class="incidencias-section">
+        <div class="section-title">Incidencias del periodo</div>
+
+        @for (incidencia of incidenciasPeriodo(); track $index) {
+          <div class="incidencia-card-small card-surface">
+            <div class="incidencia-row">
+              <div class="incidencia-tipo-small">{{ incidencia.tipo }}</div>
+              <span class="estado-chip" [ngClass]="'chip-' + incidencia.estadoColor">
+                {{ incidencia.estado }}
+              </span>
+            </div>
+            <div class="incidencia-fecha-small">{{ incidencia.fecha }}</div>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="acciones-section">
+      <button
+        mat-flat-button
+        class="full-width-btn btn-filled mb-12"
+        [disabled]="isDownloadingPdf()"
+        (click)="descargarRegistros()"
+      >
+        <span class="btn-content-flex">
+          @if (isDownloadingPdf()) {
+            <mat-spinner diameter="24" color="accent"></mat-spinner>
+          } @else {
+            <mat-icon>download</mat-icon> Descargar registros (PDF)
+          }
+        </span>
+      </button>
+
+      <button
+        mat-stroked-button
+        class="full-width-btn btn-outlined"
+        (click)="verHistorialDetallado()"
+      >
+        <span class="btn-content-flex"> <mat-icon>history</mat-icon> Ver historial completo </span>
+      </button>
+    </div>
+  </div>
+</div>

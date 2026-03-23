@@ -46,7 +46,7 @@
 -- │            IP_LOCATION_MISMATCH×2, OUT_OF_HOURS×1                         │
 -- │  audit_time_entries 10                                                     │
 -- │    SOFT_DELETE ×2 · ADMIN_ADJUST ×8                                       │
--- │  incidents           5  (2 RESOLVED · 1 REJECTED · 2 PENDING)             │
+-- │  incidences           5  (2 RESOLVED · 1 REJECTED · 2 PENDING)             │
 -- └────────────────────────────────────────────────────────────────────────────┘
 -- =============================================================================
 
@@ -57,7 +57,7 @@ TRUNCATE TABLE audit_time_entries CASCADE;
 
 TRUNCATE TABLE daily_closures CASCADE;
 
-TRUNCATE TABLE incidents CASCADE;
+TRUNCATE TABLE incidences CASCADE;
 
 TRUNCATE TABLE time_entries CASCADE;
 
@@ -1039,39 +1039,47 @@ INSERT INTO time_entries (
 
 -- ── Fichajes OPEN (turno activo hoy) ─────────────────────────────────────────
 
-INSERT INTO time_entries (
-    id, employee_id, work_date, status,
-    start_at, end_at,
-    start_lat, start_lng, end_lat, end_lng,
-    start_accuracy_m, end_accuracy_m,
-    start_ip, end_ip, start_user_agent, end_user_agent,
-    start_geoip, end_geoip, flags,
-    created_by, company_id, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), id_roberto, CURRENT_DATE, 'OPEN',
-    now() - interval '4 hours', NULL,
-    lat_encinas, lng_encinas, NULL, NULL,
-    10, NULL, '192.168.1.10'::inet, NULL, ua_android, NULL,
-    geoip_madrid, NULL, ARRAY[]::text[],
-    id_roberto, cid, now(), NULL
-);
+-- ── Fichajes OPEN (turno activo hoy) ─────────────────────────────────────────
 
-INSERT INTO time_entries (
-    id, employee_id, work_date, status,
-    start_at, end_at,
-    start_lat, start_lng, end_lat, end_lng,
-    start_accuracy_m, end_accuracy_m,
-    start_ip, end_ip, start_user_agent, end_user_agent,
-    start_geoip, end_geoip, flags,
-    created_by, company_id, created_at, updated_at
-) VALUES (
-    gen_random_uuid(), id_carlos, CURRENT_DATE, 'OPEN',
-    now() - interval '5 hours', NULL,
-    lat_rosales, lng_rosales, NULL, NULL,
-    15, NULL, '10.10.10.20'::inet, NULL, ua_iphone, NULL,
-    geoip_pozuelo, NULL, ARRAY[]::text[],
-    id_carlos, cid, now(), NULL
-);
+-- Roberto: Solo abre turno si hoy es Lunes a Viernes (ISODOW <= 5)
+IF EXTRACT(ISODOW FROM CURRENT_DATE) <= 5 THEN
+    INSERT INTO time_entries (
+        id, employee_id, work_date, status,
+        start_at, end_at,
+        start_lat, start_lng, end_lat, end_lng,
+        start_accuracy_m, end_accuracy_m,
+        start_ip, end_ip, start_user_agent, end_user_agent,
+        start_geoip, end_geoip, flags,
+        created_by, company_id, created_at, updated_at
+    ) VALUES (
+        gen_random_uuid(), id_roberto, CURRENT_DATE, 'OPEN',
+        now() - interval '4 hours', NULL,
+        lat_encinas, lng_encinas, NULL, NULL,
+        10, NULL, '192.168.1.10'::inet, NULL, ua_android, NULL,
+        geoip_madrid, NULL, ARRAY[]::text[],
+        id_roberto, cid, now(), NULL
+    );
+END IF;
+
+-- Carlos: Solo abre turno si hoy es Lunes, Miércoles o Viernes (1, 3 o 5)
+IF EXTRACT(ISODOW FROM CURRENT_DATE) IN (1, 3, 5) THEN
+    INSERT INTO time_entries (
+        id, employee_id, work_date, status,
+        start_at, end_at,
+        start_lat, start_lng, end_lat, end_lng,
+        start_accuracy_m, end_accuracy_m,
+        start_ip, end_ip, start_user_agent, end_user_agent,
+        start_geoip, end_geoip, flags,
+        created_by, company_id, created_at, updated_at
+    ) VALUES (
+        gen_random_uuid(), id_carlos, CURRENT_DATE, 'OPEN',
+        now() - interval '5 hours', NULL,
+        lat_rosales, lng_rosales, NULL, NULL,
+        15, NULL, '10.10.10.20'::inet, NULL, ua_iphone, NULL,
+        geoip_pozuelo, NULL, ARRAY[]::text[],
+        id_carlos, cid, now(), NULL
+    );
+END IF;
 
 
 -- ===========================================================================
@@ -1416,8 +1424,8 @@ LIMIT 1;
 -- ===========================================================================
 
 -- Caso 1: Laura — Sustitucion urgente → RESOLVED (viernes w1, notifico el jueves)
-INSERT INTO incidents (
-    id, user_id, type_id, date, incident_time,
+INSERT INTO incidences (
+    id, user_id, type_id, date, incidence_time,
     comment, status, admin_response, resolved_by,
     created_at, updated_at, company_id
 ) VALUES (
@@ -1433,8 +1441,8 @@ INSERT INTO incidents (
 );
 
 -- Caso 2: Carlos — Averia instalaciones → RESOLVED (mie w0)
-INSERT INTO incidents (
-    id, user_id, type_id, date, incident_time,
+INSERT INTO incidences (
+    id, user_id, type_id, date, incidence_time,
     comment, status, admin_response, resolved_by,
     created_at, updated_at, company_id
 ) VALUES (
@@ -1450,8 +1458,8 @@ INSERT INTO incidents (
 );
 
 -- Caso 3: Sergio — Olvido de llaves → REJECTED (jue w0)
-INSERT INTO incidents (
-    id, user_id, type_id, date, incident_time,
+INSERT INTO incidences (
+    id, user_id, type_id, date, incidence_time,
     comment, status, admin_response, resolved_by,
     created_at, updated_at, company_id
 ) VALUES (
@@ -1467,32 +1475,34 @@ INSERT INTO incidents (
 );
 
 -- Caso 4: Roberto — Accidente laboral → PENDING (lunes de esta semana)
-INSERT INTO incidents (
-    id, user_id, type_id, date, incident_time,
+-- (Movido al lunes de la semana pasada para asegurar que es un día laboral y en el pasado)
+INSERT INTO incidences (
+    id, user_id, type_id, date, incidence_time,
     comment, status, admin_response, resolved_by,
     created_at, updated_at, company_id
 ) VALUES (
     'ac100001-0000-0000-0000-000000000004',
     id_roberto, 'd0000000-0000-0000-0000-000000000005',
-    date_trunc('week', CURRENT_DATE)::date, '12:30:00',
+    w1, '12:30:00',
     'Resbalon en la rampa del garaje. Tobillo inflamado. Voy a la mutua.',
     'PENDING', NULL, NULL,
-    (date_trunc('week', CURRENT_DATE) + time '13:00:00') AT TIME ZONE 'Europe/Madrid',
+    (w1 + time '13:00:00') AT TIME ZONE 'Europe/Madrid',
     now(), cid
 );
 
--- Caso 5: Carlos — Falta de material → PENDING (martes de esta semana)
-INSERT INTO incidents (
-    id, user_id, type_id, date, incident_time,
+-- Caso 5: Carlos — Falta de material → PENDING 
+-- (Movido al miércoles de la semana pasada para que coincida con su horario: L/X/V)
+INSERT INTO incidences (
+    id, user_id, type_id, date, incidence_time,
     comment, status, admin_response, resolved_by,
     created_at, updated_at, company_id
 ) VALUES (
     'ac100001-0000-0000-0000-000000000005',
     id_carlos, 'd0000000-0000-0000-0000-000000000002',
-    (date_trunc('week', CURRENT_DATE) + interval '1 day')::date, '10:00:00',
+    (w1 + interval '2 days')::date, '10:00:00',
     'Necesito reposicion de guantes de poda y bolsas de basura industriales.',
     'PENDING', NULL, NULL,
-    (date_trunc('week', CURRENT_DATE) + interval '1 day' + time '10:05:00') AT TIME ZONE 'Europe/Madrid',
+    (w1 + interval '2 days' + time '10:05:00') AT TIME ZONE 'Europe/Madrid',
     now(), cid
 );
 

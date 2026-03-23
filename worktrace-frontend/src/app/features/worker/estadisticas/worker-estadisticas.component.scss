@@ -1,0 +1,535 @@
+// Ocultar el tick/check de Angular Material en los toggles de periodo
+::ng-deep .mat-button-toggle-group.periodo-selector .mat-pseudo-checkbox {
+  display: none !important;
+}
+/* Fila superior del gráfico: título a la izquierda, navegación a la derecha */
+.grafico-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.semana-navigation-bar {
+  display: flex;
+  align-items: center;
+  /* Fondo estilo "píldora" para que parezca un control unificado */
+  background-color: #f0f2f5;
+  border-radius: 24px;
+  padding: 2px 4px;
+}
+
+.semana-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000026; /* Tu color corporativo */
+  margin: 0 4px;
+  min-width: 150px; /* Fijo para que los botones no bailen al cambiar de mes */
+  text-align: center;
+  display: inline-block;
+}
+
+/* Forzamos a que los iconos de los botones también usen tu color oscuro */
+.semana-navigation-bar ::ng-deep .mat-mdc-icon-button {
+  color: #000026;
+
+  /* Hacemos los botones un pelín más compactos para que encajen en la píldora */
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+
+  .mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+.page-container {
+  min-height: 100vh;
+  background-color: #e9eaec;
+}
+
+.main-content {
+  padding: 16px;
+  /* Eliminado el padding-bottom repetitivo, el <main> raíz se encarga de esto */
+}
+
+/* Superficies blancas con bordes redondeados */
+.card-surface {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.estadisticas-header {
+  margin-bottom: 20px;
+}
+
+.estadisticas-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.estadisticas-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #000026;
+}
+
+.filter-btn {
+  color: #666;
+  &.filter-active {
+    background-color: #e3f2fd;
+    color: #2196f3;
+  }
+}
+
+.periodo-container {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.periodo-selector {
+  width: 100%;
+  display: flex;
+  background: #fff;
+  border: 2px solid #000026;
+  border-radius: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 38, 0.06);
+  overflow: hidden;
+  min-height: 48px;
+  position: relative;
+}
+
+::ng-deep .mat-button-toggle-group.periodo-selector .mat-button-toggle {
+  flex: 1;
+  background: transparent;
+  border-radius: 0;
+  /* Añadimos !important para forzar a Material a quitar su border-left nativo */
+  border: none !important;
+  transition:
+    background 0.2s,
+    color 0.2s;
+  font-size: 17px;
+  font-weight: 500;
+  color: #000026;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+::ng-deep .mat-button-toggle-group.periodo-selector .mat-button-toggle-checked {
+  background: #000026 !important;
+  color: #fff !important;
+  box-shadow: none;
+  position: relative;
+}
+
+::ng-deep .mat-button-toggle-group.periodo-selector .mat-button-toggle:not(:last-child) {
+  /* Nuestro borde separador único */
+  border-right: 1px solid #000026 !important;
+}
+
+::ng-deep .mat-button-toggle-group.periodo-selector .mat-button-toggle-checked:not(:last-child) {
+  /* Cuando está activo (oscuro), le ponemos el borde del mismo color oscuro para que quede 100% liso */
+  border-right: 1px solid #000026 !important;
+}
+
+// Eliminar cualquier pseudo-elemento de check manual que pudiera quedar
+::ng-deep .mat-button-toggle-group.periodo-selector .mat-button-toggle-checked::before {
+  display: none !important;
+  content: none !important;
+}
+
+/* Inputs nativos limpios para fechas */
+.filtro-fechas-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .fechas-inputs {
+    display: flex;
+    gap: 12px;
+  }
+
+  .input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .native-date-input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      font-family: inherit;
+      &:focus {
+        border-color: #2196f3;
+      }
+    }
+  }
+
+  .aplicar-filtro-btn {
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+  }
+}
+
+.resumen-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.resumen-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 0;
+  padding: 16px 8px;
+
+  .card-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    margin-bottom: 8px;
+  }
+
+  .card-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 4px;
+  }
+
+  .card-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: #000026;
+  }
+}
+
+.balance-positivo {
+  color: #4caf50 !important;
+}
+.balance-negativo {
+  color: #f44336 !important;
+}
+
+/* Gráfico */
+.grafico-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000026;
+  margin-bottom: 12px;
+}
+
+.grafico-container {
+  display: flex;
+  gap: 8px;
+  min-height: 180px;
+  align-items: flex-end;
+
+  &.grafico-scroll {
+    overflow-x: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+.barra-container {
+  flex: 1;
+  min-width: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover .barra {
+    background-color: #1976d2;
+    opacity: 0.8;
+  }
+}
+
+.barra-wrapper {
+  width: 100%;
+  height: 130px;
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 8px;
+}
+
+.barra {
+  width: 100%;
+  background-color: #2196f3;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height 0.3s ease;
+}
+
+.barra-label {
+  font-size: 11px;
+  color: #666;
+  text-align: center;
+}
+
+/* Tooltip Overlay */
+.tooltip-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.tooltip-card {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+  min-width: 250px;
+
+  .tooltip-fecha {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .tooltip-horas {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2196f3;
+    margin-bottom: 8px;
+  }
+}
+
+/* Balance */
+.balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+
+  .balance-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .balance-indicador {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.balance-favor {
+      background-color: #e8f5e9;
+      color: #4caf50;
+    }
+    &.balance-contra {
+      background-color: #ffebee;
+      color: #f44336;
+    }
+  }
+}
+
+.balance-value {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.balance-desc {
+  font-size: 12px;
+  color: #666;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000026;
+  margin-bottom: 12px;
+  margin-top: 24px;
+}
+
+.dia-card {
+  cursor: pointer;
+  padding: 16px;
+
+  .dia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .dia-fecha {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      .mr-2 {
+        margin-right: 8px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  .dia-stats {
+    display: flex;
+    gap: 16px;
+  }
+
+  .dia-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .dia-stat-label {
+      font-size: 12px;
+      color: #666;
+    }
+    .dia-stat-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+}
+
+/* Estado visual para el listado */
+.estado-chip {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.chip-success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  &.chip-warning {
+    background-color: #fff3e0;
+    color: #ef6c00;
+  }
+}
+
+.acciones-section {
+  margin-top: 32px;
+  padding-bottom: 24px;
+
+  .full-width-btn {
+    width: 100%;
+    height: 52px;
+    border-radius: 26px !important;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+
+    /* 1. Obligamos al contenedor de Material a ceder el 100% del espacio */
+    ::ng-deep .mdc-button__label {
+      width: 100%;
+    }
+
+    /* 2. Nuestra clase Flex que nunca falla */
+    .btn-content-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px; /* Separación perfecta entre icono y texto */
+      width: 100%;
+
+      mat-icon {
+        margin: 0 !important; /* Anulamos cualquier margen automático de Material */
+      }
+    }
+  }
+
+  /* 1. Botón oscuro (PDF) */
+  .btn-filled {
+    background-color: #000026 !important;
+    color: #ffffff !important;
+
+    ::ng-deep .mat-icon {
+      color: #ffffff !important;
+    }
+  }
+
+  /* 2. Botón transparente (Historial) */
+  .btn-outlined {
+    /* Forzamos el borde grueso oscuro */
+    --mdc-outlined-button-outline-width: 2px;
+    border-color: #000026 !important;
+
+    color: #000026 !important;
+    background-color: transparent !important;
+
+    ::ng-deep .mat-icon {
+      color: #000026 !important;
+    }
+
+    /* MATAMOS el hover/ripple azul de Material y le ponemos tu azul con opacidad */
+    ::ng-deep .mat-mdc-button-ripple::before,
+    ::ng-deep .mat-mdc-button-ripple::after {
+      background-color: rgba(0, 0, 38, 0.1) !important;
+    }
+  }
+
+  .mb-12 {
+    margin-bottom: 16px;
+  }
+}
+
+/* --- NUEVO: INCIDENCIAS --- */
+.incidencias-section {
+  margin-bottom: 20px;
+}
+
+.incidencia-card-small {
+  padding: 16px;
+  margin-bottom: 8px;
+}
+
+.incidencia-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.incidencia-tipo-small {
+  font-size: 14px;
+  font-weight: 500;
+  color: #000026;
+}
+
+.incidencia-fecha-small {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Chip color extra para incidencias rechazadas */
+.chip-error {
+  background-color: #ffebee;
+  color: #c62828;
+}

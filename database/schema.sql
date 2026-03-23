@@ -139,7 +139,7 @@ create table if not exists audit_time_entries (
 );
 
 --Incidencias y antifraude
-create table if not exists incidents (
+create table if not exists incidences (
     id uuid primary key not null default gen_random_uuid (),
     user_id uuid not null,
     date date not null,
@@ -150,7 +150,7 @@ create table if not exists incidents (
     updated_at timestamp with time zone not null default now(),
     resolved_by uuid null,
     type_id uuid not null,
-    incident_time time without time zone not null,
+    incidence_time time without time zone not null,
     company_id uuid not null,
     check (
         status in (
@@ -193,8 +193,8 @@ add constraint fk_schedules_company foreign key (company_id) references companie
 alter table time_entries
 add constraint fk_entries_company foreign key (company_id) references companies (id);
 
-alter table incidents
-add constraint fk_incidents_company foreign key (company_id) references companies (id);
+alter table incidences
+add constraint fk_incidences_company foreign key (company_id) references companies (id);
 
 alter table incidence_types
 add constraint fk_inc_types_company foreign key (company_id) references companies (id);
@@ -227,11 +227,11 @@ add constraint fk_time_entries_deleted_by foreign key (deleted_by) references us
 alter table audit_time_entries
 add constraint fk_audit_actor foreign key (actor_user_id) references users (id);
 
-alter table incidents
-add constraint fk_incidents_type foreign key (type_id) references incidence_types (id);
+alter table incidences
+add constraint fk_incidences_type foreign key (type_id) references incidence_types (id);
 
-alter table incidents
-add constraint fk_incidents_profile foreign key (user_id) references profiles (user_id);
+alter table incidences
+add constraint fk_incidences_profile foreign key (user_id) references profiles (user_id);
 
-alter table incidents
-add constraint fk_incidents_resolved_by foreign key (resolved_by) references users (id);
+alter table incidences
+add constraint fk_incidences_resolved_by foreign key (resolved_by) references users (id);
