@@ -44,10 +44,10 @@ export class WorkerBottomNavComponent implements OnInit {
       this.activeTab.set('home');
     } else if (url.includes('/worker/historial')) {
       this.activeTab.set('history');
-    } else if (url.includes('/worker/home')) {
+    } else if (url.includes('/worker/estadisticas')) {
       this.activeTab.set('stats');
-    } else if (url.includes('/worker/home')) {
-      this.activeTab.set('/worker/home');
+    } else if (url.includes('/worker/incidencias')) {
+      this.activeTab.set('incidence');
     } else if (url.includes('/worker/home')) {
       this.activeTab.set('user');
     } else {

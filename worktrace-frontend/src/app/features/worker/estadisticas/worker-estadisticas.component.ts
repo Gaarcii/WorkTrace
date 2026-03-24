@@ -55,7 +55,6 @@ interface IncidenciaVista {
 
 @Component({
   selector: 'app-worker-estadisticas',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

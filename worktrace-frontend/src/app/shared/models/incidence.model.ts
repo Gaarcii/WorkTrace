@@ -6,3 +6,10 @@ export interface IncidenceResponse {
   estado: string;
   creacion: string;
 }
+
+export interface IncidenceRequest {
+  typeId: string;
+  fechaAfectada: string;
+  hora: string;
+  comentario: string;
+}

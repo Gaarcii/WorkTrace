@@ -34,6 +34,15 @@ export const routes: Routes = [
     data: { roles: ['ROLE_WORKER', 'WORKER'] },
   },
   {
+    path: 'worker/incidencias',
+    loadComponent: () =>
+      import('./features/worker/incidencias/worker-incidencias.component').then(
+        (m) => m.WorkerIncidenciasComponent,
+      ),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_WORKER', 'WORKER'] },
+  },
+  {
     path: 'change-password',
     loadComponent: () =>
       import('./features/auth/password-change/password-change.component').then(
