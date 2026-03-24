@@ -21,6 +21,7 @@ import { es } from 'date-fns/locale';
 
 interface DiaGrafico {
   fecha: string;
+  fechaCorta: string;
   fechaOriginal: string;
   dia: string;
   horas: string;
@@ -176,6 +177,7 @@ export class WorkerEstadisticasComponent implements OnInit {
 
         diasGrafico.push({
           fecha: format(fechaDia, 'dd/MM/yyyy'),
+          fechaCorta: format(fechaDia, 'dd/MM'), // NUEVO: Extraemos solo el día y el mes
           fechaOriginal: format(fechaDia, 'yyyy-MM-dd'),
           dia: format(fechaDia, 'EEE', { locale: es }).toUpperCase(),
           horas: this.formatMinutos(trabajados),
@@ -207,8 +209,9 @@ export class WorkerEstadisticasComponent implements OnInit {
     return semanas.reverse();
   });
 
-  readonly semanaVisible = computed(() => this.historialPaginado()[this.currentWeekIndex()]);
-
+  readonly semanaVisible = computed<SemanaData | undefined>(
+    () => this.historialPaginado()[this.currentWeekIndex()],
+  );
   // --- MÉTODOS DE ACCIÓN ---
   ngOnInit(): void {
     this.cargarDatosPorPeriodo('semana');
