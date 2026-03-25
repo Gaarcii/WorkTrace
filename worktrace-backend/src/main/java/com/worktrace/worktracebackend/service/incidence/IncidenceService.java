@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.service.incidence;
 
+import com.worktrace.worktracebackend.dto.incidence.AdminIncidenceResponseDto;
 import com.worktrace.worktracebackend.dto.incidence.IncidenceRequestDto;
 import com.worktrace.worktracebackend.dto.incidence.IncidenceResponseDto;
 import com.worktrace.worktracebackend.model.EstadoIncidencia;
@@ -10,6 +11,8 @@ import com.worktrace.worktracebackend.repository.IncidenceTypeRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,6 +76,25 @@ public class IncidenceService {
 
         return mapearAIncidenceResponse(incidenceList);
     }
+
+    @Transactional(readOnly = true)
+    public Page<AdminIncidenceResponseDto> getIncidenciasByCompanyAndStatus(EstadoIncidencia status, Pageable pageable) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+
+        Page<Incidence> incidencePage = incidenceRepository
+                .findByCompany_IdAndStatus(info.getCompany().getId(), status, pageable);
+
+        return incidencePage.map(incident -> new AdminIncidenceResponseDto(
+                incident.getId(),
+                incident.getProfile().getFullName(),
+                incident.getType().getName(),
+                incident.getComment(),
+                incident.getStatus(),
+                incident.getDate(),
+                incident.getCreatedAt()
+        ));
+    }
+
 
     private List<IncidenceResponseDto> mapearAIncidenceResponse(List<Incidence> incidenceList) {
         return incidenceList.stream()

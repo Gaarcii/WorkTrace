@@ -1,6 +1,9 @@
 package com.worktrace.worktracebackend.repository;
 
+import com.worktrace.worktracebackend.model.EstadoIncidencia;
 import com.worktrace.worktracebackend.model.Incidence;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,4 +32,6 @@ public interface IncidenceRepository extends JpaRepository<Incidence, UUID> {
             @Param("fechaInicio") LocalDate fechaInicio,
             @Param("fechaFin") LocalDate fechaFin
     );
+
+    Page<Incidence> findByCompany_IdAndStatus(UUID companyId, EstadoIncidencia status, Pageable pageable);
 }
