@@ -43,6 +43,15 @@ export const routes: Routes = [
     data: { roles: ['ROLE_WORKER', 'WORKER'] },
   },
   {
+    path: 'worker/perfil',
+    loadComponent: () =>
+      import('./features/worker/perfil/worker-perfil.component').then(
+        (m) => m.WorkerPerfilComponent,
+      ),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_WORKER', 'WORKER'] },
+  },
+  {
     path: 'change-password',
     loadComponent: () =>
       import('./features/auth/password-change/password-change.component').then(

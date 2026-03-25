@@ -33,7 +33,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   ],
   templateUrl: './password-change.component.html',
   styleUrl: './password-change.component.scss',
-  // Activamos OnPush para máximo rendimiento
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PasswordChangeComponent {
