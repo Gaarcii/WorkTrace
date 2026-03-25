@@ -10,7 +10,6 @@ import {
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
-  ReactiveFormsModule,
   Validators,
   AbstractControl,
   ValidationErrors,
@@ -18,30 +17,27 @@ import {
 } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { take, finalize } from 'rxjs/operators';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { WorkerIncidenciasService } from '../../../shared/services/worker/worker-incidencias.service';
 import { WorkerIncidenceTypesService } from '../../../shared/services/worker/worker-tipos-incidencias.service';
 import { IncidenceRequest } from '../../../shared/models/incidence.model';
+import { WorkerIncidenciasHeaderComponent } from './worker-incidencias-header/worker-incidencias-header.component';
+import { WorkerIncidenciasFormModalComponent } from './worker-incidencias-form-modal/worker-incidencias-form-modal.component';
+import {
+  WorkerIncidenciasListComponent,
+  IncidenciaVista,
+} from './worker-incidencias-list/worker-incidencias-list.component';
+import { WorkerIncidenciasSnackbarComponent } from './worker-incidencias-snackbar/worker-incidencias-snackbar.component';
 
 @Component({
   selector: 'app-worker-incidencias',
-  standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
+    WorkerIncidenciasHeaderComponent,
+    WorkerIncidenciasFormModalComponent,
+    WorkerIncidenciasListComponent,
+    WorkerIncidenciasSnackbarComponent,
   ],
   templateUrl: './worker-incidencias.component.html',
   styleUrls: ['./worker-incidencias.component.scss'],
@@ -61,7 +57,7 @@ export class WorkerIncidenciasComponent implements OnInit {
   readonly incidencias = this.incidenciasService.incidenciasSignal;
   readonly tipos = this.tiposService.tiposSignal;
 
-  readonly incidenciasFormateadas = computed(() => {
+  readonly incidenciasFormateadas = computed<IncidenciaVista[]>(() => {
     return this.incidencias().map((inc) => {
       const stLower = (inc.estado || 'PENDING').toLowerCase();
       let estadoTraducido = 'Pendiente';
@@ -79,6 +75,7 @@ export class WorkerIncidenciasComponent implements OnInit {
         ...inc,
         estadoTraducido,
         estadoColor,
+        fecha: this.formatearFecha(inc.fecha),
         horaFormateada: inc.hora ? inc.hora.substring(0, 5) : '',
       };
     });
@@ -165,7 +162,11 @@ export class WorkerIncidenciasComponent implements OnInit {
       });
   }
 
-  formatearFecha(fecha: string): string {
+  clearError(): void {
+    this.mensajeError.set('');
+  }
+
+  private formatearFecha(fecha: string): string {
     try {
       return format(new Date(fecha), 'dd/MM/yyyy', { locale: es });
     } catch {

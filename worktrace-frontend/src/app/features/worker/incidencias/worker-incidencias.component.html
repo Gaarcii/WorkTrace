@@ -1,181 +1,25 @@
 <div class="page-container">
   <div class="main-content">
-    <div class="incidencias-header">
-      <div class="incidencias-title">Incidencias</div>
-      <div class="incidencias-subtitle">
-        Comunica cualquier incidencia relacionada con tu jornada
-      </div>
-    </div>
-
-    <button
-      mat-flat-button
-      color="primary"
-      class="nueva-incidencia-btn full-width-btn"
-      (click)="abrirFormulario()"
-    >
-      <span class="btn-content-flex"> <mat-icon>add</mat-icon> Nueva incidencia </span>
-    </button>
+    <app-worker-incidencias-header (abrirFormulario)="abrirFormulario()" />
 
     @if (mostrarFormulario()) {
-      <div class="modal-overlay">
-        <div class="modal-card">
-          <div class="modal-header">
-            <h2 class="text-h6">Nueva Incidencia</h2>
-          </div>
-
-          <div class="modal-body">
-            @if (mensajeError()) {
-              <div class="alert-error">
-                <span>{{ mensajeError() }}</span>
-                <mat-icon class="alert-close" (click)="mensajeError.set('')">close</mat-icon>
-              </div>
-            }
-
-            <form [formGroup]="form" class="form-container">
-              <!-- TIPO -->
-              <div class="form-group">
-                <label for="tipoId">Tipo de incidencia</label>
-
-                <div class="input-wrapper clickable" (click)="tipoSelect.focus()">
-                  <select #tipoSelect id="tipoId" formControlName="tipoId" class="form-control">
-                    <option value="" disabled selected>Selecciona un tipo</option>
-                    @for (tipo of tipos(); track tipo.id) {
-                      <option [value]="tipo.id">{{ tipo.name }}</option>
-                    }
-                  </select>
-                  <mat-icon class="input-icon">expand_more</mat-icon>
-                </div>
-
-                @if (form.controls.tipoId.touched && form.controls.tipoId.hasError('required')) {
-                  <div class="form-error">Selecciona un tipo de incidencia.</div>
-                }
-              </div>
-
-              <!-- FECHA -->
-              <div class="form-group">
-                <label for="fecha">Fecha afectada</label>
-
-                <div class="input-wrapper clickable" (click)="fechaInput.showPicker()">
-                  <input
-                    #fechaInput
-                    id="fecha"
-                    type="date"
-                    formControlName="fecha"
-                    [max]="maxDateStr"
-                    class="form-control"
-                  />
-                </div>
-
-                @if (form.controls.fecha.touched) {
-                  @if (form.controls.fecha.hasError('fechaFutura')) {
-                    <div class="form-error">No puedes registrar fechas futuras.</div>
-                  } @else if (form.controls.fecha.hasError('required')) {
-                    <div class="form-error">La fecha es obligatoria.</div>
-                  }
-                }
-              </div>
-
-              <!-- HORA -->
-              @if (mostrarHora()) {
-                <div class="form-group">
-                  <label for="hora">Hora</label>
-
-                  <div class="input-wrapper clickable" (click)="horaInput.showPicker()">
-                    <input
-                      #horaInput
-                      id="hora"
-                      type="time"
-                      formControlName="hora"
-                      class="form-control"
-                    />
-                  </div>
-
-                  @if (form.controls.hora.touched && form.controls.hora.hasError('required')) {
-                    <div class="form-error">La hora es obligatoria para este tipo.</div>
-                  }
-                </div>
-              }
-
-              <!-- COMENTARIO -->
-              <div class="form-group">
-                <label for="comentario">Comentario (opcional)</label>
-                <textarea
-                  id="comentario"
-                  formControlName="comentario"
-                  class="form-control textarea"
-                  placeholder="Añade una breve explicación..."
-                ></textarea>
-              </div>
-            </form>
-          </div>
-
-          <div class="modal-footer">
-            <button mat-button (click)="cerrarFormulario()" [disabled]="loading()">Cancelar</button>
-            <button
-              mat-flat-button
-              color="primary"
-              (click)="enviarIncidencia()"
-              [disabled]="loading() || form.invalid"
-            >
-              @if (loading()) {
-                <mat-spinner diameter="20" color="accent"></mat-spinner>
-              } @else {
-                Enviar incidencia
-              }
-            </button>
-          </div>
-        </div>
-      </div>
+      <app-worker-incidencias-form-modal
+        [form]="form"
+        [tipos]="tipos()"
+        [maxDateStr]="maxDateStr"
+        [mostrarHora]="mostrarHora()"
+        [loading]="loading()"
+        [mensajeError]="mensajeError()"
+        (cerrar)="cerrarFormulario()"
+        (enviar)="enviarIncidencia()"
+        (limpiarError)="clearError()"
+      />
     }
 
     @if (mostrarConfirmacion()) {
-      <div class="snackbar-success">Incidencia enviada correctamente</div>
+      <app-worker-incidencias-snackbar />
     }
 
-    <div class="incidencias-list">
-      <div class="resumen-title">Mis Incidencias</div>
-
-      @if (loading() && incidencias().length === 0) {
-        <div class="loading-container">
-          <mat-spinner diameter="40" color="primary"></mat-spinner>
-        </div>
-      }
-
-      @for (incidencia of incidenciasFormateadas(); track $index) {
-        <div class="incidencia-card card-surface">
-          <div class="incidencia-header-card">
-            <div class="incidencia-tipo">
-              {{ incidencia.tipoIncidencia || 'Sin tipo' }}
-            </div>
-            <span class="estado-chip" [ngClass]="'chip-' + incidencia.estadoColor">
-              {{ incidencia.estadoTraducido }}
-            </span>
-          </div>
-
-          <div class="incidencia-info">
-            <div class="incidencia-fecha">
-              <mat-icon class="mr-1">calendar_today</mat-icon>
-              {{ formatearFecha(incidencia.fecha) }}
-            </div>
-            @if (incidencia.horaFormateada) {
-              <div class="incidencia-hora">
-                <mat-icon class="mr-1">schedule</mat-icon>
-                {{ incidencia.horaFormateada }}
-              </div>
-            }
-          </div>
-
-          @if (incidencia.comentario) {
-            <div class="incidencia-comentario">
-              {{ incidencia.comentario }}
-            </div>
-          }
-        </div>
-      } @empty {
-        @if (!loading()) {
-          <div class="sin-incidencias card-surface">No hay incidencias registradas</div>
-        }
-      }
-    </div>
+    <app-worker-incidencias-list [incidencias]="incidenciasFormateadas()" [loading]="loading()" />
   </div>
 </div>

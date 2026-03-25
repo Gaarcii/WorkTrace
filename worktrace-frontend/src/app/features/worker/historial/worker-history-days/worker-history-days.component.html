@@ -1,0 +1,13 @@
+<div class="days-container">
+  @for (dia of dias(); track dia.fecha) {
+    <div
+      class="day-card"
+      [class.day-selected]="dia.seleccionado"
+      (click)="onSelectDia(dia)"
+      matRipple
+    >
+      <div class="day-name">{{ dia.nombre }}</div>
+      <div class="day-number">{{ dia.numero }}</div>
+    </div>
+  }
+</div>

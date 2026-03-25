@@ -1,0 +1,21 @@
+<div class="dias-section">
+  <div class="section-title">Detalle de la semana</div>
+  @for (dia of resumenDias(); track $index) {
+    <div class="dia-card card-surface" (click)="onVerDetalle(dia)" matRipple>
+      <div class="dia-header">
+        <div class="dia-fecha"><mat-icon class="mr-2">calendar_today</mat-icon>{{ dia.fecha }}</div>
+        <span class="estado-chip" [ngClass]="'chip-' + dia.estadoColor">{{ dia.estado }}</span>
+      </div>
+      <div class="dia-stats">
+        <div class="dia-stat">
+          <span class="dia-stat-label">Total:</span>
+          <span class="dia-stat-value">{{ dia.total }}</span>
+        </div>
+        <div class="dia-stat">
+          <span class="dia-stat-label">Balance:</span>
+          <span class="dia-stat-value" [ngClass]="dia.balanceClass">{{ dia.balance }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</div>

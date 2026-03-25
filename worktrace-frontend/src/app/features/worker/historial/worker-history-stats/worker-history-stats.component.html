@@ -1,0 +1,17 @@
+<div class="resumen-title">{{ titulo() }}</div>
+<div class="resumen-stats" [class.semana-stats]="isWeekly()">
+  <div class="stat-card" [class.semana-card]="isWeekly()">
+    <div class="stat-content">
+      <div class="stat-label">Horas trabajadas</div>
+      <div class="stat-value">{{ horas() }}</div>
+    </div>
+  </div>
+  <div class="stat-card" [class.semana-card]="isWeekly()">
+    <div class="stat-content">
+      <div class="stat-label">Cómputo {{ isWeekly() ? 'semanal' : 'diario' }}</div>
+      <div class="stat-extra" [class.stat-negative]="!isPositive()">
+        {{ balance() }}
+      </div>
+    </div>
+  </div>
+</div>

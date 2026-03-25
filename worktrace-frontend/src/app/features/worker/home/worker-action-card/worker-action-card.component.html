@@ -1,0 +1,13 @@
+<button class="dark-card" [disabled]="isLoading()" (click)="onClick()" matRipple>
+  <div class="fichar-content">
+    <div class="icon-circle">
+      @if (isLoading()) {
+        <mat-spinner diameter="40"></mat-spinner>
+      } @else {
+        <mat-icon color="primary" class="clock-icon">alarm</mat-icon>
+      }
+    </div>
+    <div class="fichar-text">{{ texto() }}</div>
+    <div class="fichar-subtext">{{ subtexto() }}</div>
+  </div>
+</button>

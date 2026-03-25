@@ -1,80 +1,36 @@
 <div class="page-container">
   <div class="main-content">
     @if (errorMsg()) {
-      <div class="error-alert">
-        <div class="error-text">{{ errorMsg() }}</div>
-        <button class="close-btn" (click)="clearError()">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
+      <app-error-alert [message]="errorMsg()!" (closed)="clearError()" />
     }
 
-    <div class="white-card">
-      <div class="white-card-header">
-        <div class="estado-label">Estado actual:</div>
-        <div class="estado-badge" [ngClass]="estadoBadgeClass()">
-          <span class="estado-dot" [ngClass]="estadoDotClass()"></span>
-          <span>{{ estadoTexto() }}</span>
-        </div>
-      </div>
-      <div class="hora-actual">{{ horaActual() }}</div>
-      <div class="fecha-actual">{{ fechaActual() }}</div>
-    </div>
+    <app-worker-status-card
+      [badgeClass]="estadoBadgeClass()"
+      [dotClass]="estadoDotClass()"
+      [texto]="estadoTexto()"
+      [hora]="horaActual()"
+      [fecha]="fechaActual()"
+    />
 
-    <button class="dark-card" [disabled]="isLoading()" (click)="handleFichaje()" matRipple>
-      <div class="fichar-content">
-        <div class="icon-circle">
-          @if (isLoading()) {
-            <mat-spinner diameter="40"></mat-spinner>
-          } @else {
-            <mat-icon color="primary" class="clock-icon">alarm</mat-icon>
-          }
-        </div>
-        <div class="fichar-text">{{ botonTexto() }}</div>
-        <div class="fichar-subtext">{{ botonSubtexto() }}</div>
-      </div>
-    </button>
+    <app-worker-action-card
+      [isLoading]="isLoading()"
+      [texto]="botonTexto()"
+      [subtexto]="botonSubtexto()"
+      (actionClicked)="handleFichaje()"
+    />
 
     <div class="resumen-section">
       <div class="resumen-title">RESUMEN DEL DÍA</div>
-      <div class="resumen-stats">
-        <div class="stat-card">
-          <div class="stat-content">
-            <div class="stat-label">Horas trabajadas</div>
-            <div class="stat-value">{{ horasTrabajadas() }}</div>
-          </div>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-content">
-            <div class="stat-label">Cómputo diario</div>
-            <div class="stat-extra" [class.stat-negative]="!isHorasExtrasPositivo()">
-              {{ horasExtras() }}
-            </div>
-          </div>
-        </div>
-      </div>
+      <app-worker-summary-stats
+        [horasTrabajadas]="horasTrabajadas()"
+        [horasExtras]="horasExtras()"
+        [isHorasExtrasPositivo]="isHorasExtrasPositivo()"
+      />
 
       <div class="resumen-title registros-title">REGISTROS RECIENTES</div>
 
-      @if (registrosFormateados().length === 0) {
-        <div class="no-registros">No hay registros recientes</div>
-      } @else {
-       @for (fichaje of registrosFormateados(); track $index) {
-          <div class="resumen-card">
-            <div class="resumen-left">
-              <div class="icon-container">
-                <mat-icon color="primary" class="resumen-icon">{{ fichaje.icono }}</mat-icon>
-              </div>
-              <div class="resumen-info">
-                <div class="resumen-tipo">{{ fichaje.tipoStr }}</div>
-                <div class="resumen-fecha">{{ fichaje.fechaStr }}</div>
-              </div>
-            </div>
-            <div class="resumen-hora">{{ fichaje.horaStr }}</div>
-          </div>
-        }
-      }
+      <app-worker-recent-records [registros]="registrosFormateados()" />
     </div>
   </div>
 </div>

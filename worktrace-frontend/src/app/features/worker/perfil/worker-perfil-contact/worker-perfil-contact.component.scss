@@ -1,0 +1,55 @@
+.card-surface {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000026;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 16px;
+}
+
+.text-primary {
+  color: #000026 !important;
+}
+.mr-2 {
+  margin-right: 8px;
+}
+.mt-3 {
+  margin-top: 16px;
+}
+.w-100 {
+  width: 100%;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.save-btn {
+  padding: 0 32px;
+  height: 48px;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-focus-outline-color: #000026;
+  --mdc-outlined-text-field-focus-label-text-color: #000026;
+}

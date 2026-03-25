@@ -1,0 +1,32 @@
+<div class="horario-semanal-section mt-5">
+  <h2 class="section-title text-center mb-4">Horario semanal</h2>
+
+  @if (loading()) {
+    <div class="loading-state py-4"><mat-spinner diameter="40"></mat-spinner></div>
+  } @else {
+    <div class="week-grid-wrapper">
+      <div class="week-grid">
+        @for (dia of horario(); track dia.id) {
+          <div class="day-col" [class.is-free]="!dia.trabaja">
+            <div class="day-header">{{ dia.inicial }}</div>
+
+            @if (dia.trabaja) {
+              <div class="day-body">
+                <div class="day-lugar">{{ dia.lugar }}</div>
+                @if (dia.ubicacion) {
+                  <div class="day-address">{{ dia.ubicacion }}</div>
+                }
+                <div class="day-time-badge">
+                  <mat-icon class="time-icon">schedule</mat-icon>
+                  {{ dia.start }} - {{ dia.end }}
+                </div>
+              </div>
+            } @else {
+              <div class="day-body free">Libre</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

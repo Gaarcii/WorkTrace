@@ -14,7 +14,6 @@ import { TokenStorageService } from '../../../core/auth/token-storage.service';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

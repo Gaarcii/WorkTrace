@@ -1,0 +1,45 @@
+<div class="incidencias-list">
+  <div class="resumen-title">Mis Incidencias</div>
+
+  @if (loading() && incidencias().length === 0) {
+    <div class="loading-container">
+      <mat-spinner diameter="40" color="primary"></mat-spinner>
+    </div>
+  }
+
+  @for (incidencia of incidencias(); track $index) {
+    <div class="incidencia-card card-surface">
+      <div class="incidencia-header-card">
+        <div class="incidencia-tipo">
+          {{ incidencia.tipoIncidencia || 'Sin tipo' }}
+        </div>
+        <span class="estado-chip" [ngClass]="'chip-' + incidencia.estadoColor">
+          {{ incidencia.estadoTraducido }}
+        </span>
+      </div>
+
+      <div class="incidencia-info">
+        <div class="incidencia-fecha">
+          <mat-icon class="mr-1">calendar_today</mat-icon>
+          {{ incidencia.fecha }}
+        </div>
+        @if (incidencia.horaFormateada) {
+          <div class="incidencia-hora">
+            <mat-icon class="mr-1">schedule</mat-icon>
+            {{ incidencia.horaFormateada }}
+          </div>
+        }
+      </div>
+
+      @if (incidencia.comentario) {
+        <div class="incidencia-comentario">
+          {{ incidencia.comentario }}
+        </div>
+      }
+    </div>
+  } @empty {
+    @if (!loading()) {
+      <div class="sin-incidencias card-surface">No hay incidencias registradas</div>
+    }
+  }
+</div>

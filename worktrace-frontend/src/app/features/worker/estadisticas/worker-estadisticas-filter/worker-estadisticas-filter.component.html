@@ -1,0 +1,23 @@
+<div class="filtro-fechas-card card-surface">
+  <form [formGroup]="form()" (ngSubmit)="onSubmit()" class="filtro-fechas-container">
+    <div class="fechas-inputs">
+      <div class="input-group">
+        <label>Fecha inicio</label>
+        <input type="date" formControlName="fechaInicio" class="native-date-input" />
+      </div>
+      <div class="input-group">
+        <label>Fecha fin</label>
+        <input type="date" formControlName="fechaFin" class="native-date-input" />
+      </div>
+    </div>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="form().invalid"
+      class="aplicar-filtro-btn"
+    >
+      Aplicar
+    </button>
+  </form>
+</div>

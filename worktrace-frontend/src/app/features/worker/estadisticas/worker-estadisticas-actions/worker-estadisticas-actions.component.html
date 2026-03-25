@@ -1,0 +1,20 @@
+<div class="acciones-section">
+  <button
+    mat-flat-button
+    class="full-width-btn btn-filled mb-12"
+    [disabled]="isDownloadingPdf()"
+    (click)="onDescargar()"
+  >
+    <span class="btn-content-flex">
+      @if (isDownloadingPdf()) {
+        <mat-spinner diameter="24" color="accent"></mat-spinner>
+      } @else {
+        <mat-icon>download</mat-icon> Descargar registros (PDF)
+      }
+    </span>
+  </button>
+
+  <button mat-stroked-button class="full-width-btn btn-outlined" (click)="onVerHistorial()">
+    <span class="btn-content-flex"> <mat-icon>history</mat-icon> Ver historial completo </span>
+  </button>
+</div>

@@ -1,0 +1,61 @@
+<div class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 class="modal-title">Actualizar Foto</h2>
+      <mat-icon class="close-icon" (click)="onClose()">close</mat-icon>
+    </div>
+    <div class="modal-body text-center">
+      <div class="avatar-upload-container">
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onFileSelect($event)"
+          class="file-input-hidden"
+          title="Haz clic o arrastra una imagen aquí"
+        />
+
+        @if (avatarPreview() || avatarUrl()) {
+          <img
+            [src]="avatarPreview() ? avatarPreview() : avatarUrl()"
+            alt="Avatar"
+            class="avatar-preview-img"
+          />
+        } @else {
+          <div class="avatar-preview-placeholder">
+            <mat-icon>person</mat-icon>
+          </div>
+        }
+
+        <div class="camera-badge">
+          <mat-icon>add_a_photo</mat-icon>
+        </div>
+      </div>
+
+      <p class="instruction-text">
+        Haz clic en el círculo para subir una imagen o arrástrala aquí.
+      </p>
+    </div>
+    <div class="modal-footer justify-space-between">
+      <div class="footer-left">
+        @if (avatarUrl()) {
+          <button mat-button class="btn-delete" (click)="onDelete()">Eliminar foto actual</button>
+        }
+      </div>
+      <div class="d-flex gap-2">
+        <button mat-button class="btn-cancel" (click)="onClose()">Cancelar</button>
+        <button
+          mat-flat-button
+          class="btn-submit"
+          (click)="onSave()"
+          [disabled]="!avatarPreview() || loading()"
+        >
+          @if (loading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Subir foto
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

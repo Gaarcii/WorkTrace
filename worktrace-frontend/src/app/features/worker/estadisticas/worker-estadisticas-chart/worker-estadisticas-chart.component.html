@@ -1,0 +1,36 @@
+<div class="grafico-card card-surface">
+  <div class="grafico-title-row">
+    <div class="grafico-title">Horas trabajadas por día</div>
+    @if (totalSemanas() > 1) {
+      <div class="semana-navigation-bar">
+        <button
+          mat-icon-button
+          (click)="onPrevWeek()"
+          [disabled]="currentWeekIndex() === totalSemanas() - 1"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <span class="semana-label">{{ semanaVisible()?.rangoTexto }}</span>
+
+        <button mat-icon-button (click)="onNextWeek()" [disabled]="currentWeekIndex() === 0">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    }
+  </div>
+  <div class="grafico-container">
+    @for (dia of semanaVisible()?.dias; track $index) {
+      <div class="barra-container" (click)="onMostrarTooltip(dia)">
+        <div class="barra-wrapper">
+          <div class="barra-horas-flotante" [style.bottom.%]="dia.altura">{{ dia.horas }}</div>
+          <div class="barra" [style.height.%]="dia.altura"></div>
+        </div>
+        <div class="barra-label-group">
+          <div class="barra-dia">{{ dia.dia }}</div>
+          <div class="barra-fecha">{{ dia.fechaCorta }}</div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

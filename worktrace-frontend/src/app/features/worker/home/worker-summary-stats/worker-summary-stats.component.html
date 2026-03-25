@@ -1,0 +1,17 @@
+<div class="resumen-stats">
+  <div class="stat-card">
+    <div class="stat-content">
+      <div class="stat-label">Horas trabajadas</div>
+      <div class="stat-value">{{ horasTrabajadas() }}</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-content">
+      <div class="stat-label">Cómputo diario</div>
+      <div class="stat-extra" [class.stat-negative]="!isHorasExtrasPositivo()">
+        {{ horasExtras() }}
+      </div>
+    </div>
+  </div>
+</div>

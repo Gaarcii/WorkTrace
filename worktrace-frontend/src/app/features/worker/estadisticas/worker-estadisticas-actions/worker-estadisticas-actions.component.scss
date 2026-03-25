@@ -1,0 +1,59 @@
+.acciones-section {
+  margin-top: 32px;
+  padding-bottom: 24px;
+
+  .full-width-btn {
+    width: 100%;
+    height: 52px;
+    border-radius: 26px !important;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+
+    ::ng-deep .mdc-button__label {
+      width: 100%;
+    }
+
+    .btn-content-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+
+      mat-icon {
+        margin: 0 !important;
+      }
+    }
+  }
+
+  .btn-filled {
+    background-color: #000026 !important;
+    color: #ffffff !important;
+
+    ::ng-deep .mat-icon {
+      color: #ffffff !important;
+    }
+  }
+
+  .btn-outlined {
+    --mdc-outlined-button-outline-width: 2px;
+    border-color: #000026 !important;
+
+    color: #000026 !important;
+    background-color: transparent !important;
+
+    ::ng-deep .mat-icon {
+      color: #000026 !important;
+    }
+
+    ::ng-deep .mat-mdc-button-ripple::before,
+    ::ng-deep .mat-mdc-button-ripple::after {
+      background-color: rgba(0, 0, 38, 0.1) !important;
+    }
+  }
+
+  .mb-12 {
+    margin-bottom: 16px;
+  }
+}

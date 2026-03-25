@@ -1,0 +1,83 @@
+.card-surface {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000026;
+  margin-bottom: 12px;
+  margin-top: 24px;
+}
+
+.dia-card {
+  cursor: pointer;
+  padding: 16px;
+
+  .dia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .dia-fecha {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      .mr-2 {
+        margin-right: 8px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  .dia-stats {
+    display: flex;
+    gap: 16px;
+  }
+
+  .dia-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .dia-stat-label {
+      font-size: 12px;
+      color: #666;
+    }
+    .dia-stat-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+}
+
+.estado-chip {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.chip-success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  &.chip-warning {
+    background-color: #fff3e0;
+    color: #ef6c00;
+  }
+}
+
+.balance-positivo {
+  color: #4caf50 !important;
+}
+.balance-negativo {
+  color: #f44336 !important;
+}

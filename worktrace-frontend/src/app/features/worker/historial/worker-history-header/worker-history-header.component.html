@@ -1,0 +1,17 @@
+<div class="calendar-header">
+  <div class="month-year">{{ rangoSemana() }}</div>
+
+  <div class="nav-buttons">
+    <button mat-icon-button class="nav-btn" (click)="onPrev()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button mat-icon-button class="nav-btn" (click)="abrirSelector()">
+      <mat-icon>calendar_today</mat-icon>
+    </button>
+    <button mat-icon-button class="nav-btn" (click)="onNext()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <input type="date" #datePicker style="display: none" (change)="onDateChange($event)" />
+</div>

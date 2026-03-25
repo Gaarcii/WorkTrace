@@ -1,0 +1,22 @@
+<div class="resumen-cards">
+  <div class="resumen-card card-surface">
+    <mat-icon color="primary" class="card-icon">schedule</mat-icon>
+    <div class="card-label">Horas trabajadas</div>
+    <div class="card-value">{{ horasTrabajadas() }}</div>
+  </div>
+  <div class="resumen-card card-surface">
+    <mat-icon color="primary" class="card-icon">balance</mat-icon>
+    <div class="card-label">Balance horario</div>
+    <div class="card-value" [ngClass]="balanceClass()">{{ balanceHorario() }}</div>
+  </div>
+  <div class="resumen-card card-surface">
+    <mat-icon color="warn" class="card-icon">warning_amber</mat-icon>
+    <div class="card-label">Jornadas Incomp.</div>
+    <div class="card-value">{{ jornadasIncompletas() }}</div>
+  </div>
+  <div class="resumen-card card-surface">
+    <mat-icon color="primary" class="card-icon">error_outline</mat-icon>
+    <div class="card-label">Incidencias</div>
+    <div class="card-value">{{ totalIncidencias() }}</div>
+  </div>
+</div>

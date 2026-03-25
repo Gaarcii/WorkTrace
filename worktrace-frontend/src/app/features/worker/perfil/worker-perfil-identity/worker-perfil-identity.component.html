@@ -1,0 +1,24 @@
+<div class="card-surface identity-card text-center">
+  <div class="avatar-container">
+    <div class="profile-avatar">
+      @if (avatarUrl()) {
+        <img [src]="avatarUrl()" alt="Avatar" class="avatar-img" />
+      } @else {
+        <mat-icon class="avatar-placeholder">person</mat-icon>
+      }
+    </div>
+    <button mat-mini-fab color="primary" class="avatar-edit-btn" (click)="onEditAvatar()">
+      <mat-icon>photo_camera</mat-icon>
+    </button>
+  </div>
+
+  <div class="user-greeting">
+    <span class="greeting-text">¡Bienvenido!</span>
+    <h2 class="user-name">{{ nombreCompleto() || 'Cargando...' }}</h2>
+  </div>
+
+  <div class="user-role">
+    <mat-icon class="role-icon">badge</mat-icon>
+    {{ puestoTrabajo() || 'Sin puesto asignado' }}
+  </div>
+</div>

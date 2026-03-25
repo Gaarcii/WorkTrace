@@ -1,0 +1,93 @@
+.incidencias-list {
+  margin-top: 16px;
+}
+
+.resumen-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000026;
+  margin-bottom: 16px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}
+
+.sin-incidencias {
+  text-align: center;
+  padding: 32px;
+  color: #999;
+  font-size: 15px;
+}
+
+.card-surface {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.incidencia-header-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.incidencia-tipo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000026;
+}
+
+.estado-chip {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.chip-success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  &.chip-warning {
+    background-color: #fff3e0;
+    color: #ef6c00;
+  }
+  &.chip-error {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+}
+
+.incidencia-info {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #666;
+
+  .incidencia-fecha,
+  .incidencia-hora {
+    display: flex;
+    align-items: center;
+
+    .mr-1 {
+      margin-right: 4px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.incidencia-comentario {
+  font-size: 14px;
+  color: #666;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}

@@ -5,28 +5,29 @@ import {
   inject,
   signal,
   computed,
-  ViewChild,
-  ElementRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { take } from 'rxjs/operators';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatRippleModule } from '@angular/material/core';
 import { WorkerHistoryService } from '../../../shared/services/worker/worker-historial.service';
 import { ActivatedRoute } from '@angular/router';
-
-interface DiaSemana {
-  fecha: string;
-  nombre: string;
-  numero: number;
-  seleccionado: boolean;
-}
+import { WorkerHistoryHeaderComponent } from './worker-history-header/worker-history-header.component';
+import { WorkerHistoryStatsComponent } from './worker-history-stats/worker-history-stats.component';
+import {
+  WorkerHistoryRecordsComponent,
+  FormattedRegistro,
+} from './worker-history-records/worker-history-records.component';
+import {
+  WorkerHistoryDaysComponent,
+  DiaSemana,
+} from './worker-history-days/worker-history-days.component';
 
 @Component({
   selector: 'app-worker-history',
-  standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatRippleModule],
+  imports: [
+    WorkerHistoryHeaderComponent,
+    WorkerHistoryDaysComponent,
+    WorkerHistoryStatsComponent,
+    WorkerHistoryRecordsComponent,
+  ],
   templateUrl: './worker-historial.component.html',
   styleUrls: ['./worker-historial.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,8 +35,6 @@ interface DiaSemana {
 export class WorkerHistoryComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly historyService = inject(WorkerHistoryService);
-
-  @ViewChild('datePicker') private readonly datePicker!: ElementRef<HTMLInputElement>;
 
   readonly fechaSeleccionada = signal<Date>(new Date());
   readonly semanaActual = signal<Date>(this.getStartOfWeek(new Date()));
@@ -91,7 +90,6 @@ export class WorkerHistoryComponent implements OnInit {
 
   readonly estadisticasSemana = computed(() => {
     const data = this.historial();
-    // Parseamos los strings que vienen del DTO a números (base 10)
     const trabajados = parseInt(data?.minutosTrabajadosSemana || '0', 10);
     const objetivo = parseInt(data?.minutosObjetivoSemana || '0', 10);
     const balance = trabajados - objetivo;
@@ -103,7 +101,7 @@ export class WorkerHistoryComponent implements OnInit {
     };
   });
 
-  readonly fichajesDelDia = computed(() => {
+  readonly fichajesDelDia = computed<FormattedRegistro[]>(() => {
     const registros = this.historial()?.registrosDia ?? [];
 
     return registros.map((registro) => {
@@ -128,7 +126,6 @@ export class WorkerHistoryComponent implements OnInit {
     this.route.queryParamMap.subscribe((params) => {
       const fechaParam = params.get('fecha');
       if (fechaParam) {
-        // fechaParam viene en formato yyyy-MM-dd
         const [year, month, day] = fechaParam.split('-').map(Number);
         const fecha = new Date(year, month - 1, day);
         this.fechaSeleccionada.set(fecha);
@@ -156,16 +153,6 @@ export class WorkerHistoryComponent implements OnInit {
     const nuevaFecha = new Date(dia.fecha);
     this.fechaSeleccionada.set(nuevaFecha);
     this.cargarHistorial(nuevaFecha);
-  }
-
-  abrirSelector(): void {
-    if (this.datePicker) {
-      if (typeof this.datePicker.nativeElement.showPicker === 'function') {
-        this.datePicker.nativeElement.showPicker();
-      } else {
-        this.datePicker.nativeElement.click();
-      }
-    }
   }
 
   onDateChange(event: Event): void {

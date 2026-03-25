@@ -7,19 +7,22 @@ import {
   computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { take, finalize } from 'rxjs/operators';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatRippleModule } from '@angular/material/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { WorkerEstadisticasService } from '../../../shared/services/worker/worker-estadisticas.service';
 import { startOfWeek, endOfWeek, addDays, isSameDay, format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { WorkerEstadisticasHeaderComponent } from './worker-estadisticas-header/worker-estadisticas-header.component';
+import { WorkerEstadisticasFilterComponent } from './worker-estadisticas-filter/worker-estadisticas-filter.component';
+import { WorkerEstadisticasSummaryComponent } from './worker-estadisticas-summary/worker-estadisticas-summary.component';
+import { WorkerEstadisticasChartComponent } from './worker-estadisticas-chart/worker-estadisticas-chart.component';
+import { WorkerEstadisticasBalanceComponent } from './worker-estadisticas-balance/worker-estadisticas-balance.component';
+import { WorkerEstadisticasDaysComponent } from './worker-estadisticas-days/worker-estadisticas-days.component';
+import { WorkerEstadisticasIncidencesComponent } from './worker-estadisticas-incidences/worker-estadisticas-incidences.component';
+import { WorkerEstadisticasActionsComponent } from './worker-estadisticas-actions/worker-estadisticas-actions.component';
 
-interface DiaGrafico {
+export interface DiaGrafico {
   fecha: string;
   fechaCorta: string;
   fechaOriginal: string;
@@ -30,7 +33,7 @@ interface DiaGrafico {
   altura: number;
 }
 
-interface ResumenDia {
+export interface ResumenDia {
   fecha: string;
   fechaOriginal: string;
   total: string;
@@ -40,13 +43,13 @@ interface ResumenDia {
   estadoColor: string;
 }
 
-interface SemanaData {
+export interface SemanaData {
   rangoTexto: string;
   dias: DiaGrafico[];
   resumenDias: ResumenDia[];
 }
 
-interface IncidenciaVista {
+export interface IncidenciaVista {
   tipo: string;
   estado: string;
   estadoColor: string;
@@ -57,12 +60,14 @@ interface IncidenciaVista {
   selector: 'app-worker-estadisticas',
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatRippleModule,
-    MatProgressSpinnerModule,
+    WorkerEstadisticasHeaderComponent,
+    WorkerEstadisticasFilterComponent,
+    WorkerEstadisticasSummaryComponent,
+    WorkerEstadisticasChartComponent,
+    WorkerEstadisticasBalanceComponent,
+    WorkerEstadisticasDaysComponent,
+    WorkerEstadisticasIncidencesComponent,
+    WorkerEstadisticasActionsComponent,
   ],
   templateUrl: './worker-estadisticas.component.html',
   styleUrls: ['./worker-estadisticas.component.scss'],
@@ -250,7 +255,7 @@ export class WorkerEstadisticasComponent implements OnInit {
     this.diaSeleccionado.set(null);
   }
 
-  verDetalleDia(dia: any): void {
+  verDetalleDia(dia: ResumenDia): void {
     this.router.navigate(['/worker/historial'], { queryParams: { fecha: dia.fechaOriginal } });
   }
 

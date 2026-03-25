@@ -1,0 +1,15 @@
+<div class="incidencias-section">
+  <div class="section-title">Incidencias del periodo</div>
+
+  @for (incidencia of incidencias(); track $index) {
+    <div class="incidencia-card-small card-surface">
+      <div class="incidencia-row">
+        <div class="incidencia-tipo-small">{{ incidencia.tipo }}</div>
+        <span class="estado-chip" [ngClass]="'chip-' + incidencia.estadoColor">
+          {{ incidencia.estado }}
+        </span>
+      </div>
+      <div class="incidencia-fecha-small">{{ incidencia.fecha }}</div>
+    </div>
+  }
+</div>

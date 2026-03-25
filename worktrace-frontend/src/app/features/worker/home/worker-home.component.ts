@@ -5,21 +5,29 @@ import {
   inject,
   signal,
   computed,
-  DestroyRef
+  DestroyRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { take, finalize } from 'rxjs/operators';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatRippleModule } from '@angular/material/core';
 import { WorkerHomeService } from '../../../shared/services/worker/worker-home.service';
 import { TimeEntryRequest } from '../../../shared/models/time-entry.model';
+import { ErrorAlertComponent } from './error-alert/error-alert.component';
+import { WorkerStatusCardComponent } from './worker-status-card/worker-status-card.component';
+import { WorkerActionCardComponent } from './worker-action-card/worker-action-card.component';
+import { WorkerSummaryStatsComponent } from './worker-summary-stats/worker-summary-stats.component';
+import {
+  WorkerRecentRecordsComponent,
+  FormattedRecord,
+} from './worker-recent-records/worker-recent-records.component';
 
 @Component({
   selector: 'app-worker-home',
-  standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, MatRippleModule],
+  imports: [
+    ErrorAlertComponent,
+    WorkerStatusCardComponent,
+    WorkerActionCardComponent,
+    WorkerSummaryStatsComponent,
+    WorkerRecentRecordsComponent,
+  ],
   templateUrl: './worker-home.component.html',
   styleUrls: ['./worker-home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +35,6 @@ import { TimeEntryRequest } from '../../../shared/models/time-entry.model';
 export class WorkerHomeComponent implements OnInit {
   private readonly workerService = inject(WorkerHomeService);
   private readonly destroyRef = inject(DestroyRef);
-
 
   readonly isLoading = signal<boolean>(false);
   readonly errorMsg = signal<string | null>(null);
@@ -73,9 +80,7 @@ export class WorkerHomeComponent implements OnInit {
 
   readonly botonSubtexto = computed(() => {
     if (this.isLoading()) return 'Espera un momento';
-    return this.isWorking()
-      ? 'Pulsa para registrar tu salida'
-      : 'Pulsa para registrar tu entrada';
+    return this.isWorking() ? 'Pulsa para registrar tu salida' : 'Pulsa para registrar tu entrada';
   });
 
   readonly horasTrabajadas = computed(() => {
@@ -101,7 +106,7 @@ export class WorkerHomeComponent implements OnInit {
     return `${signo} ${h}h ${m}m`;
   });
 
-  readonly registrosFormateados = computed(() => {
+  readonly registrosFormateados = computed<FormattedRecord[]>(() => {
     const registros = this.resumen()?.ultimosFichajes ?? [];
     return registros.map((fichaje) => {
       const fechaObj = new Date(fichaje.fecha);
@@ -109,7 +114,11 @@ export class WorkerHomeComponent implements OnInit {
       return {
         ...fichaje,
         horaStr: fechaObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-        fechaStr: fechaObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }),
+        fechaStr: fechaObj.toLocaleDateString('es-ES', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+        }),
         icono: isEntrada ? 'login' : 'logout',
         tipoStr: isEntrada ? 'Entrada' : 'Salida',
       };
@@ -150,7 +159,7 @@ export class WorkerHomeComponent implements OnInit {
         .fichar(request)
         .pipe(
           take(1),
-          finalize(() => this.isLoading.set(false))
+          finalize(() => this.isLoading.set(false)),
         )
         .subscribe({
           error: (err: unknown) => {
@@ -181,7 +190,7 @@ export class WorkerHomeComponent implements OnInit {
           else if (error.code === error.TIMEOUT) mensaje = 'Tiempo de espera agotado';
           reject(new Error(mensaje));
         },
-        { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
       );
     });
   }

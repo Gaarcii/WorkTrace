@@ -1,0 +1,18 @@
+@if (registros().length === 0) {
+  <div class="no-registros">No hay registros recientes</div>
+} @else {
+  @for (fichaje of registros(); track $index) {
+    <div class="resumen-card">
+      <div class="resumen-left">
+        <div class="icon-container">
+          <mat-icon color="primary" class="resumen-icon">{{ fichaje.icono }}</mat-icon>
+        </div>
+        <div class="resumen-info">
+          <div class="resumen-tipo">{{ fichaje.tipoStr }}</div>
+          <div class="resumen-fecha">{{ fichaje.fechaStr }}</div>
+        </div>
+      </div>
+      <div class="resumen-hora">{{ fichaje.horaStr }}</div>
+    </div>
+  }
+}

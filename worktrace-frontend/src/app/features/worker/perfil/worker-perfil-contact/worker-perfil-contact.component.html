@@ -1,0 +1,43 @@
+<div class="card-surface">
+  <div class="card-title">
+    <mat-icon class="text-primary mr-2">person_outline</mat-icon> Datos de Contacto
+  </div>
+
+  <form [formGroup]="form()" class="mt-3">
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Email de acceso</mat-label>
+        <input matInput formControlName="email" type="email" />
+        @if (form().controls['email'].hasError('required')) {
+          <mat-error>El email es obligatorio</mat-error>
+        } @else if (form().controls['email'].hasError('email')) {
+          <mat-error>Formato de email inválido</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telefono" />
+        @if (form().controls['telefono'].hasError('required')) {
+          <mat-error>El teléfono es obligatorio</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="form-actions">
+      <button
+        mat-flat-button
+        color="primary"
+        class="save-btn"
+        (click)="onSave()"
+        [disabled]="form().invalid || loading()"
+      >
+        @if (loading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Guardar cambios
+        }
+      </button>
+    </div>
+  </form>
+</div>

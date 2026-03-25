@@ -15,7 +15,6 @@ import { MatRippleModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-admin-navbar',
-  standalone: true,
   imports: [CommonModule, RouterModule, MatIconModule, MatRippleModule],
   templateUrl: './admin-navbar.component.html',
   styleUrls: ['./admin-navbar.component.scss'],

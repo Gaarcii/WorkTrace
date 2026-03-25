@@ -1,0 +1,11 @@
+<div class="white-card">
+  <div class="white-card-header">
+    <div class="estado-label">Estado actual:</div>
+    <div class="estado-badge" [ngClass]="badgeClass()">
+      <span class="estado-dot" [ngClass]="dotClass()"></span>
+      <span>{{ texto() }}</span>
+    </div>
+  </div>
+  <div class="hora-actual">{{ hora() }}</div>
+  <div class="fecha-actual">{{ fecha() }}</div>
+</div>

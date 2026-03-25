@@ -9,7 +9,6 @@ import { TokenStorageService } from './core/auth/token-storage.service';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [RouterOutlet, HeaderBarComponent, WorkerBottomNavComponent,AdminNavbarComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',

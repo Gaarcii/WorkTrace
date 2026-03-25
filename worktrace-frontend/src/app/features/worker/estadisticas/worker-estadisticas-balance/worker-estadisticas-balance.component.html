@@ -1,0 +1,14 @@
+<div class="balance-card card-surface">
+  <div class="balance-header">
+    <div class="balance-title">Balance acumulado</div>
+    <div
+      class="balance-indicador"
+      [class.balance-favor]="balanceClass() === 'balance-positivo'"
+      [class.balance-contra]="balanceClass() === 'balance-negativo'"
+    >
+      <mat-icon>{{ balanceClass() === 'balance-positivo' ? 'check_circle' : 'error' }}</mat-icon>
+    </div>
+  </div>
+  <div class="balance-value" [ngClass]="balanceClass()">{{ balanceHorario() }}</div>
+  <div class="balance-desc">Diferencia entre horas trabajadas y horas previstas</div>
+</div>

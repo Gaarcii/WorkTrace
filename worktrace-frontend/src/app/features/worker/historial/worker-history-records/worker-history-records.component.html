@@ -1,0 +1,20 @@
+<div class="resumen-title registros-title">REGISTROS DEL DÍA</div>
+
+@if (registros().length === 0) {
+  <div class="no-registros">No hay registros para este día</div>
+} @else {
+  @for (registro of registros(); track registro.timeEntryId + '-' + registro.tipoEvento) {
+    <div class="resumen-card">
+      <div class="resumen-left">
+        <div class="icon-container">
+          <mat-icon color="primary" class="resumen-icon">{{ registro.icono }}</mat-icon>
+        </div>
+        <div class="resumen-info">
+          <div class="resumen-tipo">{{ registro.tipoStr }}</div>
+          <div class="resumen-fecha">{{ registro.fechaStr }}</div>
+        </div>
+      </div>
+      <div class="resumen-hora">{{ registro.horaStr }}</div>
+    </div>
+  }
+}

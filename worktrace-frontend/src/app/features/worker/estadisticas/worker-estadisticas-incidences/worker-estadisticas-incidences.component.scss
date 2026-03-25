@@ -1,0 +1,62 @@
+.card-surface {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000026;
+  margin-bottom: 12px;
+  margin-top: 24px;
+}
+
+.incidencias-section {
+  margin-bottom: 20px;
+}
+
+.incidencia-card-small {
+  padding: 16px;
+  margin-bottom: 8px;
+}
+
+.incidencia-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.incidencia-tipo-small {
+  font-size: 14px;
+  font-weight: 500;
+  color: #000026;
+}
+
+.incidencia-fecha-small {
+  font-size: 12px;
+  color: #666;
+}
+
+.estado-chip {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.chip-success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  &.chip-warning {
+    background-color: #fff3e0;
+    color: #ef6c00;
+  }
+  &.chip-error {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+}

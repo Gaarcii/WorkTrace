@@ -1,0 +1,82 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 38, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+.modal-card {
+  background: white;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000026;
+  display: flex;
+  align-items: center;
+}
+.modal-desc {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  margin: 0;
+}
+.modal-body {
+  padding: 24px;
+}
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+  background-color: #fcfcfc;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.close-icon {
+  cursor: pointer;
+  color: #888;
+  transition: color 0.2s;
+  &:hover {
+    color: #000026;
+  }
+}
+
+.text-primary {
+  color: #000026 !important;
+}
+.mr-2 {
+  margin-right: 8px;
+}
+.mt-3 {
+  margin-top: 16px;
+}
+.w-100 {
+  width: 100%;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+
+::ng-deep .mat-mdc-form-field {
+  --mdc-outlined-text-field-focus-outline-color: #000026;
+  --mdc-outlined-text-field-focus-label-text-color: #000026;
+}

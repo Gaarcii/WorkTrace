@@ -21,7 +21,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-password-change',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

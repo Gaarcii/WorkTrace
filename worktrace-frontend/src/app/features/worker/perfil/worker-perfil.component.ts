@@ -7,35 +7,32 @@ import {
   computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-  AbstractControl,
-  ValidationErrors,
-} from '@angular/forms';
+import { FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { take, finalize } from 'rxjs/operators';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProfileService } from '../../../shared/services/profile.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ProfileRequest, ProfileResponse } from '../../../shared/models/profile.model';
 import { PasswordChangeRequest } from '../../../shared/models/auth.model';
+import { DiaHorario } from '../../../shared/models/work-schedule.model';
+import { WorkerPerfilIdentityComponent } from './worker-perfil-identity/worker-perfil-identity.component';
+import { WorkerPerfilContactComponent } from './worker-perfil-contact/worker-perfil-contact.component';
+import { WorkerPerfilSecurityComponent } from './worker-perfil-security/worker-perfil-security.component';
+import { WorkerPerfilScheduleComponent } from './worker-perfil-schedule/worker-perfil-schedule.component';
+import { WorkerPerfilAvatarModalComponent } from './worker-perfil-avatar-modal/worker-perfil-avatar-modal.component';
+import { WorkerPerfilPasswordModalComponent } from './worker-perfil-password-modal/worker-perfil-password-modal.component';
+import { WorkerPerfilEmailModalComponent } from './worker-perfil-email-modal/worker-perfil-email-modal.component';
 
 @Component({
   selector: 'app-worker-perfil',
-  standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
+    WorkerPerfilIdentityComponent,
+    WorkerPerfilContactComponent,
+    WorkerPerfilSecurityComponent,
+    WorkerPerfilScheduleComponent,
+    WorkerPerfilAvatarModalComponent,
+    WorkerPerfilPasswordModalComponent,
+    WorkerPerfilEmailModalComponent,
   ],
   templateUrl: './worker-perfil.component.html',
   styleUrls: ['./worker-perfil.component.scss'],
@@ -60,12 +57,8 @@ export class WorkerPerfilComponent implements OnInit {
   readonly mostrarCambiarPassword = signal<boolean>(false);
   readonly loadingPassword = signal<boolean>(false);
   readonly passwordError = signal<string>('');
-  readonly showCurrentPassword = signal<boolean>(false);
-  readonly showNewPassword = signal<boolean>(false);
-  readonly showConfirmPassword = signal<boolean>(false);
 
   readonly mostrarPedirPasswordEmail = signal<boolean>(false);
-  readonly hideConfirmPassword = signal<boolean>(true);
 
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -83,7 +76,7 @@ export class WorkerPerfilComponent implements OnInit {
 
   readonly passwordConfirmacion = this.fb.control('', Validators.required);
 
-  readonly horarioSemanal = computed(() => {
+  readonly horarioSemanal = computed<DiaHorario[]>(() => {
     const diasSemana = [
       'MONDAY',
       'TUESDAY',
@@ -106,7 +99,7 @@ export class WorkerPerfilComponent implements OnInit {
     const horarioBackend = this.profile()?.horario || [];
 
     return diasSemana.map((diaEnum) => {
-      const turno = horarioBackend.find((h) => h.diaSemana.toUpperCase() === diaEnum);
+      const turno = horarioBackend.find((h: any) => h.diaSemana.toUpperCase() === diaEnum);
       return {
         id: diaEnum,
         inicial: iniciales[diaEnum],
@@ -202,6 +195,7 @@ export class WorkerPerfilComponent implements OnInit {
   abrirSelectorAvatar(): void {
     this.mostrarSelectorAvatar.set(true);
   }
+
   cerrarSelectorAvatar(): void {
     this.mostrarSelectorAvatar.set(false);
     this.archivoSeleccionado.set(null);
@@ -256,20 +250,11 @@ export class WorkerPerfilComponent implements OnInit {
   abrirModalPassword(): void {
     this.mostrarCambiarPassword.set(true);
   }
+
   cerrarModalPassword(): void {
     this.mostrarCambiarPassword.set(false);
     this.passwordForm.reset();
     this.passwordError.set('');
-  }
-
-  toggleActual() {
-    this.showCurrentPassword.set(!this.showCurrentPassword());
-  }
-  toggleNueva() {
-    this.showNewPassword.set(!this.showNewPassword());
-  }
-  toggleRepetir() {
-    this.showConfirmPassword.set(!this.showConfirmPassword());
   }
 
   passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {

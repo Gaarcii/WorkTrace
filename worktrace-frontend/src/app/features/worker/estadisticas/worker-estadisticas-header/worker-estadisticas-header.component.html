@@ -1,0 +1,25 @@
+<div class="estadisticas-header">
+  <div class="estadisticas-title-row">
+    <div class="estadisticas-title">Estadísticas</div>
+    <button
+      mat-icon-button
+      class="filter-btn"
+      [class.filter-active]="mostrarFiltroFechas()"
+      (click)="onToggleFiltro()"
+    >
+      <mat-icon>filter_list</mat-icon>
+    </button>
+  </div>
+
+  <div class="periodo-container">
+    <mat-button-toggle-group
+      class="periodo-selector"
+      [value]="periodoSeleccionado()"
+      (change)="onCambiarPeriodo($event.value)"
+    >
+      <mat-button-toggle value="semana">Últ. Semana</mat-button-toggle>
+      <mat-button-toggle value="mes">Últ. Mes</mat-button-toggle>
+      <mat-button-toggle value="todo">Todo</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+</div>

@@ -6,3 +6,13 @@ export interface WorkScheduleResponse {
   end: string;
   horas: number;
 }
+
+export interface DiaHorario {
+  id: string;
+  inicial: string;
+  trabaja: boolean;
+  start: string | null;
+  end: string | null;
+  lugar: string;
+  ubicacion: string;
+}

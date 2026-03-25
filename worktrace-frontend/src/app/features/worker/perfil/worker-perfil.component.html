@@ -7,136 +7,22 @@
 
     <div class="top-grid">
       <div class="left-panel">
-        <div class="card-surface identity-card text-center">
-          <div class="avatar-container">
-            <div class="profile-avatar">
-              @if (profile()?.avatarUrl) {
-                <img [src]="profile()?.avatarUrl" alt="Avatar" class="avatar-img" />
-              } @else {
-                <mat-icon class="avatar-placeholder">person</mat-icon>
-              }
-            </div>
-            <button
-              mat-mini-fab
-              color="primary"
-              class="avatar-edit-btn"
-              (click)="abrirSelectorAvatar()"
-            >
-              <mat-icon>photo_camera</mat-icon>
-            </button>
-          </div>
-
-          <div class="user-greeting">
-            <span class="greeting-text">¡Bienvenido!</span>
-            <h2 class="user-name">{{ profile()?.nombreCompleto || 'Cargando...' }}</h2>
-          </div>
-
-          <div class="user-role">
-            <mat-icon class="role-icon">badge</mat-icon>
-            {{ profile()?.puestoTrabajo || 'Sin puesto asignado' }}
-          </div>
-        </div>
+        <app-worker-perfil-identity
+          [avatarUrl]="profile()?.avatarUrl"
+          [nombreCompleto]="profile()?.nombreCompleto"
+          [puestoTrabajo]="profile()?.puestoTrabajo"
+          (editAvatar)="abrirSelectorAvatar()"
+        />
       </div>
 
       <div class="right-panel">
-        <div class="card-surface">
-          <div class="card-title">
-            <mat-icon class="text-primary mr-2">person_outline</mat-icon> Datos de Contacto
-          </div>
+        <app-worker-perfil-contact [form]="form" [loading]="loading()" (save)="guardarPerfil()" />
 
-          <form [formGroup]="form" class="mt-3">
-            <div class="form-grid">
-              <mat-form-field appearance="outline" class="w-100">
-                <mat-label>Email de acceso</mat-label>
-                <input matInput formControlName="email" type="email" />
-                @if (form.controls.email.hasError('required')) {
-                  <mat-error>El email es obligatorio</mat-error>
-                } @else if (form.controls.email.hasError('email')) {
-                  <mat-error>Formato de email inválido</mat-error>
-                }
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="w-100">
-                <mat-label>Teléfono</mat-label>
-                <input matInput formControlName="telefono" />
-                @if (form.controls.telefono.hasError('required')) {
-                  <mat-error>El teléfono es obligatorio</mat-error>
-                }
-              </mat-form-field>
-            </div>
-
-            <div class="form-actions">
-              <button
-                mat-flat-button
-                color="primary"
-                class="save-btn"
-                (click)="guardarPerfil()"
-                [disabled]="form.invalid || loading()"
-              >
-                @if (loading()) {
-                  <mat-spinner diameter="20"></mat-spinner>
-                } @else {
-                  Guardar cambios
-                }
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <div class="card-surface">
-          <div class="card-title">
-            <mat-icon class="text-primary mr-2">security</mat-icon> Seguridad
-          </div>
-          <div class="security-row">
-            <div class="security-info">
-              <h3>Contraseña de acceso</h3>
-              <p>Actualiza tu contraseña periódicamente para mantener tu cuenta segura.</p>
-            </div>
-            <button
-              mat-stroked-button
-              color="primary"
-              class="pass-btn"
-              (click)="abrirModalPassword()"
-            >
-              Cambiar contraseña
-            </button>
-          </div>
-        </div>
+        <app-worker-perfil-security (changePassword)="abrirModalPassword()" />
       </div>
     </div>
 
-    <div class="horario-semanal-section mt-5">
-      <h2 class="section-title text-center mb-4">Horario semanal</h2>
-
-      @if (loading()) {
-        <div class="loading-state py-4"><mat-spinner diameter="40"></mat-spinner></div>
-      } @else {
-        <div class="week-grid-wrapper">
-          <div class="week-grid">
-            @for (dia of horarioSemanal(); track dia.id) {
-              <div class="day-col" [class.is-free]="!dia.trabaja">
-                <div class="day-header">{{ dia.inicial }}</div>
-
-                @if (dia.trabaja) {
-                  <div class="day-body">
-                    <div class="day-lugar">{{ dia.lugar }}</div>
-                    @if (dia.ubicacion) {
-                      <div class="day-address">{{ dia.ubicacion }}</div>
-                    }
-                    <div class="day-time-badge">
-                      <mat-icon class="time-icon">schedule</mat-icon>
-                      {{ dia.start }} - {{ dia.end }}
-                    </div>
-                  </div>
-                } @else {
-                  <div class="day-body free">Libre</div>
-                }
-              </div>
-            }
-          </div>
-        </div>
-      }
-    </div>
+    <app-worker-perfil-schedule [horario]="horarioSemanal()" [loading]="loading()" />
   </div>
 
   @if (mostrarConfirmacion()) {
@@ -148,185 +34,32 @@
 </div>
 
 @if (mostrarPedirPasswordEmail()) {
-  <div class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h2 class="modal-title">
-          <mat-icon class="mr-2 text-primary">mark_email_read</mat-icon> Verificación
-        </h2>
-        <mat-icon class="close-icon" (click)="cerrarModalPasswordEmail()">close</mat-icon>
-      </div>
-      <div class="modal-body">
-        <p class="modal-desc">
-          Has modificado tu correo electrónico. Por motivos de seguridad, introduce tu contraseña
-          actual para confirmar los cambios.
-        </p>
-        <mat-form-field appearance="outline" class="w-100 mt-3">
-          <mat-label>Contraseña actual</mat-label>
-          <input
-            matInput
-            [type]="hideConfirmPassword() ? 'password' : 'text'"
-            [formControl]="passwordConfirmacion"
-          />
-          <mat-icon
-            matSuffix
-            class="cursor-pointer"
-            (click)="hideConfirmPassword.set(!hideConfirmPassword())"
-          >
-            {{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}
-          </mat-icon>
-        </mat-form-field>
-      </div>
-      <div class="modal-footer">
-        <button mat-button (click)="cerrarModalPasswordEmail()" [disabled]="loading()">
-          Cancelar
-        </button>
-        <button
-          mat-flat-button
-          color="primary"
-          (click)="confirmarGuardarConPassword()"
-          [disabled]="passwordConfirmacion.invalid || loading()"
-        >
-          @if (loading()) {
-            <mat-spinner diameter="20"></mat-spinner>
-          } @else {
-            Confirmar
-          }
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-worker-perfil-email-modal
+    [passwordControl]="passwordConfirmacion"
+    [loading]="loading()"
+    (close)="cerrarModalPasswordEmail()"
+    (confirm)="confirmarGuardarConPassword()"
+  />
 }
 
 @if (mostrarSelectorAvatar()) {
-  <div class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h2 class="modal-title">Actualizar Foto</h2>
-        <mat-icon class="close-icon" (click)="cerrarSelectorAvatar()">close</mat-icon>
-      </div>
-      <div class="modal-body text-center">
-        @if (avatarPreview()) {
-          <img [src]="avatarPreview()" alt="Preview" class="avatar-preview-img mb-4" />
-        } @else {
-          <div class="avatar-preview-placeholder mb-4">
-            <mat-icon>cloud_upload</mat-icon>
-          </div>
-        }
-        <div class="file-input-wrapper">
-          <button mat-stroked-button color="primary">Buscar imagen en mi PC</button>
-          <input
-            type="file"
-            accept="image/*"
-            (change)="procesarArchivo($event)"
-            class="file-input-hidden"
-          />
-        </div>
-      </div>
-      <div class="modal-footer justify-space-between">
-        @if (profile()?.avatarUrl) {
-          <button mat-button color="warn" (click)="eliminarFoto()">Eliminar foto actual</button>
-        } @else {
-          <span></span>
-        }
-        <div class="d-flex gap-2">
-          <button mat-button (click)="cerrarSelectorAvatar()">Cancelar</button>
-          <button
-            mat-flat-button
-            color="primary"
-            (click)="guardarPerfil()"
-            [disabled]="!avatarPreview() || loading()"
-          >
-            @if (loading()) {
-              <mat-spinner diameter="20"></mat-spinner>
-            } @else {
-              Subir foto
-            }
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-worker-perfil-avatar-modal
+    [avatarUrl]="profile()?.avatarUrl"
+    [avatarPreview]="avatarPreview()"
+    [loading]="loading()"
+    (close)="cerrarSelectorAvatar()"
+    (fileSelected)="procesarArchivo($event)"
+    (delete)="eliminarFoto()"
+    (save)="guardarPerfil()"
+  />
 }
 
 @if (mostrarCambiarPassword()) {
-  <div class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h2 class="modal-title">
-          <mat-icon class="mr-2 text-primary">lock_reset</mat-icon> Cambiar Contraseña
-        </h2>
-        <mat-icon class="close-icon" (click)="cerrarModalPassword()">close</mat-icon>
-      </div>
-      <div class="modal-body">
-        <form [formGroup]="passwordForm" class="d-flex flex-column gap-2 mt-2">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Contraseña actual</mat-label>
-            <input
-              matInput
-              [type]="showCurrentPassword() ? 'text' : 'password'"
-              formControlName="actual"
-              autocomplete="current-password"
-            />
-            <mat-icon matSuffix class="cursor-pointer" (click)="toggleActual()">
-              {{ showCurrentPassword() ? 'visibility_off' : 'visibility' }}
-            </mat-icon>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Nueva contraseña</mat-label>
-            <input
-              matInput
-              [type]="showNewPassword() ? 'text' : 'password'"
-              formControlName="nueva"
-              autocomplete="new-password"
-            />
-            <mat-icon matSuffix class="cursor-pointer" (click)="toggleNueva()">
-              {{ showNewPassword() ? 'visibility_off' : 'visibility' }}
-            </mat-icon>
-            @if (passwordForm.controls.nueva.hasError('minlength')) {
-              <mat-error>Mínimo 6 caracteres</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Confirmar nueva contraseña</mat-label>
-            <input
-              matInput
-              [type]="showConfirmPassword() ? 'text' : 'password'"
-              formControlName="repetir"
-              autocomplete="new-password"
-            />
-            <mat-icon matSuffix class="cursor-pointer" (click)="toggleRepetir()">
-              {{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}
-            </mat-icon>
-            @if (passwordForm.hasError('noMatch')) {
-              <mat-error>Las contraseñas no coinciden</mat-error>
-            }
-          </mat-form-field>
-
-          @if (passwordError()) {
-            <div class="alert-error">{{ passwordError() }}</div>
-          }
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button mat-button (click)="cerrarModalPassword()" [disabled]="loadingPassword()">
-          Cancelar
-        </button>
-        <button
-          mat-flat-button
-          color="primary"
-          (click)="actualizarPassword()"
-          [disabled]="passwordForm.invalid || loadingPassword()"
-        >
-          @if (loadingPassword()) {
-            <mat-spinner diameter="20"></mat-spinner>
-          } @else {
-            Actualizar
-          }
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-worker-perfil-password-modal
+    [passwordForm]="passwordForm"
+    [passwordError]="passwordError()"
+    [loading]="loadingPassword()"
+    (close)="cerrarModalPassword()"
+    (save)="actualizarPassword()"
+  />
 }
