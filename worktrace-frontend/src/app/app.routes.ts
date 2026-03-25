@@ -52,6 +52,38 @@ export const routes: Routes = [
     data: { roles: ['ROLE_WORKER', 'WORKER'] },
   },
   {
+    path: 'admin/home',
+    loadComponent: () =>
+      import('./features/admin/home/admin-home.component').then((m) => m.AdminHomeComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_ADMIN', 'ADMIN'] },
+  },
+  {
+    path: 'admin/incidencias',
+    loadComponent: () =>
+      import('./features/admin/incidencias/admin-incidencias.component').then(
+        (m) => m.AdminIncidenciasComponent,
+      ),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_ADMIN', 'ADMIN'] },
+  },
+  {
+    path: 'admin/perfil',
+    loadComponent: () =>
+      import('./features/admin/perfil/admin-perfil.component').then((m) => m.AdminPerfilComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_ADMIN', 'ADMIN'] },
+  },
+  {
+    path: 'admin/trabajadores',
+    loadComponent: () =>
+      import('./features/admin/trabajadores/admin-trabajadores.component').then(
+        (m) => m.AdminTrabajadoresComponent,
+      ),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_ADMIN', 'ADMIN'] },
+  },
+  {
     path: 'change-password',
     loadComponent: () =>
       import('./features/auth/password-change/password-change.component').then(

@@ -1,0 +1,27 @@
+<nav class="bottom-nav">
+  <a routerLink="/admin/home" class="nav-btn" [class.active]="activeTab() === 'home'" matRipple>
+    <mat-icon>home</mat-icon>
+  </a>
+
+  <a
+    routerLink="/admin/incidencias"
+    class="nav-btn"
+    [class.active]="activeTab() === 'incidencia'"
+    matRipple
+  >
+    <mat-icon>warning_amber</mat-icon>
+  </a>
+
+  <a
+    routerLink="/admin/trabajadores"
+    class="nav-btn"
+    [class.active]="activeTab() === 'trabajadores'"
+    matRipple
+  >
+    <mat-icon>groups</mat-icon>
+  </a>
+
+  <a routerLink="/admin/perfil" class="nav-btn" [class.active]="activeTab() === 'perfil'" matRipple>
+    <mat-icon>person_outline</mat-icon>
+  </a>
+</nav>

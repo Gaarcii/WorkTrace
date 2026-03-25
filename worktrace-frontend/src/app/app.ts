@@ -4,12 +4,13 @@ import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { HeaderBarComponent } from './shared/components/header-bar/header-bar.component';
 import { WorkerBottomNavComponent } from './features/worker/navbar/worker-navbar.component';
+import { AdminNavbarComponent } from './features/admin/navbar/admin-navbar.component';
 import { TokenStorageService } from './core/auth/token-storage.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderBarComponent, WorkerBottomNavComponent],
+  imports: [RouterOutlet, HeaderBarComponent, WorkerBottomNavComponent,AdminNavbarComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

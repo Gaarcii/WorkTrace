@@ -14,19 +14,20 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 
 @Component({
-  selector: 'app-worker-bottom-nav',
+  selector: 'app-admin-navbar',
+  standalone: true,
   imports: [CommonModule, RouterModule, MatIconModule, MatRippleModule],
-  templateUrl: './worker-navbar.component.html',
-  styleUrls: ['./worker-navbar.component.scss'],
+  templateUrl: './admin-navbar.component.html',
+  styleUrls: ['./admin-navbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorkerBottomNavComponent implements OnInit {
+export class AdminNavbarComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly activeTab = signal<string>('home');
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.updateActiveTab(this.router.url);
 
     this.router.events
@@ -39,17 +40,15 @@ export class WorkerBottomNavComponent implements OnInit {
       });
   }
 
-  private updateActiveTab(url: string) {
-    if (url.includes('/worker/home')) {
+  private updateActiveTab(url: string): void {
+    if (url.includes('/admin/home') || url === '/admin') {
       this.activeTab.set('home');
-    } else if (url.includes('/worker/historial')) {
-      this.activeTab.set('history');
-    } else if (url.includes('/worker/estadisticas')) {
-      this.activeTab.set('stats');
-    } else if (url.includes('/worker/incidencias')) {
-      this.activeTab.set('incidence');
-    } else if (url.includes('/worker/perfil')) {
-      this.activeTab.set('user');
+    } else if (url.includes('/admin/incidencias')) {
+      this.activeTab.set('incidencia');
+    } else if (url.includes('/admin/trabajadores')) {
+      this.activeTab.set('trabajadores');
+    } else if (url.includes('/admin/perfil')) {
+      this.activeTab.set('perfil');
     } else {
       this.activeTab.set('home');
     }
