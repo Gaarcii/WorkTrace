@@ -1,4 +1,3 @@
-/* --- FORMULARIO MEJORADO --- */
 .form-container {
   display: flex;
   flex-direction: column;
@@ -76,7 +75,6 @@ textarea.form-control:hover {
   cursor: text;
 }
 
-/* Estados */
 .form-control:hover {
   border-color: #999;
   background: #fff;
@@ -94,7 +92,6 @@ textarea.form-control:hover {
   box-shadow: 0 0 0 3px rgba(0, 0, 38, 0.08);
 }
 
-/* Error */
 .form-error {
   color: #c62828;
   font-size: 12px;
@@ -102,7 +99,6 @@ textarea.form-control:hover {
   font-weight: 500;
 }
 
-/* --- RESTO IGUAL --- */
 .page-container {
   min-height: 100vh;
   background-color: #e9eaec;

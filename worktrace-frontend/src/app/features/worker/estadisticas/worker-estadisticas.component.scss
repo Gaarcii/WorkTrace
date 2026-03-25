@@ -2,7 +2,7 @@
 ::ng-deep .mat-button-toggle-group.periodo-selector .mat-pseudo-checkbox {
   display: none !important;
 }
-/* Fila superior del gráfico: título a la izquierda, navegación a la derecha */
+
 .grafico-title-row {
   display: flex;
   justify-content: space-between;
@@ -13,7 +13,7 @@
 .semana-navigation-bar {
   display: flex;
   align-items: center;
-  /* Fondo estilo "píldora" para que parezca un control unificado */
+
   background-color: #f0f2f5;
   border-radius: 24px;
   padding: 2px 4px;
@@ -22,18 +22,16 @@
 .semana-label {
   font-size: 14px;
   font-weight: 700;
-  color: #000026; /* Tu color corporativo */
+  color: #000026;
   margin: 0 4px;
-  min-width: 150px; /* Fijo para que los botones no bailen al cambiar de mes */
+  min-width: 150px;
   text-align: center;
   display: inline-block;
 }
 
-/* Forzamos a que los iconos de los botones también usen tu color oscuro */
 .semana-navigation-bar ::ng-deep .mat-mdc-icon-button {
   color: #000026;
 
-  /* Hacemos los botones un pelín más compactos para que encajen en la píldora */
   width: 36px;
   height: 36px;
   padding: 6px;
@@ -51,10 +49,8 @@
 
 .main-content {
   padding: 16px;
-  /* Eliminado el padding-bottom repetitivo, el <main> raíz se encarga de esto */
 }
 
-/* Superficies blancas con bordes redondeados */
 .card-surface {
   background-color: #ffffff;
   border-radius: 16px;
@@ -109,7 +105,7 @@
   flex: 1;
   background: transparent;
   border-radius: 0;
-  /* Añadimos !important para forzar a Material a quitar su border-left nativo */
+
   border: none !important;
   transition:
     background 0.2s,
@@ -131,12 +127,10 @@
 }
 
 ::ng-deep .mat-button-toggle-group.periodo-selector .mat-button-toggle:not(:last-child) {
-  /* Nuestro borde separador único */
   border-right: 1px solid #000026 !important;
 }
 
 ::ng-deep .mat-button-toggle-group.periodo-selector .mat-button-toggle-checked:not(:last-child) {
-  /* Cuando está activo (oscuro), le ponemos el borde del mismo color oscuro para que quede 100% liso */
   border-right: 1px solid #000026 !important;
 }
 
@@ -146,7 +140,6 @@
   content: none !important;
 }
 
-/* Inputs nativos limpios para fechas */
 .filtro-fechas-container {
   display: flex;
   flex-direction: column;
@@ -230,7 +223,6 @@
   color: #f44336 !important;
 }
 
-/* Gráfico */
 .grafico-title {
   font-size: 16px;
   font-weight: 600;
@@ -259,7 +251,7 @@
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  position: relative; /* Necesario para el posicionamiento absoluto del texto flotante */
+  position: relative;
 
   &:hover .barra {
     background-color: #1976d2;
@@ -273,10 +265,9 @@
   display: flex;
   align-items: flex-end;
   margin-bottom: 8px;
-  position: relative; /* Contexto para la etiqueta flotante */
+  position: relative;
 }
 
-/* NUEVO: Estilo para las horas encima de la barra */
 .barra-horas-flotante {
   position: absolute;
   width: 100%;
@@ -284,20 +275,19 @@
   font-size: 10px;
   font-weight: 700;
   color: #000026;
-  margin-bottom: 4px; /* Separación respecto a la punta de la barra */
-  pointer-events: none; /* Para que no estorbe al hacer clic */
-  white-space: nowrap; /* Evita que el texto salte de línea */
+  margin-bottom: 4px;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .barra {
   width: 100%;
   background-color: #2196f3;
   border-radius: 4px 4px 0 0;
-  min-height: 4px; /* Un mínimo para que siempre se vea una raya aunque haya 0 horas */
+  min-height: 4px;
   transition: height 0.3s ease;
 }
 
-/* NUEVO: Agrupamos las etiquetas inferiores */
 .barra-label-group {
   display: flex;
   flex-direction: column;
@@ -316,7 +306,6 @@
   color: #666;
 }
 
-/* Tooltip Overlay */
 .tooltip-overlay {
   position: fixed;
   top: 0;
@@ -350,7 +339,6 @@
   }
 }
 
-/* Balance */
 .balance-header {
   display: flex;
   justify-content: space-between;
@@ -445,7 +433,6 @@
   }
 }
 
-/* Estado visual para el listado */
 .estado-chip {
   padding: 4px 8px;
   border-radius: 12px;
@@ -474,26 +461,23 @@
     font-weight: 600;
     letter-spacing: 0.3px;
 
-    /* 1. Obligamos al contenedor de Material a ceder el 100% del espacio */
     ::ng-deep .mdc-button__label {
       width: 100%;
     }
 
-    /* 2. Nuestra clase Flex que nunca falla */
     .btn-content-flex {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px; /* Separación perfecta entre icono y texto */
+      gap: 8px;
       width: 100%;
 
       mat-icon {
-        margin: 0 !important; /* Anulamos cualquier margen automático de Material */
+        margin: 0 !important;
       }
     }
   }
 
-  /* 1. Botón oscuro (PDF) */
   .btn-filled {
     background-color: #000026 !important;
     color: #ffffff !important;
@@ -503,9 +487,7 @@
     }
   }
 
-  /* 2. Botón transparente (Historial) */
   .btn-outlined {
-    /* Forzamos el borde grueso oscuro */
     --mdc-outlined-button-outline-width: 2px;
     border-color: #000026 !important;
 
@@ -516,7 +498,6 @@
       color: #000026 !important;
     }
 
-    /* MATAMOS el hover/ripple azul de Material y le ponemos tu azul con opacidad */
     ::ng-deep .mat-mdc-button-ripple::before,
     ::ng-deep .mat-mdc-button-ripple::after {
       background-color: rgba(0, 0, 38, 0.1) !important;
@@ -528,7 +509,6 @@
   }
 }
 
-/* --- NUEVO: INCIDENCIAS --- */
 .incidencias-section {
   margin-bottom: 20px;
 }
@@ -556,7 +536,6 @@
   color: #666;
 }
 
-/* Chip color extra para incidencias rechazadas */
 .chip-error {
   background-color: #ffebee;
   color: #c62828;

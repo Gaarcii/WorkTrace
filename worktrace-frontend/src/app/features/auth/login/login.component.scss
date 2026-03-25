@@ -1,21 +1,15 @@
-/* Contenedor principal a pantalla completa */
 .split-layout {
   display: flex;
   height: 100vh;
   width: 100vw;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Evita scrolls raros */
+  overflow: hidden;
 }
 
-/* --- PANEL IZQUIERDO (BRANDING) --- */
 .brand-panel {
-  flex: 1; /* Ocupa la mitad de la pantalla */
-  background: linear-gradient(
-    135deg,
-    #000026 0%,
-    #00004d 100%
-  ); /* Tu color con un ligero degradado */
+  flex: 1;
+  background: linear-gradient(135deg, #000026 0%, #00004d 100%);
   color: white;
   display: flex;
   flex-direction: column;
@@ -24,7 +18,6 @@
   text-align: center;
   padding: 40px;
 
-  /* Ocultamos el panel de branding en móviles para que solo quede el login */
   @media (max-width: 768px) {
     display: none;
   }
@@ -34,7 +27,7 @@
   max-width: 400px;
 
   .brand-logo {
-    width: 200px; 
+    width: 200px;
     height: auto;
     margin: 0 auto 24px auto;
     filter: brightness(0) invert(1);
@@ -54,9 +47,8 @@
   }
 }
 
-/* --- PANEL DERECHO (FORMULARIO) --- */
 .form-panel {
-  flex: 1; /* Ocupa la otra mitad */
+  flex: 1;
   background-color: #ffffff;
   display: flex;
   justify-content: center;
@@ -92,10 +84,9 @@
 
 .full-width {
   width: 100%;
-  margin-bottom: 8px; /* Material ya tiene su propio padding interno */
+  margin-bottom: 8px;
 }
 
-/* Estilizamos el error para que parezca de sistema moderno */
 .error-box {
   display: flex;
   align-items: center;
@@ -119,11 +110,10 @@
   height: 54px;
   font-size: 16px;
   font-weight: 600;
-  border-radius: 8px; /* Botones un poco más redondeados */
+  border-radius: 8px;
   letter-spacing: 0.5px;
   margin-top: 16px;
 
-  /* Centramos el spinner si está cargando */
   ::ng-deep .mdc-button__label {
     display: flex;
     justify-content: center;
