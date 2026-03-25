@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.repository;
 
+import com.worktrace.worktracebackend.dto.timeEntry.DailyFichajeCountProjection;
 import com.worktrace.worktracebackend.dto.timeEntry.EstadisticaDiariaProjection;
 import com.worktrace.worktracebackend.model.EstadoFichaje;
 import com.worktrace.worktracebackend.model.TimeEntry;
@@ -88,4 +89,24 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
 
     @Query("SELECT MIN(t.workDate) FROM TimeEntry t WHERE t.employee.userId = :userId")
     LocalDate findFirstWorkDateByEmployee(@Param("userId") UUID userId);
+
+    List<TimeEntry> getAllByCompany_IdAndEndAtIsNull(UUID companyId);
+
+    Long countAllByCompany_IdAndWorkDateBetween(
+            UUID companyId, LocalDate startDate, LocalDate endDate);
+
+    @Query(value = """
+            SELECT t.work_date AS fecha, COUNT(t.id) AS numFichajes
+            FROM time_entries t
+            WHERE t.company_id = :companyId
+              AND t.work_date BETWEEN :startDate AND :endDate
+              AND t.deleted_at IS NULL
+            GROUP BY t.work_date
+            ORDER BY t.work_date
+            """, nativeQuery = true)
+    List<DailyFichajeCountProjection> getFichajesCountByCompanyAndDateRange(
+            @Param("companyId") UUID companyId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

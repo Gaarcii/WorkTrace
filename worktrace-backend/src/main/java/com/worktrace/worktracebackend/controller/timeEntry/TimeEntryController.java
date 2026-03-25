@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/time-entries")
@@ -92,5 +93,30 @@ public class TimeEntryController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfBytes);
+    }
+
+    @GetMapping("/activeWorkers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ActiveWorkerDto>> getActiveWorkers() {
+        List<ActiveWorkerDto> activeWorkerDto = timeEntryService.getActiveWorkers();
+        return ResponseEntity.ok(activeWorkerDto);
+    }
+
+    @GetMapping("/numFichajes")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Long getFichajesCountToday() {
+        return timeEntryService.getFichajesCountToday();
+    }
+
+    @GetMapping("/weeklyChart")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<DailyFichajeCountDto>> getWeeklyData(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+
+        List<DailyFichajeCountDto> dailyFichajeCountDtos =
+                timeEntryService.getWeeklyChartData(fechaInicio, fechaFin);
+        return ResponseEntity.ok(dailyFichajeCountDtos);
+
     }
 }

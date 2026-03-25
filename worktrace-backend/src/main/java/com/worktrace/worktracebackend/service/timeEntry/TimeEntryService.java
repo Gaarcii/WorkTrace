@@ -295,6 +295,76 @@ public class TimeEntryService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public List<ActiveWorkerDto> getActiveWorkers() {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+
+        List<TimeEntry> timeEntryList = timeEntryRepository
+                .getAllByCompany_IdAndEndAtIsNull(company.getId());
+
+        DayOfWeek today = LocalDate.now().getDayOfWeek();
+
+        return timeEntryList.stream()
+                .map(timeEntry -> {
+                    Profile employee = timeEntry.getEmployee();
+                    String puesto = null;
+                    if (employee.getPosition() != null) {
+                        puesto = employee.getPosition().getTitle();
+                    }
+                    Optional<WorkSchedule> horarioOpt = workScheduleRepository
+                            .findByEmployee_UserIdAndDayOfWeek(employee.getUserId(), today);
+                    Long puntualidad = null;
+                    if (horarioOpt.isPresent() && timeEntry.getStartAt() != null) {
+                        OffsetDateTime horaEntrada = timeEntry.getStartAt();
+                        LocalTime horaHorario = horarioOpt.get().getStartTime();
+                        puntualidad = Duration.between(horaHorario, horaEntrada).toMinutes();
+                    }
+                    return new ActiveWorkerDto(
+                            employee.getUserId(),
+                            employee.getFullName(),
+                            puesto,
+                            employee.getAvatarUrl(),
+                            timeEntry.getStartAt(),
+                            puntualidad
+                    );
+                })
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Long getFichajesCountToday() {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+
+        return timeEntryRepository.countAllByCompany_IdAndWorkDateBetween(
+                company.getId(), LocalDate.now(), LocalDate.now());
+    }
+
+    @Transactional(readOnly = true)
+    public List<DailyFichajeCountDto> getWeeklyChartData(LocalDate startDate, LocalDate endDate) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+
+        List<DailyFichajeCountProjection> fichajesAgrupados = timeEntryRepository
+                .getFichajesCountByCompanyAndDateRange(
+                        company.getId(), startDate, endDate);
+
+        Map<LocalDate, Long> conteoPorFecha = new HashMap<>();
+        for (DailyFichajeCountProjection proy : fichajesAgrupados) {
+            conteoPorFecha.put(proy.getFecha(), proy.getNumFichajes());
+        }
+
+        List<DailyFichajeCountDto> resultado = new ArrayList<>();
+        LocalDate fecha = startDate;
+        while (!fecha.isAfter(endDate)) {
+            Long numFichajes = conteoPorFecha.getOrDefault(fecha, 0L);
+            resultado.add(new DailyFichajeCountDto(fecha.toString(), numFichajes));
+            fecha = fecha.plusDays(1);
+        }
+        return resultado;
+    }
+
     public LocalDate primerFichaje() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         LocalDate primeraFecha = timeEntryRepository.findFirstWorkDateByEmployee(info.getProfile().getUserId());
