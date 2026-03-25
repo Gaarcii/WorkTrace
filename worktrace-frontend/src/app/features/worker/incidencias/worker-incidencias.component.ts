@@ -61,7 +61,6 @@ export class WorkerIncidenciasComponent implements OnInit {
   readonly incidencias = this.incidenciasService.incidenciasSignal;
   readonly tipos = this.tiposService.tiposSignal;
 
-  // Formateo de la lista: traducción de estados y limpieza de segundos
   readonly incidenciasFormateadas = computed(() => {
     return this.incidencias().map((inc) => {
       const stLower = (inc.estado || 'PENDING').toLowerCase();

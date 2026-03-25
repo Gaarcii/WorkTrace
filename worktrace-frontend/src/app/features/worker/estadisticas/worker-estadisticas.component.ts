@@ -145,7 +145,6 @@ export class WorkerEstadisticasComponent implements OnInit {
     });
   });
 
-  // --- LÓGICA DE PAGINACIÓN POR SEMANAS ---
   readonly historialPaginado = computed<SemanaData[]>(() => {
     const diarios = this.estadisticas()?.resumenDiario ?? [];
     if (diarios.length === 0) return [];
@@ -176,7 +175,7 @@ export class WorkerEstadisticasComponent implements OnInit {
 
         diasGrafico.push({
           fecha: format(fechaDia, 'dd/MM/yyyy'),
-          fechaCorta: format(fechaDia, 'dd/MM'), // NUEVO: Extraemos solo el día y el mes
+          fechaCorta: format(fechaDia, 'dd/MM'),
           fechaOriginal: format(fechaDia, 'yyyy-MM-dd'),
           dia: format(fechaDia, 'EEE', { locale: es }).toUpperCase(),
           horas: this.formatMinutos(trabajados),
@@ -211,7 +210,7 @@ export class WorkerEstadisticasComponent implements OnInit {
   readonly semanaVisible = computed<SemanaData | undefined>(
     () => this.historialPaginado()[this.currentWeekIndex()],
   );
-  // --- MÉTODOS DE ACCIÓN ---
+
   ngOnInit(): void {
     this.cargarDatosPorPeriodo('semana');
   }

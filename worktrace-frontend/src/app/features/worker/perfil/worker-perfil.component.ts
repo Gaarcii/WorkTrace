@@ -15,15 +15,11 @@ import {
   ValidationErrors,
 } from '@angular/forms';
 import { take, finalize } from 'rxjs/operators';
-
-// Angular Material Imports
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
-// Servicios y Modelos
 import { ProfileService } from '../../../shared/services/profile.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ProfileRequest, ProfileResponse } from '../../../shared/models/profile.model';
@@ -57,12 +53,10 @@ export class WorkerPerfilComponent implements OnInit {
   readonly mostrarConfirmacion = signal<boolean>(false);
   readonly mostrarError = signal<boolean>(false);
 
-  // Modales Avatar
   readonly mostrarSelectorAvatar = signal<boolean>(false);
   readonly archivoSeleccionado = signal<File | null>(null);
   readonly avatarPreview = signal<string>('');
 
-  // Modales Contraseña
   readonly mostrarCambiarPassword = signal<boolean>(false);
   readonly loadingPassword = signal<boolean>(false);
   readonly passwordError = signal<string>('');
@@ -73,13 +67,11 @@ export class WorkerPerfilComponent implements OnInit {
   readonly mostrarPedirPasswordEmail = signal<boolean>(false);
   readonly hideConfirmPassword = signal<boolean>(true);
 
-  // Formulario de Datos
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     telefono: ['', Validators.required],
   });
 
-  // Formulario de Contraseña
   readonly passwordForm = this.fb.group(
     {
       actual: ['', [Validators.required]],
@@ -91,7 +83,6 @@ export class WorkerPerfilComponent implements OnInit {
 
   readonly passwordConfirmacion = this.fb.control('', Validators.required);
 
-  // --- LÓGICA DEL CALENDARIO HORIZONTAL ---
   readonly horarioSemanal = computed(() => {
     const diasSemana = [
       'MONDAY',

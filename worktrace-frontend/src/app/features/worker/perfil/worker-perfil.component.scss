@@ -1,10 +1,8 @@
-/* --- ESTRUCTURA GLOBAL --- */
 .page-container {
   min-height: 100vh;
   background-color: #f4f6f8;
 }
 
-/* Ampliamos al 95% del ancho de la pantalla para un diseño Dashboard real */
 .main-content {
   padding: 32px 24px 76px 24px;
   width: 95%;
@@ -12,7 +10,6 @@
   margin: 0 auto;
 }
 
-/* --- CABECERA DE PÁGINA --- */
 .page-header {
   margin-bottom: 32px;
 }
@@ -29,10 +26,9 @@
   margin: 0;
 }
 
-/* --- SECCIÓN SUPERIOR: IDENTIDAD Y AJUSTES --- */
 .top-grid {
   display: grid;
-  grid-template-columns: 400px 1fr; /* Más ancho para la identidad */
+  grid-template-columns: 400px 1fr;
   gap: 32px;
   align-items: start;
 
@@ -52,7 +48,6 @@
   gap: 32px;
 }
 
-/* --- TARJETAS BASE --- */
 .card-surface {
   background-color: #ffffff;
   border-radius: 16px;
@@ -71,7 +66,6 @@
   padding-bottom: 16px;
 }
 
-/* --- IDENTIDAD --- */
 .identity-card {
   display: flex;
   flex-direction: column;
@@ -154,7 +148,6 @@
   }
 }
 
-/* --- FORMULARIO GRID --- */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -178,7 +171,6 @@
   font-size: 15px;
 }
 
-/* --- SEGURIDAD ROW --- */
 .security-row {
   display: flex;
   justify-content: space-between;
@@ -204,7 +196,6 @@
   border-radius: 8px;
 }
 
-/* --- SECCIÓN INFERIOR: HORARIO SEMANAL ESTILO DASHBOARD --- */
 .horario-semanal-section {
   width: 100%;
 }
@@ -220,7 +211,6 @@
   text-align: center;
 }
 
-/* Solo hace scroll si es en móvil */
 .week-grid-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -229,14 +219,13 @@
 
 .week-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr); /* Ocupa exactamente las 7 columnas */
+  grid-template-columns: repeat(7, 1fr);
   gap: 16px;
   min-width: 900px;
 }
 
-/* Diseño del día de trabajo activo */
 .day-col {
-  background: linear-gradient(145deg, #000026, #000040); /* Gradiente corporativo premium */
+  background: linear-gradient(145deg, #000026, #000040);
   color: #ffffff;
   border-radius: 16px;
   padding: 24px 16px;
@@ -268,7 +257,7 @@
   flex: 1;
   width: 100%;
   align-items: center;
-  justify-content: space-between; /* Mantiene la hora abajo y el lugar arriba */
+  justify-content: space-between;
 }
 
 .day-lugar {
@@ -291,7 +280,7 @@
   font-weight: 600;
   background-color: rgba(255, 255, 255, 0.1);
   padding: 8px 16px;
-  border-radius: 30px; /* Forma de píldora */
+  border-radius: 30px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -304,7 +293,6 @@
   }
 }
 
-/* Diseño del día libre (Claro y limpio) */
 .day-col.is-free {
   background: #ffffff;
   color: #000026;
@@ -330,13 +318,11 @@
   }
 }
 
-/* --- MATERIAL OVERRIDES GLOBALES --- */
 ::ng-deep .mat-mdc-form-field {
   --mdc-outlined-text-field-focus-outline-color: #000026;
   --mdc-outlined-text-field-focus-label-text-color: #000026;
 }
 
-/* --- MODALES PERSONALES --- */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -436,7 +422,6 @@
   }
 }
 
-/* --- UTILIDADES --- */
 .mt-2 {
   margin-top: 8px;
 }
@@ -484,7 +469,6 @@
   cursor: pointer;
 }
 
-/* --- ESTADOS Y ALERTAS --- */
 .loading-state {
   display: flex;
   justify-content: center;

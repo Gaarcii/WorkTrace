@@ -2,7 +2,6 @@
 
 @include mat.core();
 
-/* 1. Dejamos el azure como motor matemático base */
 $worktrace-theme: mat.define-theme(
   (
     color: (
@@ -16,7 +15,6 @@ $worktrace-theme: mat.define-theme(
   )
 );
 
-/* 2. Aplicamos el tema a la web y forzamos el azul global */
 html {
   @include mat.all-component-themes($worktrace-theme);
   --mat-sys-primary: #000026 !important;
@@ -30,42 +28,33 @@ body {
   height: 100vh;
 }
 
-/* 3. Forzar el color del Botón Flat Sólido */
 .mat-mdc-unelevated-button.mat-primary {
   background-color: #000026 !important;
   color: #ffffff !important;
 }
 
-/* 4. Color limpio para los inputs SIN romper el hueco del texto */
 mat-form-field {
   --mdc-outlined-text-field-focus-outline-color: #000026 !important;
   --mdc-outlined-text-field-focus-label-text-color: #000026 !important;
   --mdc-outlined-text-field-caret-color: #000026 !important;
   --mat-form-field-icon-color: #000026 !important;
 }
-/* =========================================================
-   EL TOQUE FINAL: Borde y textos al hacer clic (Foco)
-   ========================================================= */
 
-/* 1. Teñimos las 3 piezas del borde SIN tocar su grosor ni romper el hueco */
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
   border-color: #000026 !important;
 }
 
-/* 2. Teñimos el texto flotante ("Correo electrónico*") */
 .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label,
 .mat-mdc-form-field.mat-focused .mdc-floating-label {
   color: #000026 !important;
 }
 
-/* 3. Teñimos el palito que parpadea al escribir (Caret) */
 .mat-mdc-form-field.mat-focused .mat-mdc-input-element {
   caret-color: #000026 !important;
 }
 
-/* 4. Teñimos los iconos (el sobre o el candado) */
 .mat-mdc-form-field.mat-focused .mat-icon {
   color: #000026 !important;
 }

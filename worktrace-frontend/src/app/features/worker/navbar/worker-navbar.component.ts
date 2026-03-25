@@ -48,7 +48,7 @@ export class WorkerBottomNavComponent implements OnInit {
       this.activeTab.set('stats');
     } else if (url.includes('/worker/incidencias')) {
       this.activeTab.set('incidence');
-    } else if (url.includes('/worker/home')) {
+    } else if (url.includes('/worker/perfil')) {
       this.activeTab.set('user');
     } else {
       this.activeTab.set('home');

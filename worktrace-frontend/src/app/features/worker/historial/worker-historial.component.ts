@@ -33,7 +33,6 @@ interface DiaSemana {
 })
 export class WorkerHistoryComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
-  // Inyecciones
   private readonly historyService = inject(WorkerHistoryService);
 
   @ViewChild('datePicker') private readonly datePicker!: ElementRef<HTMLInputElement>;
@@ -43,7 +42,6 @@ export class WorkerHistoryComponent implements OnInit {
 
   readonly historial = this.historyService.historialSignal;
 
-  // --- COMPUTADOS PARA EL CALENDARIO ---
   readonly rangoSemana = computed(() => {
     const inicio = this.semanaActual();
     const fin = this.addDays(inicio, 6);
@@ -182,7 +180,6 @@ export class WorkerHistoryComponent implements OnInit {
     }
   }
 
-  // --- MÉTODOS PRIVADOS AUXILIARES ---
   private cargarHistorial(fecha: Date): void {
     this.historyService.obtenerHistorial(fecha).pipe(take(1)).subscribe();
   }

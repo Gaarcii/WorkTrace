@@ -26,7 +26,6 @@ import { TokenStorageService } from '../../../core/auth/token-storage.service';
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  // Activamos el máximo rendimiento
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
@@ -80,7 +79,6 @@ export class LoginComponent {
           }
         },
         error: (err: HttpErrorResponse) => {
-          console.error(err);
           this.errorMessage.set('Credenciales incorrectas. Inténtalo de nuevo.');
         },
       });

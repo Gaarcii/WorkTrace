@@ -41,7 +41,6 @@ export class PasswordChangeComponent {
   private router = inject(Router);
   private tokenStorage = inject(TokenStorageService);
 
-  // Convertimos el estado a Signals
   hideActual = signal(true);
   hideNueva = signal(true);
   hideRepetir = signal(true);
@@ -68,7 +67,6 @@ export class PasswordChangeComponent {
     return null;
   }
 
-  // Métodos para alternar la visibilidad (Signals)
   toggleActual() {
     this.hideActual.update((v) => !v);
   }
@@ -80,22 +78,18 @@ export class PasswordChangeComponent {
   }
 
   onSubmit() {
-    // 1. Protección contra envíos dobles y formularios inválidos
     if (this.passwordForm.invalid || this.isSubmitting()) {
       this.passwordForm.markAllAsTouched();
       return;
     }
 
-    // 2. Reiniciamos estado
     this.errorMessage.set(null);
     this.isSubmitting.set(true);
 
-    // 3. Flujo reactivo con RxJS
     this.authService
       .changeFirstPassword(this.passwordForm.getRawValue())
       .pipe(
         take(1),
-        // finalize apaga el spinner independientemente de si hay éxito o error
         finalize(() => this.isSubmitting.set(false)),
       )
       .subscribe({
@@ -108,9 +102,6 @@ export class PasswordChangeComponent {
           }
         },
         error: (err: HttpErrorResponse) => {
-          console.error(err);
-          // Si tuvieras tu errorHandlerService importado, lo usarías aquí.
-          // Por ahora lo parseamos localmente:
           const msg =
             err.error?.message ||
             err.error ||

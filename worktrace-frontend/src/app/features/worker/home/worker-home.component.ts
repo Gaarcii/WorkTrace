@@ -25,7 +25,6 @@ import { TimeEntryRequest } from '../../../shared/models/time-entry.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkerHomeComponent implements OnInit {
-  // Inyecciones
   private readonly workerService = inject(WorkerHomeService);
   private readonly destroyRef = inject(DestroyRef);
 
