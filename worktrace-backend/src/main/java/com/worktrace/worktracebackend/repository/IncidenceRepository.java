@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,4 +35,7 @@ public interface IncidenceRepository extends JpaRepository<Incidence, UUID> {
     );
 
     Page<Incidence> findByCompany_IdAndStatus(UUID companyId, EstadoIncidencia status, Pageable pageable);
+
+    Page<Incidence> findByCompany_IdAndStatusIn(UUID company_id, Collection<EstadoIncidencia> status, Pageable pageable);
+
 }

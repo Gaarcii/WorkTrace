@@ -1,11 +1,10 @@
 package com.worktrace.worktracebackend.service.incidence;
 
+import com.worktrace.worktracebackend.dto.incidence.AdminIncidenceRequestDto;
 import com.worktrace.worktracebackend.dto.incidence.AdminIncidenceResponseDto;
-import com.worktrace.worktracebackend.dto.incidence.IncidenceRequestDto;
-import com.worktrace.worktracebackend.dto.incidence.IncidenceResponseDto;
-import com.worktrace.worktracebackend.model.EstadoIncidencia;
-import com.worktrace.worktracebackend.model.Incidence;
-import com.worktrace.worktracebackend.model.IncidenceType;
+import com.worktrace.worktracebackend.dto.incidence.WorkerIncidenceRequestDto;
+import com.worktrace.worktracebackend.dto.incidence.WorkerIncidenceResponseDto;
+import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.IncidenceTypeRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class IncidenceService {
     private final UserService userService;
 
     @Transactional(readOnly = true)
-    public List<IncidenceResponseDto> getIncidenciasByUserID() {
+    public List<WorkerIncidenceResponseDto> getIncidenciasByUserID() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
 
         List<Incidence> incidenceList = incidenceRepository
@@ -39,7 +39,7 @@ public class IncidenceService {
     }
 
     @Transactional
-    public IncidenceResponseDto postIncidence(IncidenceRequestDto requestDto) {
+    public WorkerIncidenceResponseDto postIncidence(WorkerIncidenceRequestDto requestDto) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         IncidenceType tipoRef = incidenceTypeRepository.getReferenceById(requestDto.getTypeId());
 
@@ -55,7 +55,7 @@ public class IncidenceService {
         incidence.setUpdatedAt(OffsetDateTime.now());
 
         incidence = incidenceRepository.save(incidence);
-        return new IncidenceResponseDto(
+        return new WorkerIncidenceResponseDto(
                 incidence.getType().getName(),
                 incidence.getDate(),
                 incidence.getIncidenceTime(),
@@ -66,7 +66,7 @@ public class IncidenceService {
     }
 
     @Transactional(readOnly = true)
-    public List<IncidenceResponseDto> getIncidenciaPorFechas(LocalDate fechaInicio, LocalDate fechaFin) {
+    public List<WorkerIncidenceResponseDto> getIncidenciaPorFechas(LocalDate fechaInicio, LocalDate fechaFin) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
 
         List<Incidence> incidenceList = incidenceRepository
@@ -84,21 +84,47 @@ public class IncidenceService {
         Page<Incidence> incidencePage = incidenceRepository
                 .findByCompany_IdAndStatus(info.getCompany().getId(), status, pageable);
 
-        return incidencePage.map(incident -> new AdminIncidenceResponseDto(
-                incident.getId(),
-                incident.getProfile().getFullName(),
-                incident.getType().getName(),
-                incident.getComment(),
-                incident.getStatus(),
-                incident.getDate(),
-                incident.getCreatedAt()
-        ));
+        return mapearAdminResponse(incidencePage);
     }
 
+    @Transactional(readOnly = true)
+    public Page<AdminIncidenceResponseDto> getIncidenciasByCompanyStatusIn(Pageable pageable) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+        Page<Incidence> incidencePage = incidenceRepository.findByCompany_IdAndStatusIn
+                (company.getId(), List.of(EstadoIncidencia.RESOLVED, EstadoIncidencia.REJECTED), pageable);
 
-    private List<IncidenceResponseDto> mapearAIncidenceResponse(List<Incidence> incidenceList) {
+        return mapearAdminResponse(incidencePage);
+    }
+
+    @Transactional
+    public void gestionarIncidencia(UUID incidenciaId, AdminIncidenceRequestDto dto) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+        User user = info.getUser();
+
+        Incidence incidence = incidenceRepository.findById(incidenciaId)
+                .orElseThrow(() -> new IllegalStateException("Incidencia no encontrada"));
+
+        if (!incidence.getCompany().getId().equals(company.getId())) {
+            throw new IllegalStateException("No tienes permisos sobre esta incidencia");
+        }
+
+        if (incidence.getStatus() == EstadoIncidencia.PENDING) {
+            incidence.setStatus(dto.getEstado());
+            incidence.setUpdatedAt(OffsetDateTime.now());
+            incidence.setResolvedBy(user);
+            incidence.setAdminResponse(dto.getRespuestaAdmin());
+
+            incidenceRepository.save(incidence);
+        } else {
+            throw new IllegalStateException("La incidencia ya ha sido gestionada anteriormente");
+        }
+    }
+
+    private List<WorkerIncidenceResponseDto> mapearAIncidenceResponse(List<Incidence> incidenceList) {
         return incidenceList.stream()
-                .map(incident -> new IncidenceResponseDto(
+                .map(incident -> new WorkerIncidenceResponseDto(
                         incident.getType().getName(),
                         incident.getDate(),
                         incident.getIncidenceTime(),
@@ -107,5 +133,19 @@ public class IncidenceService {
                         incident.getCreatedAt()
                 ))
                 .toList();
+    }
+
+    private Page<AdminIncidenceResponseDto> mapearAdminResponse(Page<Incidence> incidencePage) {
+        return incidencePage.map(incident -> new AdminIncidenceResponseDto(
+                incident.getId(),
+                incident.getProfile().getFullName(),
+                incident.getType().getName(),
+                incident.getComment(),
+                incident.getStatus(),
+                incident.getDate(),
+                incident.getCreatedAt(),
+                incident.getProfile().getAvatarUrl(),
+                incident.getAdminResponse()
+        ));
     }
 }

@@ -15,7 +15,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class IncidenceRequestDto {
+public class WorkerIncidenceRequestDto {
     @NotNull(message = "El tipo de incidencia es obligatorio")
     private UUID typeId;
 

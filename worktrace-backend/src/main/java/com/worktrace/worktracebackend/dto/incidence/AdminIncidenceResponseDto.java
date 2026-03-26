@@ -22,4 +22,6 @@ public class AdminIncidenceResponseDto {
     private EstadoIncidencia estado;
     private LocalDate fechaAfectada;
     private OffsetDateTime creacion;
+    private String avatarUrl;
+    private String adminResponse;
 }

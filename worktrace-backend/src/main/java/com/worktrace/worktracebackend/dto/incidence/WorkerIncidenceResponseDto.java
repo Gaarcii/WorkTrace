@@ -14,7 +14,7 @@ import java.time.OffsetDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class IncidenceResponseDto {
+public class WorkerIncidenceResponseDto {
     private String tipoIncidencia;
     private LocalDate fecha;
     private LocalTime hora;

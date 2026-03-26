@@ -1,6 +1,6 @@
 package com.worktrace.worktracebackend.service.timeEntry;
 
-import com.worktrace.worktracebackend.dto.incidence.IncidenceResponseDto;
+import com.worktrace.worktracebackend.dto.incidence.WorkerIncidenceResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.IncidenceRepository;
@@ -226,7 +226,7 @@ public class TimeEntryService {
                         EstadisticaDiariaProjection::getMinutosTrabajados
                 ));
 
-        List<IncidenceResponseDto> incidencias = incidenceService
+        List<WorkerIncidenceResponseDto> incidencias = incidenceService
                 .getIncidenciaPorFechas(fechaInicio, fechaFin);
 
         long totalTrabajados = 0L;
