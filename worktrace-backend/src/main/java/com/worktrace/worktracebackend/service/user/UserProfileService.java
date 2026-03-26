@@ -1,10 +1,14 @@
 package com.worktrace.worktracebackend.service.user;
 
+import com.worktrace.worktracebackend.dto.user.DepartmentStatDto;
+import com.worktrace.worktracebackend.dto.user.DepartmentStatProjection;
 import com.worktrace.worktracebackend.dto.user.UserRequestDto;
 import com.worktrace.worktracebackend.dto.user.UserResponseDto;
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleResponseDto;
+import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.Profile;
 import com.worktrace.worktracebackend.model.User;
+import com.worktrace.worktracebackend.repository.UserRepository;
 import com.worktrace.worktracebackend.security.JwtService;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
@@ -26,6 +30,7 @@ public class UserProfileService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final StorageService storageService;
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public UserResponseDto getProfile() {
@@ -83,6 +88,31 @@ public class UserProfileService {
         return responseDto;
     }
 
+
+    @Transactional(readOnly = true)
+    public Long getCompanyWorkers() {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+        return userRepository.countUsersByCompany_Id(company.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public List<DepartmentStatDto> getDepartmetnStatus() {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+
+        List<DepartmentStatProjection> departmentStatProjections = userRepository
+                .getDepartamentStats(company.getId());
+
+        return departmentStatProjections.stream()
+                .map(department -> new DepartmentStatDto(
+                        department.getDepartamento(),
+                        department.getTotalTrabajadores(),
+                        department.getTrabajadoresActivos()
+                ))
+                .toList();
+    }
+    
     private UserResponseDto construirUserResponseDto(Profile profile, User user) {
         List<WorkScheduleResponseDto> horario = profile.getWorkSchedules().stream()
                 .map(h -> {
@@ -115,4 +145,3 @@ public class UserProfileService {
     }
 
 }
-

@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.controller.user;
 
+import com.worktrace.worktracebackend.dto.user.DepartmentStatDto;
 import com.worktrace.worktracebackend.dto.user.UserRequestDto;
 import com.worktrace.worktracebackend.dto.user.UserResponseDto;
 import com.worktrace.worktracebackend.service.user.UserProfileService;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -30,5 +33,18 @@ public class UserController {
 
         UserResponseDto responseDto = userProfileService.putProfile(requestDto);
         return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/total-workers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Long getTotalWorkers() {
+        return userProfileService.getCompanyWorkers();
+    }
+
+    @GetMapping("/departments")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<DepartmentStatDto>> getDepartmenteStats() {
+        List<DepartmentStatDto> dto = userProfileService.getDepartmetnStatus();
+        return ResponseEntity.ok(dto);
     }
 }
