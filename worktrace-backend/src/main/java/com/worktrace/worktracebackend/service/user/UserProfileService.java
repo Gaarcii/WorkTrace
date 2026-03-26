@@ -1,19 +1,20 @@
 package com.worktrace.worktracebackend.service.user;
 
-import com.worktrace.worktracebackend.dto.user.DepartmentStatDto;
-import com.worktrace.worktracebackend.dto.user.DepartmentStatProjection;
-import com.worktrace.worktracebackend.dto.user.UserRequestDto;
-import com.worktrace.worktracebackend.dto.user.UserResponseDto;
+import com.worktrace.worktracebackend.dto.user.*;
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleResponseDto;
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.Profile;
+import com.worktrace.worktracebackend.model.Role;
 import com.worktrace.worktracebackend.model.User;
+import com.worktrace.worktracebackend.repository.ProfileRepository;
 import com.worktrace.worktracebackend.repository.UserRepository;
 import com.worktrace.worktracebackend.security.JwtService;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
 import com.worktrace.worktracebackend.service.storage.StorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ public class UserProfileService {
     private final JwtService jwtService;
     private final StorageService storageService;
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
 
     @Transactional(readOnly = true)
     public UserResponseDto getProfile() {
@@ -111,6 +113,37 @@ public class UserProfileService {
                         department.getTrabajadoresActivos()
                 ))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<EmployeeResponseDto> empleadosPorEmpresa(Pageable pageable) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+
+        Page<Profile> profilePage = profileRepository
+                .findByUser_Company_IdAndUser_Role(company.getId(), Role.WORKER, pageable);
+        return profilePage.map(
+                profile -> new EmployeeResponseDto(
+                        profile.getUserId(),
+                        profile.getFullName(),
+                        profile.getEmployeeCode(),
+                        profile.getUser().getEmail(),
+                        profile.getPosition().getTitle(),
+                        profile.getWeeklyHours().toString() + "h",
+                        estadoEmpleado(profile),
+                        profile.getUser().getCreatedAt()
+                )
+        );
+    }
+
+    private String estadoEmpleado(Profile profile) {
+        if (!profile.getIsActive()) {
+            return "Inactivo";
+        }
+        if (profile.getIsFirstLogin()) {
+            return "Pendiente";
+        }
+        return "Activo";
     }
     
     private UserResponseDto construirUserResponseDto(Profile profile, User user) {
