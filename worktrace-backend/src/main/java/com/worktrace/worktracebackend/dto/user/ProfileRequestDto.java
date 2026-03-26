@@ -1,9 +1,6 @@
 package com.worktrace.worktracebackend.dto.user;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,16 +19,18 @@ public class ProfileRequestDto {
     private String fullName;
 
     @NotBlank(message = "El DNI es obligatorio")
-    @Size(min = 9, max = 9, message = "El DNI debe tener 9 caracteres")
+    @Pattern(regexp = "^[0-9]{8}[A-Za-z]$", message = "El DNI debe tener 8 números y 1 letra")
     private String employeeCode;
 
     @NotBlank(message = "El teléfono es obligatorio")
     @Size(max = 20, message = "El teléfono no puede superar los 20 caracteres")
     private String phone;
 
+    @NotNull(message = "El puesto de trabajo es obligatorio")
+    private UUID positionId;
+
     @Positive(message = "Las horas semanales deben ser un número positivo")
     @Max(value = 168, message = "No hay más de 168 horas en una semana")
+    @NotNull(message = "Las horas semanales son obligatorias")
     private BigDecimal weeklyHours;
-
-    private UUID position;
 }

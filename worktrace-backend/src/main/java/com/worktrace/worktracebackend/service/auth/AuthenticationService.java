@@ -6,11 +6,9 @@ import com.worktrace.worktracebackend.dto.company.CompanyRequestDto;
 import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
 import com.worktrace.worktracebackend.dto.user.PasswordChangeRequestDto;
 import com.worktrace.worktracebackend.exception.InvalidCredentialsException;
-import com.worktrace.worktracebackend.model.Company;
-import com.worktrace.worktracebackend.model.Profile;
-import com.worktrace.worktracebackend.model.Role;
-import com.worktrace.worktracebackend.model.User;
+import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.CompanyRepository;
+import com.worktrace.worktracebackend.repository.JobPositionRepository;
 import com.worktrace.worktracebackend.repository.ProfileRepository;
 import com.worktrace.worktracebackend.repository.UserRepository;
 import com.worktrace.worktracebackend.security.JwtService;
@@ -37,6 +35,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final EmailService emailService;
+    private final JobPositionRepository jobPositionRepository;
 
 
     @Transactional
@@ -110,10 +109,18 @@ public class AuthenticationService {
         user.getProfile().setIsFirstLogin(false);
     }
 
-    @jakarta.transaction.Transactional
+    @Transactional
     public void registerEmployee(EmployeeRequestDto requestDto) {
         User admin = userService.getAuthenticatedUser();
         Company company = admin.getCompany();
+
+        JobPosition puesto = jobPositionRepository.findById(
+                requestDto.getProfile().getPositionId()).orElseThrow(() ->
+                new IllegalArgumentException("El puesto de trabajo no existe"));
+
+        if (!puesto.getCompany().getId().equals(company.getId())) {
+            throw new IllegalStateException("El puesto no pertenece a tu empresa");
+        }
 
         String password = generarPasswordSegura();
 
@@ -131,6 +138,8 @@ public class AuthenticationService {
                 .fullName(requestDto.getProfile().getFullName())
                 .employeeCode(requestDto.getProfile().getEmployeeCode())
                 .phone(requestDto.getProfile().getPhone())
+                .position(puesto)
+                .weeklyHours(requestDto.getProfile().getWeeklyHours())
                 .isFirstLogin(true)
                 .isActive(true)
                 .updatedAt(OffsetDateTime.now())
