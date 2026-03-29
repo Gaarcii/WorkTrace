@@ -15,6 +15,7 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
 
+    Optional<User> findById(UUID id);
     Long countUsersByCompany_Id(UUID companyId);
 
     @Query(value = """
