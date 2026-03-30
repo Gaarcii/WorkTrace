@@ -2,6 +2,7 @@ package com.worktrace.worktracebackend.service.timeEntry;
 
 import com.worktrace.worktracebackend.dto.incidence.WorkerIncidenceResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.*;
+import com.worktrace.worktracebackend.exception.NotFoundException;
 import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
@@ -365,9 +366,55 @@ public class TimeEntryService {
         return resultado;
     }
 
+    @Transactional(readOnly = true)
     public LocalDate primerFichaje() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         LocalDate primeraFecha = timeEntryRepository.findFirstWorkDateByEmployee(info.getProfile().getUserId());
         return primeraFecha != null ? primeraFecha : LocalDate.now();
     }
+
+    @Transactional
+    public void editarFichaje(UUID id, EditTimeEntryRequestDto dto) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+        TimeEntry fichaje = comprobarFichaje(id, company);
+
+        fichaje.setStartAt(dto.getEntrada());
+        fichaje.setWorkDate(dto.getEntrada().toLocalDate());
+
+        if (dto.getSalida() != null) {
+            fichaje.setEndAt(dto.getSalida());
+            fichaje.setEstadoFichaje(EstadoFichaje.CLOSED);
+        } else {
+            fichaje.setEndAt(null);
+            fichaje.setEstadoFichaje(EstadoFichaje.OPEN);
+        }
+
+        fichaje.setModificationReason(dto.getJustificacion());
+        fichaje.setUpdatedAt(OffsetDateTime.now());
+    }
+
+    @Transactional
+    public void anularFichaje(UUID id, AnularTimeEntryRequestDto dto) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+        TimeEntry fichaje = comprobarFichaje(id, company);
+
+        fichaje.setDeletedAt(OffsetDateTime.now());
+        fichaje.setDeletedBy(info.getUser());
+        fichaje.setDeleteReason(dto.getJustificacion());
+        fichaje.setUpdatedAt(OffsetDateTime.now());
+    }
+
+    private TimeEntry comprobarFichaje(UUID id, Company company) {
+        Optional<TimeEntry> fichaje = timeEntryRepository.findById(id);
+        if (fichaje.isEmpty()) {
+            throw new NotFoundException("No se encontró el fichajeOp");
+        }
+        if (!fichaje.get().getCompany().getId().equals(company.getId())) {
+            throw new IllegalStateException("El fichajeOp no pertenece a tu empresa");
+        }
+        return fichaje.get();
+    }
+
 }

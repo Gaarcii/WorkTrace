@@ -106,7 +106,7 @@ public class TimeEntry {
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
-    @Column(name = "updated_at", insertable = false, updatable = false)
+    @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
     @Column(name = "modification_reason")

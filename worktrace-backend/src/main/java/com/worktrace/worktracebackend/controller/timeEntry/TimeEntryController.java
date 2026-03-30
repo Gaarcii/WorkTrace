@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/time-entries")
@@ -119,4 +120,23 @@ public class TimeEntryController {
         return ResponseEntity.ok(dailyFichajeCountDtos);
 
     }
+
+    @PatchMapping("/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> editarFichaje(
+            @PathVariable UUID id,
+            @Valid @RequestBody EditTimeEntryRequestDto dto) {
+        timeEntryService.editarFichaje(id, dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/anular")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> anularFichaje(
+            @PathVariable UUID id,
+            @Valid @RequestBody AnularTimeEntryRequestDto dto) {
+        timeEntryService.anularFichaje(id, dto);
+        return ResponseEntity.ok().build();
+    }
+
 }
