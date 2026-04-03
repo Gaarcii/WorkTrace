@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user")
@@ -56,5 +57,12 @@ public class UserController {
     public ResponseEntity<Page<EmployeeResponseDto>> getEmpleados(Pageable pageable) {
         Page<EmployeeResponseDto> responseDtos = userProfileService.empleadosPorEmpresa(pageable);
         return ResponseEntity.ok(responseDtos);
+    }
+
+    @GetMapping("/employees/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<EmployeeResponseDto> getEmpleadoDetalle(@PathVariable UUID id) {
+        EmployeeResponseDto responseDto = userProfileService.getEmpleadoById(id);
+        return ResponseEntity.ok(responseDto);
     }
 }

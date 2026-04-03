@@ -4,6 +4,8 @@ import com.worktrace.worktracebackend.dto.timeEntry.DailyFichajeCountProjection;
 import com.worktrace.worktracebackend.dto.timeEntry.EstadisticaDiariaProjection;
 import com.worktrace.worktracebackend.model.EstadoFichaje;
 import com.worktrace.worktracebackend.model.TimeEntry;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -109,4 +111,6 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    Page<TimeEntry> findByEmployee_UserIdAndDeletedAtIsNullOrderByWorkDateDesc(UUID userId, Pageable pageable);
 }

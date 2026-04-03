@@ -17,6 +17,8 @@ public class EmployeeResponseDto {
     private String nombre;
     private String dni;
     private String email;
+    private String avatarUrl;
+    private String telefono;
     private String puesto;
     private String horasSemanales;
     private String estado;

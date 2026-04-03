@@ -2,6 +2,7 @@ package com.worktrace.worktracebackend.service.user;
 
 import com.worktrace.worktracebackend.dto.user.*;
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleResponseDto;
+import com.worktrace.worktracebackend.exception.NotFoundException;
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.Profile;
 import com.worktrace.worktracebackend.model.Role;
@@ -23,6 +24,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -128,11 +130,39 @@ public class UserProfileService {
                         profile.getFullName(),
                         profile.getEmployeeCode(),
                         profile.getUser().getEmail(),
+                        profile.getAvatarUrl(),
+                        profile.getPhone(),
                         profile.getPosition().getTitle(),
-                        profile.getWeeklyHours().toString() + "h",
+                        profile.getWeeklyHours().toString(),
                         estadoEmpleado(profile),
                         profile.getUser().getCreatedAt()
                 )
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public EmployeeResponseDto getEmpleadoById(UUID employeeId) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+
+        Profile profile = profileRepository.findById(employeeId)
+                .orElseThrow(() -> new NotFoundException("Empleado no encontrado"));
+
+        if (!profile.getUser().getCompany().getId().equals(company.getId())) {
+            throw new IllegalStateException("El empleado no pertenece a tu empresa");
+        }
+
+        return new EmployeeResponseDto(
+                profile.getUserId(),
+                profile.getFullName(),
+                profile.getEmployeeCode(),
+                profile.getUser().getEmail(),
+                profile.getAvatarUrl(),
+                profile.getPhone(),
+                profile.getPosition().getTitle(),
+                profile.getWeeklyHours().toString(),
+                estadoEmpleado(profile),
+                profile.getUser().getCreatedAt()
         );
     }
 

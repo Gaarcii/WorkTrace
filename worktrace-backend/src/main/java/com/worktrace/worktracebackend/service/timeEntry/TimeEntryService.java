@@ -13,9 +13,12 @@ import com.worktrace.worktracebackend.service.incidence.IncidenceService;
 import com.worktrace.worktracebackend.service.ip.IpDetectionService;
 import com.worktrace.worktracebackend.service.pdf.EmployeePdfGeneratorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -138,7 +141,7 @@ public class TimeEntryService {
                 getWorkedMinutesByEmployeeAndDateRange(info.getProfile().getUserId(), fechaInicio, fechaFin);
 
         Long minutosSemanales = info.getProfile().getWeeklyHours() != null
-                ? info.getProfile().getWeeklyHours().multiply(java.math.BigDecimal.valueOf(60)).longValue()
+                ? info.getProfile().getWeeklyHours().multiply(BigDecimal.valueOf(60)).longValue()
                 : 0L;
 
         List<UltimosFichajesResponseDto> registrosDia = mapTimeEntriesToEventos(fichajesDia).stream()
@@ -369,7 +372,8 @@ public class TimeEntryService {
     @Transactional(readOnly = true)
     public LocalDate primerFichaje() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
-        LocalDate primeraFecha = timeEntryRepository.findFirstWorkDateByEmployee(info.getProfile().getUserId());
+        LocalDate primeraFecha = timeEntryRepository.findFirstWorkDateByEmployee
+                (info.getProfile().getUserId());
         return primeraFecha != null ? primeraFecha : LocalDate.now();
     }
 
@@ -404,6 +408,41 @@ public class TimeEntryService {
         fichaje.setDeletedBy(info.getUser());
         fichaje.setDeleteReason(dto.getJustificacion());
         fichaje.setUpdatedAt(OffsetDateTime.now());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<FichajeTablaResponseDto> getFichajesPaginadosPorEmpleado
+            (UUID employeeId, Pageable pageable) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+
+        User trabajador = userService.getUserById(employeeId);
+        if (!trabajador.getCompany().getId().equals(info.getCompany().getId())) {
+            throw new IllegalStateException("El trabajador no pertenece a tu empresa");
+        }
+
+        Page<TimeEntry> page = timeEntryRepository
+                .findByEmployee_UserIdAndDeletedAtIsNullOrderByWorkDateDesc(employeeId, pageable);
+
+        return page.map(f -> {
+            Long horasTrabajadas = null;
+
+            if (f.getStartAt() != null && f.getEndAt() != null) {
+                Duration duracion = Duration.between(f.getStartAt(), f.getEndAt());
+                horasTrabajadas = duracion.toMinutes();
+            }
+
+            return new FichajeTablaResponseDto(
+                    f.getId(),
+                    f.getWorkDate(),
+                    f.getStartAt(),
+                    f.getEndAt(),
+                    f.getStartLat(),
+                    f.getStartLng(),
+                    f.getEndLat(),
+                    f.getEndLng(),
+                    horasTrabajadas
+            );
+        });
     }
 
     private TimeEntry comprobarFichaje(UUID id, Company company) {

@@ -5,6 +5,8 @@ import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -137,6 +139,16 @@ public class TimeEntryController {
             @Valid @RequestBody AnularTimeEntryRequestDto dto) {
         timeEntryService.anularFichaje(id, dto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/employee/{employeeId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<FichajeTablaResponseDto>> getFichajesPorEmpleado(
+            @PathVariable UUID employeeId,
+            Pageable pageable) {
+        Page<FichajeTablaResponseDto> response = timeEntryService
+                .getFichajesPaginadosPorEmpleado(employeeId, pageable);
+        return ResponseEntity.ok(response);
     }
 
 }
