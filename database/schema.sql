@@ -165,6 +165,7 @@ create table if not exists incidence_types (
     id uuid primary key default gen_random_uuid (),
     name text not null,
     created_at timestamp with time zone not null default now(),
+    deleted_at timestamp with time zone null,
     company_id uuid not null,
     unique (name, company_id)
 );

@@ -41,7 +41,9 @@ public class IncidenceService {
     @Transactional
     public WorkerIncidenceResponseDto postIncidence(WorkerIncidenceRequestDto requestDto) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
-        IncidenceType tipoRef = incidenceTypeRepository.getReferenceById(requestDto.getTypeId());
+        IncidenceType tipoRef = incidenceTypeRepository
+                .findByIdAndCompany_IdAndDeletedAtIsNull(requestDto.getTypeId(), info.getCompany().getId())
+                .orElseThrow(() -> new IllegalStateException("Tipo de incidencia no encontrado"));
 
         Incidence incidence = new Incidence();
         incidence.setProfile(info.getProfile());

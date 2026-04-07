@@ -38,4 +38,6 @@ public interface IncidenceRepository extends JpaRepository<Incidence, UUID> {
 
     Page<Incidence> findByCompany_IdAndStatusIn(UUID company_id, Collection<EstadoIncidencia> status, Pageable pageable);
 
+    boolean existsByType_IdAndCompany_Id(UUID typeId, UUID companyId);
+
 }
