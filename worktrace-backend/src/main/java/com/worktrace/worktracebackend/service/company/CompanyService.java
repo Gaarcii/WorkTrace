@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.service.company;
 
+import com.worktrace.worktracebackend.dto.company.UpdateCompanyDto;
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.User;
 import com.worktrace.worktracebackend.repository.CompanyRepository;
@@ -8,6 +9,7 @@ import com.worktrace.worktracebackend.service.storage.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,6 +21,7 @@ public class CompanyService {
     private final StorageService storageService;
     private final UserService userService;
 
+    @Transactional
     public String updateMyCompanyLogo(MultipartFile file) {
         if (file.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se ha enviado ninguna imagen");
@@ -44,5 +47,21 @@ public class CompanyService {
         }
 
         return newLogoUrl;
+    }
+
+@Transactional
+    public void updateMyCompanyData(UpdateCompanyDto dto) {
+        User admin = userService.getAuthenticatedUser();
+        Company myCompany = admin.getCompany();
+
+        if (myCompany == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Este administrador no tiene ninguna empresa asignada");
+        }
+
+        myCompany.setCompanyName(dto.getCompanyName());
+        myCompany.setCif(dto.getCif());
+
+        companyRepository.save(myCompany);
     }
 }

@@ -1,14 +1,13 @@
 package com.worktrace.worktracebackend.controller.company;
 
+import com.worktrace.worktracebackend.dto.company.UpdateCompanyDto;
 import com.worktrace.worktracebackend.service.company.CompanyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
@@ -27,6 +26,18 @@ public class CompanyController {
         return ResponseEntity.ok(Map.of(
                 "message", "Logo de la empresa actualizado correctamente",
                 "logoUrl", logoUrl
+        ));
+    }
+
+    @PatchMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, String>> updateCompanyData
+            (@Valid @RequestBody UpdateCompanyDto dto) {
+
+        companyService.updateMyCompanyData(dto);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Datos de la empresa actualizados correctamente"
         ));
     }
 }
