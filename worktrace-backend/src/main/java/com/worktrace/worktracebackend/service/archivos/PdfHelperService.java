@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.service.pdf;
+package com.worktrace.worktracebackend.service.archivos;
 
 import com.worktrace.worktracebackend.model.Company;
 import org.openpdf.text.*;

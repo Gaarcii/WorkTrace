@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.service.timeEntry;
 
+import com.worktrace.worktracebackend.dto.auditTimeEntries.AuditRecordDto;
 import com.worktrace.worktracebackend.dto.incidence.WorkerIncidenceResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.exception.NotFoundException;
@@ -7,11 +8,13 @@ import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
+import com.worktrace.worktracebackend.service.archivos.ExcelGeneratorService;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
 import com.worktrace.worktracebackend.service.incidence.IncidenceService;
 import com.worktrace.worktracebackend.service.ip.IpDetectionService;
-import com.worktrace.worktracebackend.service.pdf.EmployeePdfGeneratorService;
+import com.worktrace.worktracebackend.service.archivos.AdminPdfGeneratorService;
+import com.worktrace.worktracebackend.service.archivos.EmployeePdfGeneratorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +36,8 @@ public class TimeEntryService {
     private final WorkScheduleRepository workScheduleRepository;
     private final IncidenceRepository incidentRepository;
     private final EmployeePdfGeneratorService employeePdfGeneratorService;
+    private final AdminPdfGeneratorService adminPdfGeneratorService;
+    private final ExcelGeneratorService excelGeneratorService;
     private final IncidenceService incidenceService;
 
     @Transactional
@@ -443,6 +448,32 @@ public class TimeEntryService {
                     horasTrabajadas
             );
         });
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] exportarInformeEmpresaPdf(LocalDate fechaInicio, LocalDate fechaFin) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+
+        List<TimeEntry> fichajes = timeEntryRepository
+                .findByCompany_IdAndWorkDateBetweenOrderByWorkDateDesc(company.getId(), fechaInicio, fechaFin);
+
+        List<AuditRecordDto> auditoria = List.of();
+
+        return adminPdfGeneratorService.generarPDFFichajesEmpresa(company, fichajes, fechaInicio, fechaFin, auditoria);
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] exportarInformeEmpresaExcel(LocalDate fechaInicio, LocalDate fechaFin) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+
+        List<TimeEntry> fichajes = timeEntryRepository
+                .findByCompany_IdAndWorkDateBetweenOrderByWorkDateDesc(company.getId(), fechaInicio, fechaFin);
+
+        List<AuditRecordDto> auditoria = List.of();
+
+        return excelGeneratorService.generarExcelFichajesEmpresa(fichajes, auditoria, fechaInicio, fechaFin);
     }
 
     private TimeEntry comprobarFichaje(UUID id, Company company) {
