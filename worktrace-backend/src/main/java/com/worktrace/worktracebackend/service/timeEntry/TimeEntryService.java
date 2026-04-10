@@ -351,6 +351,21 @@ public class TimeEntryService {
     }
 
     @Transactional(readOnly = true)
+    public HorasTrabajadasHoyResponseDto getHorasTotalesHoy() {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+
+        Long minutosTotales = timeEntryRepository
+                .getWorkedMinutesByCompanyAndDate(company.getId(), LocalDate.now());
+
+        if (minutosTotales == null) {
+            minutosTotales = 0L;
+        }
+
+        return new HorasTrabajadasHoyResponseDto(minutosTotales);
+    }
+
+    @Transactional(readOnly = true)
     public List<DailyFichajeCountDto> getWeeklyChartData(LocalDate startDate, LocalDate endDate) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();

@@ -94,6 +94,24 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
 
     List<TimeEntry> getAllByCompany_IdAndEndAtIsNull(UUID companyId);
 
+    @Query(value = """
+            SELECT COALESCE(SUM(
+                CASE
+                    WHEN t.status = 'CLOSED' THEN EXTRACT(EPOCH FROM (t.end_at - t.start_at)) / 60
+                    WHEN t.status = 'OPEN' THEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.start_at)) / 60
+                    ELSE 0
+                END
+            ), 0)
+            FROM time_entries t
+            WHERE t.company_id = :companyId
+              AND t.work_date = :date
+              AND t.deleted_at IS NULL
+            """, nativeQuery = true)
+    Long getWorkedMinutesByCompanyAndDate(
+            @Param("companyId") UUID companyId,
+            @Param("date") LocalDate date
+    );
+
     Long countAllByCompany_IdAndWorkDateBetween(
             UUID companyId, LocalDate startDate, LocalDate endDate);
 

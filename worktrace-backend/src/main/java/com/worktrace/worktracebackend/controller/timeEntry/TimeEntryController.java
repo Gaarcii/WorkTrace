@@ -111,6 +111,13 @@ public class TimeEntryController {
         return timeEntryService.getFichajesCountToday();
     }
 
+    @GetMapping("/horasHoy")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<HorasTrabajadasHoyResponseDto> getHorasTotalesHoy() {
+        HorasTrabajadasHoyResponseDto response = timeEntryService.getHorasTotalesHoy();
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/weeklyChart")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<DailyFichajeCountDto>> getWeeklyData(
