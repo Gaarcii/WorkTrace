@@ -1,0 +1,26 @@
+<div>
+  <h1 class="page-title mb-4">Incidencias</h1>
+
+  <div class="tabs mb-4" role="tablist" aria-label="Filtro de incidencias">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="modelValue() === 0"
+      (click)="setTab(0)"
+      role="tab"
+      [attr.aria-selected]="modelValue() === 0"
+    >
+      Pendientes
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="modelValue() === 1"
+      (click)="setTab(1)"
+      role="tab"
+      [attr.aria-selected]="modelValue() === 1"
+    >
+      Historial
+    </button>
+  </div>
+</div>
