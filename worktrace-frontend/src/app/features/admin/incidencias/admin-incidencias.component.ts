@@ -11,12 +11,12 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { AdminIncidenciasService } from '../../../shared/services/admin/admin-incidencias.service';
 import { AdminGestionEstado, AdminIncidenciaView } from './admin-incidencias.types';
-import { AdminIncidenciasHeaderComponent } from './components/admin-incidencias-header/admin-incidencias-header.component';
-import { AdminIncidenciasLoadingComponent } from './components/admin-incidencias-loading/admin-incidencias-loading.component';
-import { AdminIncidenciasEmptyComponent } from './components/admin-incidencias-empty/admin-incidencias-empty.component';
-import { AdminIncidenciasListComponent } from './components/admin-incidencias-list/admin-incidencias-list.component';
-import { AdminIncidenciasDialogComponent } from './components/admin-incidencias-dialog/admin-incidencias-dialog.component';
-import { AdminIncidenciasSnackbarComponent } from './components/admin-incidencias-snackbar/admin-incidencias-snackbar.component';
+import { AdminIncidenciasHeaderComponent } from './admin-incidencias-header/admin-incidencias-header.component';
+import { AdminIncidenciasLoadingComponent } from './admin-incidencias-loading/admin-incidencias-loading.component';
+import { AdminIncidenciasEmptyComponent } from './admin-incidencias-empty/admin-incidencias-empty.component';
+import { AdminIncidenciasListComponent } from './admin-incidencias-list/admin-incidencias-list.component';
+import { AdminIncidenciasDialogComponent } from './admin-incidencias-dialog/admin-incidencias-dialog.component';
+import { AdminIncidenciasSnackbarComponent } from './admin-incidencias-snackbar/admin-incidencias-snackbar.component';
 
 @Component({
   selector: 'app-incidencias.component',
