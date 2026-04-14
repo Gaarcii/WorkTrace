@@ -17,6 +17,7 @@ import java.util.UUID;
 public class AdminIncidenceResponseDto {
     private UUID id;
     private String nombreTrabajador;
+    private String puestoTrabajo;
     private String tipoIncidencia;
     private String comentario;
     private EstadoIncidencia estado;

@@ -141,6 +141,7 @@ public class IncidenceService {
         return incidencePage.map(incident -> new AdminIncidenceResponseDto(
                 incident.getId(),
                 incident.getProfile().getFullName(),
+                obtenerPuestoTrabajo(incident),
                 incident.getType().getName(),
                 incident.getComment(),
                 incident.getStatus(),
@@ -149,5 +150,12 @@ public class IncidenceService {
                 incident.getProfile().getAvatarUrl(),
                 incident.getAdminResponse()
         ));
+    }
+
+    private String obtenerPuestoTrabajo(Incidence incident) {
+        if (incident.getProfile() == null || incident.getProfile().getPosition() == null) {
+            return "Sin asignar";
+        }
+        return incident.getProfile().getPosition().getTitle();
     }
 }
