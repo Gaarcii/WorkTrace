@@ -8,6 +8,7 @@ import {
   HorasTrabajadasHoyResponseDto,
 } from '../../models/time-entry.model';
 import { AdminIncidenceResponseDto } from '../../models/incidence.model';
+import { DepartmentStatDto } from '../../models/profile.model';
 
 interface SpringPageResponse<T> {
   content: T[];
@@ -26,6 +27,7 @@ export class AdminHomeService {
   readonly numFichajesHoySignal = signal<number | null>(null);
   readonly horasHoySignal = signal<HorasTrabajadasHoyResponseDto | null>(null);
   readonly weeklyChartSignal = signal<DailyFichajeCountDto[]>([]);
+  readonly departmentStatsSignal = signal<DepartmentStatDto[]>([]);
 
   obtenerTrabajadoresActivos(): Observable<ActiveWorkerDto[]> {
     return this.http
@@ -37,6 +39,12 @@ export class AdminHomeService {
     return this.http
       .get<number>(`${this.BASE_URL}user/total-workers`)
       .pipe(tap((total) => this.totalWorkersSignal.set(total)));
+  }
+
+  obtenerDepartamentos(): Observable<DepartmentStatDto[]> {
+    return this.http
+      .get<DepartmentStatDto[]>(`${this.BASE_URL}user/departments`)
+      .pipe(tap((departments) => this.departmentStatsSignal.set(departments)));
   }
 
   obtenerIncidenciasAdmin(

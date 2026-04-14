@@ -17,3 +17,9 @@ export interface ProfileRequest {
   contrasenaActual: string;
   eliminarAvatar: string;
 }
+
+export interface DepartmentStatDto {
+  departamento: string;
+  totalTrabajadores: number;
+  trabajadoresActivos: number;
+}

@@ -1,0 +1,41 @@
+<div>
+  <div class="header-container mb-3">
+    <h3 class="section-title">Por Departamento</h3>
+
+    <div class="select-wrapper">
+      <select class="custom-select" (change)="onFilterChange($event)" [disabled]="loading()">
+        <option value="ALL">Todos</option>
+
+        @for (dept of departamentos(); track dept.nombre) {
+          <option [value]="dept.nombre" [selected]="departamentoSeleccionado() === dept.nombre">
+            {{ dept.nombre }}
+          </option>
+        }
+      </select>
+      <span class="material-icons select-icon">expand_more</span>
+    </div>
+  </div>
+
+  <div class="stat-card mb-6 pa-4">
+    @if (loading()) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+      </div>
+    } @else if (departamentosFiltrados().length === 0) {
+      <div class="text-center text-grey">No hay datos departamentales</div>
+    } @else {
+      @for (dept of departamentosFiltrados(); track dept.nombre) {
+        <div class="mb-4" [class.opacity-50]="!dept.activo">
+          <div class="dept-header mb-1">
+            <span class="font-weight-medium">{{ dept.nombre }}</span>
+            <span class="font-weight-medium">{{ dept.activos }}/{{ dept.total }}</span>
+          </div>
+
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" [style.width.%]="dept.porcentaje"></div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

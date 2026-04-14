@@ -10,8 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DepartmentStatDto {
-    private String Departamento;
-    private Long TotalTrabajadores;
-    private Long TrabajadoresActivos;
+    private String departamento;
+    private Long totalTrabajadores;
+    private Long trabajadoresActivos;
 
 }
