@@ -13,3 +13,15 @@ export interface IncidenceRequest {
   hora: string;
   comentario: string;
 }
+
+export interface AdminIncidenceResponseDto {
+  id: string;
+  nombreTrabajador: string;
+  tipoIncidencia: string;
+  comentario: string;
+  estado: string;
+  fechaAfectada: string;
+  creacion: string;
+  avatarUrl: string;
+  adminResponse: string;
+}

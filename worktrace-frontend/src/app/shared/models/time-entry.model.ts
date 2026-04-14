@@ -48,3 +48,16 @@ export interface EstadisticasResponse {
   resumenDiario: EstadisticaDiariaResponse[];
   incidenciasList: IncidenceResponse[];
 }
+
+export interface ActiveWorkerDto {
+  trabajadorId: string;
+  nombreCompleto: string;
+  puestoTrabajo: string;
+  urlAvatar: string;
+  horaFichaje: string;
+  puntualidad: number;
+}
+
+export interface HorasTrabajadasHoyResponseDto {
+  minutosTotales: number;
+}
