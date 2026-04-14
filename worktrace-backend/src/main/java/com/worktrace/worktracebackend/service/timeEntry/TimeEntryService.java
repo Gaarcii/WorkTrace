@@ -8,13 +8,13 @@ import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
+import com.worktrace.worktracebackend.service.archivos.AdminPdfGeneratorService;
+import com.worktrace.worktracebackend.service.archivos.EmployeePdfGeneratorService;
 import com.worktrace.worktracebackend.service.archivos.ExcelGeneratorService;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
 import com.worktrace.worktracebackend.service.incidence.IncidenceService;
 import com.worktrace.worktracebackend.service.ip.IpDetectionService;
-import com.worktrace.worktracebackend.service.archivos.AdminPdfGeneratorService;
-import com.worktrace.worktracebackend.service.archivos.EmployeePdfGeneratorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -312,23 +312,35 @@ public class TimeEntryService {
         List<TimeEntry> timeEntryList = timeEntryRepository
                 .getAllByCompany_IdAndEndAtIsNull(company.getId());
 
-        DayOfWeek today = LocalDate.now().getDayOfWeek();
+        ZoneId zone = ZoneId.of("Europe/Madrid");
 
         return timeEntryList.stream()
                 .map(timeEntry -> {
                     Profile employee = timeEntry.getEmployee();
+
                     String puesto = null;
                     if (employee.getPosition() != null) {
                         puesto = employee.getPosition().getTitle();
                     }
-                    Optional<WorkSchedule> horarioOpt = workScheduleRepository
-                            .findByEmployee_UserIdAndDayOfWeek(employee.getUserId(), today);
+
                     Long puntualidad = null;
-                    if (horarioOpt.isPresent() && timeEntry.getStartAt() != null) {
-                        OffsetDateTime horaEntrada = timeEntry.getStartAt();
-                        LocalTime horaHorario = horarioOpt.get().getStartTime();
-                        puntualidad = Duration.between(horaHorario, horaEntrada).toMinutes();
+                    OffsetDateTime startAt = timeEntry.getStartAt();
+
+                    if (startAt != null) {
+                        ZonedDateTime entradaLocal = startAt.atZoneSameInstant(zone);
+                        DayOfWeek dayLocal = entradaLocal.getDayOfWeek();
+
+                        Optional<WorkSchedule> horarioOpt = workScheduleRepository
+                                .findByEmployee_UserIdAndDayOfWeek(employee.getUserId(), dayLocal);
+
+                        if (horarioOpt.isPresent()) {
+                            LocalTime horaHorario = horarioOpt.get().getStartTime();
+                            LocalTime horaEntradaLocal = entradaLocal.toLocalTime();
+
+                            puntualidad = Duration.between(horaHorario, horaEntradaLocal).toMinutes();
+                        }
                     }
+
                     return new ActiveWorkerDto(
                             employee.getUserId(),
                             employee.getFullName(),

@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import { finalize, take } from 'rxjs/operators';
 import { AdminHomeService } from '../../../../shared/services/admin/admin-home.service';
-import { DepartmentStatDto } from '../../../../shared/models/profile.model';
 
 export interface DepartmentViewData {
   nombre: string;
