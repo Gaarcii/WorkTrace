@@ -478,6 +478,37 @@ public class TimeEntryService {
     }
 
     @Transactional(readOnly = true)
+    public List<AdminFichajeDiaResponseDto> getFichajesPorDiaEmpresa(LocalDate fecha) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+
+        List<TimeEntry> fichajes = timeEntryRepository
+                .findByCompany_IdAndWorkDateOrderByStartAtDesc(company.getId(), fecha);
+
+        return fichajes.stream().map(f -> {
+            Long minutosTrabajados = null;
+            if (f.getStartAt() != null && f.getEndAt() != null) {
+                minutosTrabajados = Duration.between(f.getStartAt(), f.getEndAt()).toMinutes();
+            }
+
+            Profile employee = f.getEmployee();
+            String puesto = employee.getPosition() != null ? employee.getPosition().getTitle() : null;
+
+            return new AdminFichajeDiaResponseDto(
+                    f.getId(),
+                    employee.getUserId(),
+                    employee.getFullName(),
+                    puesto,
+                    employee.getAvatarUrl(),
+                    f.getWorkDate(),
+                    f.getStartAt(),
+                    f.getEndAt(),
+                    minutosTrabajados
+            );
+        }).toList();
+    }
+
+    @Transactional(readOnly = true)
     public byte[] exportarInformeEmpresaPdf(LocalDate fechaInicio, LocalDate fechaFin) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();

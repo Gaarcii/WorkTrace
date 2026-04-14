@@ -130,6 +130,14 @@ public class TimeEntryController {
 
     }
 
+    @GetMapping("/admin/by-day")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<AdminFichajeDiaResponseDto>> getFichajesPorDiaEmpresa(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        List<AdminFichajeDiaResponseDto> response = timeEntryService.getFichajesPorDiaEmpresa(fecha);
+        return ResponseEntity.ok(response);
+    }
+
     @PatchMapping("/{id}/edit")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> editarFichaje(
