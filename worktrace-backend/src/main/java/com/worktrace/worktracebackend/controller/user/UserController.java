@@ -1,6 +1,7 @@
 package com.worktrace.worktracebackend.controller.user;
 
 import com.worktrace.worktracebackend.dto.user.DepartmentStatDto;
+import com.worktrace.worktracebackend.dto.user.EditEmployeeWorkDataRequestDto;
 import com.worktrace.worktracebackend.dto.user.EmployeeResponseDto;
 import com.worktrace.worktracebackend.dto.user.UserRequestDto;
 import com.worktrace.worktracebackend.dto.user.UserResponseDto;
@@ -64,5 +65,14 @@ public class UserController {
     public ResponseEntity<EmployeeResponseDto> getEmpleadoDetalle(@PathVariable UUID id) {
         EmployeeResponseDto responseDto = userProfileService.getEmpleadoById(id);
         return ResponseEntity.ok(responseDto);
+    }
+
+    @PatchMapping("/employees/{id}/work-data")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> editarPuestoYHorasEmpleado(
+            @PathVariable UUID id,
+            @Valid @RequestBody EditEmployeeWorkDataRequestDto dto) {
+        userProfileService.editarPuestoYHorasEmpleado(id, dto);
+        return ResponseEntity.ok().build();
     }
 }

@@ -4,9 +4,11 @@ import com.worktrace.worktracebackend.dto.user.*;
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleResponseDto;
 import com.worktrace.worktracebackend.exception.NotFoundException;
 import com.worktrace.worktracebackend.model.Company;
+import com.worktrace.worktracebackend.model.JobPosition;
 import com.worktrace.worktracebackend.model.Profile;
 import com.worktrace.worktracebackend.model.Role;
 import com.worktrace.worktracebackend.model.User;
+import com.worktrace.worktracebackend.repository.JobPositionRepository;
 import com.worktrace.worktracebackend.repository.ProfileRepository;
 import com.worktrace.worktracebackend.repository.UserRepository;
 import com.worktrace.worktracebackend.security.JwtService;
@@ -35,6 +37,7 @@ public class UserProfileService {
     private final StorageService storageService;
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
+    private final JobPositionRepository jobPositionRepository;
 
     @Transactional(readOnly = true)
     public UserResponseDto getProfile() {
@@ -164,6 +167,34 @@ public class UserProfileService {
                 estadoEmpleado(profile),
                 profile.getUser().getCreatedAt()
         );
+    }
+
+    @Transactional
+    public void editarPuestoYHorasEmpleado(UUID employeeId, EditEmployeeWorkDataRequestDto dto) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        Company company = info.getCompany();
+
+        Profile profile = profileRepository.findById(employeeId)
+                .orElseThrow(() -> new NotFoundException("Empleado no encontrado"));
+
+        if (!profile.getUser().getCompany().getId().equals(company.getId())) {
+            throw new IllegalStateException("El empleado no pertenece a tu empresa");
+        }
+
+        if (!Role.WORKER.equals(profile.getUser().getRole())) {
+            throw new IllegalStateException("Solo se puede editar un empleado");
+        }
+
+        JobPosition puesto = jobPositionRepository.findById(dto.getPositionId())
+                .orElseThrow(() -> new IllegalArgumentException("El puesto de trabajo no existe"));
+
+        if (!puesto.getCompany().getId().equals(company.getId())) {
+            throw new IllegalStateException("El puesto no pertenece a tu empresa");
+        }
+
+        profile.setPosition(puesto);
+        profile.setWeeklyHours(dto.getWeeklyHours());
+        profile.setUpdatedAt(OffsetDateTime.now());
     }
 
     private String estadoEmpleado(Profile profile) {
