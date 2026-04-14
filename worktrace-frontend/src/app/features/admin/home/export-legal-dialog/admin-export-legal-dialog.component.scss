@@ -1,0 +1,143 @@
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+.dialog-card {
+  width: min(500px, 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24);
+}
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background-color: #424242;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.dialog-body {
+  padding: 24px 16px 16px;
+}
+
+.icon {
+  font-size: 20px;
+}
+
+.format-toggle {
+  display: inline-flex;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.format-btn {
+  border: none;
+  background-color: #ffffff;
+  color: #1f2937;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.format-btn.active {
+  background-color: #000026;
+  color: #ffffff;
+}
+
+.format-btn .material-icons {
+  font-size: 18px;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.radio-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.dialog-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.btn-confirm {
+  background-color: #000026;
+  color: #ffffff;
+}
+
+.btn-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.text-body-2 {
+  font-size: 0.875rem;
+}
+
+.text-subtitle-2 {
+  font-size: 0.875rem;
+}
+
+.text-grey-darken-1 {
+  color: #616161;
+}
+
+.font-weight-bold {
+  font-weight: 700;
+}
+
+.mb-2 {
+  margin-bottom: 8px;
+}
+
+.mb-4 {
+  margin-bottom: 16px;
+}
+
+@media (min-width: 600px) {
+  .dialog-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .btn {
+    min-width: 140px;
+  }
+}

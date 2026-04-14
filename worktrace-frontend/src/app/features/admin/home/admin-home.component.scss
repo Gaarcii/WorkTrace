@@ -1,0 +1,51 @@
+.page-container {
+  background-color: #f3f4f6;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+.main-content {
+  background-color: #f3f4f6;
+  min-height: calc(100vh - 64px);
+}
+
+.container-fluid {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.page-title {
+  color: #000026;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.date-picker-hidden {
+  display: none;
+}
+
+.text-subtitle-2 {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-grey-darken-1 {
+  color: #757575;
+}
+
+.font-weight-medium {
+  font-weight: 500;
+}
+
+.mb-2 {
+  margin-bottom: 8px;
+}
+
+.mb-4 {
+  margin-bottom: 16px;
+}
+
+.pa-4 {
+  padding: 16px;
+}

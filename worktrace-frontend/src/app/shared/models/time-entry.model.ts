@@ -66,3 +66,15 @@ export interface DailyFichajeCountDto {
   fecha: string;
   numFichajes: number;
 }
+
+export interface AdminFichajeDiaDto {
+  id: string;
+  trabajadorId: string;
+  nombreTrabajador: string;
+  puestoTrabajo: string | null;
+  avatarUrl: string | null;
+  fecha: string;
+  entrada: string;
+  salida: string | null;
+  minutosTrabajados: number | null;
+}

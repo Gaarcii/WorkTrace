@@ -1,73 +1,81 @@
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-card-content">
-      <div class="stat-card-header">
-        <span class="icon material-icons">group</span>
-        <span class="caption">Activos</span>
-      </div>
-      
-      @if (loading()) {
-        <div class="loading-container">
-          <div class="spinner"></div>
+<div class="stats-grid mb-6">
+  <div class="stat-col">
+    <div class="stat-card" role="presentation">
+      <div class="stat-card-content pa-4">
+        <div class="d-flex align-center mb-2 text-grey">
+          <span class="material-icons icon mr-1">group</span>
+          <span class="text-caption">Activos</span>
         </div>
-      } @else {
-        <div class="stat-value">{{ trabajadoresActivos() }}</div>
-        <div class="stat-caption">de {{ totalTrabajadores() }} trabajadores</div>
-      }
+
+        @if (loading()) {
+          <div class="loading-container">
+            <div class="spinner"></div>
+          </div>
+        } @else {
+          <div class="text-h4 font-weight-bold mb-1">{{ trabajadoresActivos() }}</div>
+          <div class="text-caption text-grey">de {{ totalTrabajadores() }} trabajadores</div>
+        }
+      </div>
     </div>
   </div>
 
-  <div class="stat-card">
-    <div class="stat-card-content">
-      <div class="stat-card-header">
-        <span class="icon material-icons">schedule</span>
-        <span class="caption">Fichajes</span>
-      </div>
-      
-      @if (loading()) {
-        <div class="loading-container">
-          <div class="spinner"></div>
+  <div class="stat-col">
+    <div class="stat-card" role="presentation">
+      <div class="stat-card-content pa-4">
+        <div class="d-flex align-center mb-2 text-grey">
+          <span class="material-icons icon mr-1">schedule</span>
+          <span class="text-caption">Fichajes</span>
         </div>
-      } @else {
-        <div class="stat-value">{{ fichajesHoy() }}</div>
-        <div class="stat-caption">registros hoy</div>
-      }
+
+        @if (loading()) {
+          <div class="loading-container">
+            <div class="spinner"></div>
+          </div>
+        } @else {
+          <div class="text-h4 font-weight-bold mb-1">{{ fichajesHoy() }}</div>
+          <div class="text-caption text-grey">registros hoy</div>
+        }
+      </div>
     </div>
   </div>
 
-  <div class="stat-card">
-    <div class="stat-card-content">
-      <div class="stat-card-header">
-        <span class="icon material-icons">error_outline</span>
-        <span class="caption">Alertas</span>
-      </div>
-      
-      @if (loading()) {
-        <div class="loading-container">
-          <div class="spinner"></div>
+  <div class="stat-col">
+    <div class="stat-card" role="presentation">
+      <div class="stat-card-content pa-4">
+        <div class="d-flex align-center mb-2 text-grey">
+          <span class="material-icons icon mr-1">warning_amber</span>
+          <span class="text-caption">Alertas</span>
         </div>
-      } @else {
-        <div class="stat-value">{{ alertasPendientes() }}</div>
-        <div class="stat-caption">pendientes</div>
-      }
+
+        @if (loading()) {
+          <div class="loading-container">
+            <div class="spinner"></div>
+          </div>
+        } @else {
+          <div class="text-h4 font-weight-bold mb-1">{{ alertasPendientes() }}</div>
+          <div class="text-caption text-grey">pendientes</div>
+        }
+      </div>
     </div>
   </div>
 
-  <div class="stat-card">
-    <div class="stat-card-content">
-      <div class="stat-card-header">
-        <span class="icon material-icons">trending_up</span>
-        <span class="caption">Horas</span>
-      </div>
-      
-      @if (loading()) {
-        <div class="loading-container">
-          <div class="spinner"></div>
+  <div class="stat-col">
+    <div class="stat-card" role="presentation">
+      <div class="stat-card-content pa-4">
+        <div class="d-flex align-center mb-2 text-grey">
+          <span class="material-icons icon mr-1">trending_up</span>
+          <span class="text-caption">Horas</span>
         </div>
-      } @else {
-        <div class="stat-value">{{ horasTotales() }}</div>
-        <div class="stat-caption">horas totales</div>
-      }
+
+        @if (loading()) {
+          <div class="loading-container">
+            <div class="spinner"></div>
+          </div>
+        } @else {
+          <div class="text-h4 font-weight-bold mb-1">{{ horasTotales() }}</div>
+          <div class="text-caption text-grey">horas totales</div>
+        }
+      </div>
     </div>
   </div>
 </div>

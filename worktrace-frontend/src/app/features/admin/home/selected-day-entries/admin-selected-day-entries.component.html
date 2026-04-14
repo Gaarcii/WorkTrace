@@ -1,0 +1,48 @@
+@if (fichajesDiaSeleccionado().length > 0) {
+  <div class="mb-6">
+    <h3 class="text-subtitle-2 text-grey-darken-1 mb-3 font-weight-medium">
+      Fichajes del {{ formatFechaDia()(diaSeleccionado()) }}
+    </h3>
+    <div class="stat-card mb-3">
+      <div class="pa-4">
+        <div class="text-caption text-grey mb-3">
+          {{ fichajesDiaSeleccionado().length }} fichaje(s) registrado(s)
+        </div>
+
+        @for (fichaje of fichajesDiaSeleccionado(); track fichaje.id) {
+          <div class="entry-row">
+            <div class="d-flex align-center">
+              <div class="avatar mr-3">
+                @if (fichaje.avatar) {
+                  <img [src]="fichaje.avatar" class="avatar-img" alt="Avatar" />
+                } @else {
+                  <span class="text-caption">{{ fichaje.iniciales }}</span>
+                }
+              </div>
+              <div>
+                <div class="text-body-2 font-weight-bold">{{ fichaje.nombre }}</div>
+                <div class="text-caption text-grey">{{ fichaje.departamento }}</div>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <div class="text-body-2 font-weight-medium">
+                {{ fichaje.entrada }}
+                @if (fichaje.salida) {
+                  <span> - {{ fichaje.salida }}</span>
+                }
+              </div>
+              <div class="text-caption text-grey">
+                @if (fichaje.duracion) {
+                  <span>{{ fichaje.duracion }}</span>
+                } @else {
+                  <span>En curso</span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

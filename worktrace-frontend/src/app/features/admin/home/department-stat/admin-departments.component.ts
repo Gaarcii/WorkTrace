@@ -1,21 +1,5 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  OnInit,
-  inject,
-  signal,
-  computed,
-} from '@angular/core';
-import { finalize, take } from 'rxjs/operators';
-import { AdminHomeService } from '../../../../shared/services/admin/admin-home.service';
-
-export interface DepartmentViewData {
-  nombre: string;
-  activos: number;
-  total: number;
-  porcentaje: number;
-  activo: boolean;
-}
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { DepartmentSummary } from '../admin-home.types';
 
 @Component({
   selector: 'app-admin-departments',
@@ -23,60 +7,23 @@ export interface DepartmentViewData {
   styleUrls: ['./admin-departments.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminDepartmentsComponent implements OnInit {
-  private readonly adminHomeService = inject(AdminHomeService);
+export class AdminDepartmentsComponent {
+  readonly departamentoSeleccionado = input<string | null>(null);
+  readonly departamentos = input<DepartmentSummary[]>([]);
 
-  readonly loading = signal<boolean>(true);
-  readonly departamentoSeleccionado = signal<string | null>(null);
+  readonly filter = output<string | null>();
 
-  readonly departamentos = computed<DepartmentViewData[]>(() => {
-    const rawData = this.adminHomeService.departmentStatsSignal();
-
-    if (!rawData?.length) return [];
-
-    return rawData.map((departamento) => ({
-      nombre: departamento.departamento,
-      activos: departamento.trabajadoresActivos,
-      total: departamento.totalTrabajadores,
-      porcentaje:
-        departamento.totalTrabajadores > 0
-          ? (departamento.trabajadoresActivos / departamento.totalTrabajadores) * 100
-          : 0,
-      activo: departamento.trabajadoresActivos > 0,
-    }));
-  });
-
-  readonly departamentosFiltrados = computed<DepartmentViewData[]>(() => {
-    const seleccion = this.departamentoSeleccionado();
-    const todos = this.departamentos();
-
-    if (!seleccion) {
-      return todos;
+  readonly departamentosFiltrados = computed<DepartmentSummary[]>(() => {
+    const seleccionado = this.departamentoSeleccionado();
+    if (!seleccionado) {
+      return this.departamentos();
     }
 
-    return todos.filter((dept) => dept.nombre === seleccion);
+    return this.departamentos().filter((dept) => dept.nombre === seleccionado);
   });
 
-  ngOnInit(): void {
-    this.cargarDepartamentos();
-  }
-
-  private cargarDepartamentos(): void {
-    this.loading.set(true);
-
-    this.adminHomeService
-      .obtenerDepartamentos()
-      .pipe(
-        take(1),
-        finalize(() => this.loading.set(false)),
-      )
-      .subscribe();
-  }
-
   onFilterChange(event: Event): void {
-    const selectElement = event.target as HTMLSelectElement;
-    const value = selectElement.value;
-
-    this.departamentoSeleccionado.set(value === 'ALL' ? null : value);
+    const value = (event.target as HTMLSelectElement).value;
+    this.filter.emit(value === 'ALL' ? null : value);
   }
 }

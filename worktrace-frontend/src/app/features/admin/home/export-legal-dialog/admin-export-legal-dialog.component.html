@@ -1,0 +1,96 @@
+@if (modelValue()) {
+  <div class="dialog-backdrop">
+    <div class="dialog-card">
+      <div class="dialog-title">
+        <span class="material-icons icon">balance</span>
+        Informe de Inspección
+      </div>
+
+      <div class="dialog-body">
+        <p class="text-body-2 text-grey-darken-1 mb-4">
+          Seleccione el periodo auditado. El documento incluirá firma criptográfica SHA-256 para
+          garantizar la inalterabilidad de los datos (Art. 34.9 ET).
+        </p>
+
+        <div class="mb-4">
+          <p class="text-subtitle-2 font-weight-bold mb-2">Formato:</p>
+          <div class="format-toggle">
+            <button
+              type="button"
+              class="format-btn"
+              [class.active]="formatoExportacion() === 'pdf'"
+              (click)="onSelectFormato('pdf')"
+            >
+              <span class="material-icons">picture_as_pdf</span>
+              PDF
+            </button>
+            <button
+              type="button"
+              class="format-btn"
+              [class.active]="formatoExportacion() === 'excel'"
+              (click)="onSelectFormato('excel')"
+            >
+              <span class="material-icons">table_chart</span>
+              Excel
+            </button>
+          </div>
+        </div>
+
+        <p class="text-subtitle-2 font-weight-bold mb-2">Periodo:</p>
+        <div class="radio-group">
+          <label class="radio-row">
+            <input
+              type="radio"
+              name="rango-export"
+              [checked]="rangoExportacion() === 'hoy'"
+              (change)="onSelectRango('hoy')"
+            />
+            <span>Jornada de Hoy</span>
+          </label>
+
+          <label class="radio-row">
+            <input
+              type="radio"
+              name="rango-export"
+              [checked]="rangoExportacion() === 'mes'"
+              (change)="onSelectRango('mes')"
+            />
+            <span>Mes Actual</span>
+          </label>
+
+          <label class="radio-row">
+            <input
+              type="radio"
+              name="rango-export"
+              [checked]="rangoExportacion() === 'anio'"
+              (change)="onSelectRango('anio')"
+            />
+            <span>Año Actual</span>
+          </label>
+
+          <label class="radio-row">
+            <input
+              type="radio"
+              name="rango-export"
+              [checked]="rangoExportacion() === 'todo'"
+              (change)="onSelectRango('todo')"
+            />
+            <span class="font-weight-bold">Historial Completo (4 años)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-cancel" (click)="handleCancel()">Cancelar</button>
+        <button
+          type="button"
+          class="btn btn-confirm"
+          [disabled]="cargandoExportacion()"
+          (click)="handleConfirm()"
+        >
+          {{ cargandoExportacion() ? 'Exportando...' : 'Exportar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

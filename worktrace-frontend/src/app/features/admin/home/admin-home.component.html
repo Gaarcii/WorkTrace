@@ -1,7 +1,75 @@
-<section class="admin-home-page">
-  <app-admin-home-stats />
-  <app-admin-recent-alerts />
-  <app-admin-weekly-chart />
-  <app-admin-departments />
-  <app-admin-active-workers />
-</section>
+<div class="page-container">
+  <div class="main-content">
+    <div class="container-fluid pa-4">
+      <h1 class="page-title mb-4">Panel Admin</h1>
+
+      <h3 class="text-subtitle-2 text-grey-darken-1 mb-2 font-weight-medium">Resumen de Hoy</h3>
+
+      <app-admin-home-stats
+        [loading]="loading()"
+        [trabajadoresActivos]="trabajadoresActivos()"
+        [totalTrabajadores]="totalTrabajadores()"
+        [fichajesHoy]="fichajesHoy()"
+        [alertasPendientes]="alertasPendientes()"
+        [horasTotales]="horasTotales()"
+      />
+
+      <app-admin-recent-alerts
+        [loading]="loading()"
+        [alertasRecientes]="alertasRecientes()"
+        [formatTiempo]="formatTiempo"
+        (viewAll)="navigateToIncidencias()"
+      />
+
+      <app-admin-weekly-chart
+        [rangoSemana]="rangoSemana()"
+        [fichajesSemana]="fichajesSemana()"
+        [leyendaGrafico]="leyendaGrafico()"
+        (prev)="semanaAnterior()"
+        (next)="semanaSiguiente()"
+        (open)="abrirSelector()"
+        (selectDay)="seleccionarDia($event)"
+      >
+        <input
+          date-input
+          #datePicker
+          type="date"
+          class="date-picker-hidden"
+          (change)="onDateChange($event)"
+        />
+      </app-admin-weekly-chart>
+
+      <app-admin-departments
+        [departamentoSeleccionado]="departamentoSeleccionado()"
+        [departamentos]="departamentos()"
+        (filter)="filtrarDepartamento($event)"
+      />
+
+      <app-admin-selected-day-entries
+        [fichajesDiaSeleccionado]="fichajesDiaSeleccionado()"
+        [diaSeleccionado]="diaSeleccionado()"
+        [formatFechaDia]="formatFechaDia"
+      />
+
+      <app-admin-active-workers
+        [loading]="loading()"
+        [trabajadoresList]="trabajadoresList()"
+        [trabajadoresListFiltrados]="trabajadoresListFiltrados()"
+        [trabajadoresActivos]="trabajadoresActivos()"
+      />
+
+      <app-admin-quick-actions [acciones]="acciones()" (actionClick)="handleAccionClick($event)" />
+    </div>
+  </div>
+
+  <app-admin-export-legal-dialog
+    [modelValue]="dialogoExportar()"
+    [formatoExportacion]="formatoExportacion()"
+    [rangoExportacion]="rangoExportacion()"
+    [cargandoExportacion]="cargandoExportacion()"
+    (updateModelValue)="dialogoExportar.set($event)"
+    (updateFormatoExportacion)="formatoExportacion.set($event)"
+    (updateRangoExportacion)="rangoExportacion.set($event)"
+    (confirm)="generarInformeLegal()"
+  />
+</div>

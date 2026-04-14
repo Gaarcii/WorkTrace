@@ -1,39 +1,42 @@
 <div class="alerts-section">
-  <div class="header-container">
+  <div class="d-flex justify-space-between align-center mb-3">
     <h3 class="section-title">Alertas Recientes</h3>
-    <a href="#" class="view-all-link" (click)="onViewAll($event)">Ver todo</a>
+    <a href="#" class="view-all-link" (click)="emitViewAll($event)">Ver todo</a>
   </div>
 
   @if (loading()) {
-    <div class="card loading-card text-center">
+    <div class="card rounded-lg text-center pa-6 mb-6">
       <div class="spinner"></div>
-      <p class="text-grey mt-3">Cargando incidencias...</p>
+      <p class="mt-3 text-grey">Cargando incidencias...</p>
     </div>
-
   } @else if (alertasRecientes().length === 0) {
-    <div class="card empty-card text-center">
+    <div class="card rounded-lg text-center pa-6 mb-6">
       <span class="material-icons icon-success">check_circle_outline</span>
-      <h4 class="mt-3 text-dark">Todo limpio</h4>
+      <h4 class="mt-3 text-grey-darken-2">Todo limpio</h4>
       <p class="text-grey">No hay incidencias pendientes</p>
     </div>
-
   } @else {
     @for (alerta of alertasRecientes(); track alerta.id) {
-      <div class="card alert-card">
+      <div class="card alert-card mb-3 rounded-lg">
         <div class="alert-border"></div>
-        <div class="alert-content">
-          <div class="alert-icon-wrapper mr-3">
-            <span class="material-icons text-white">priority_high</span>
-          </div>
+        <div class="pa-4">
+          <div class="d-flex">
+            <div class="alert-icon-wrapper mr-3">
+              <span class="material-icons icon-white">priority_high</span>
+            </div>
 
-          <div class="flex-grow-1">
-            <h4 class="alert-title">{{ alerta.tipoIncidencia }}</h4>
-            <p class="alert-body">
-              {{ alerta.nombreTrabajador || 'Sin nombre' }} - {{ alerta.comentario }}
-            </p>
-            <p class="alert-footer">
-              {{ alerta.creacion | date: 'dd/MM/yyyy HH:mm' }}
-            </p>
+            <div class="flex-grow-1">
+              <h4 class="alert-title">{{ alerta.type }}</h4>
+              <p class="alert-body">
+                {{ alerta.workerName || 'Sin nombre' }} - {{ alerta.comment || alerta.description }}
+              </p>
+              <p class="alert-footer">
+                {{ formatTiempo()(alerta.createdAt) }}
+                @if (alerta.jobTitle) {
+                  <span> • {{ alerta.jobTitle }}</span>
+                }
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -1,0 +1,17 @@
+<div>
+  <h3 class="text-subtitle-2 text-grey-darken-1 mb-3 font-weight-medium">Acciones Rápidas</h3>
+  <div class="actions-grid mb-6">
+    @for (accion of acciones(); track accion.icono) {
+      <div class="action-col pa-2">
+        <button
+          class="stat-card accion-card text-center pa-4"
+          type="button"
+          (click)="emitAction(accion)"
+        >
+          <span class="material-icons action-icon mb-2">{{ resolveIcon(accion.icono) }}</span>
+          <div class="text-caption font-weight-medium">{{ accion.texto }}</div>
+        </button>
+      </div>
+    }
+  </div>
+</div>

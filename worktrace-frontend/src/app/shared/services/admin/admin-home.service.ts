@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import { API_CONFIG } from '../../../core/api/api.config';
 import {
+  AdminFichajeDiaDto,
   ActiveWorkerDto,
   DailyFichajeCountDto,
   HorasTrabajadasHoyResponseDto,
@@ -12,6 +13,7 @@ import { DepartmentStatDto } from '../../models/profile.model';
 
 interface SpringPageResponse<T> {
   content: T[];
+  totalElements?: number;
 }
 
 @Injectable({
@@ -24,6 +26,7 @@ export class AdminHomeService {
   readonly activeWorkersSignal = signal<ActiveWorkerDto[]>([]);
   readonly totalWorkersSignal = signal<number | null>(null);
   readonly adminIncidenciasSignal = signal<AdminIncidenceResponseDto[]>([]);
+  readonly adminIncidenciasTotalSignal = signal<number>(0);
   readonly numFichajesHoySignal = signal<number | null>(null);
   readonly horasHoySignal = signal<HorasTrabajadasHoyResponseDto | null>(null);
   readonly weeklyChartSignal = signal<DailyFichajeCountDto[]>([]);
@@ -59,8 +62,12 @@ export class AdminHomeService {
         params,
       })
       .pipe(
+        tap((response) => {
+          const incidencias = response.content ?? [];
+          this.adminIncidenciasSignal.set(incidencias);
+          this.adminIncidenciasTotalSignal.set(response.totalElements ?? incidencias.length);
+        }),
         map((response) => response.content ?? []),
-        tap((incidencias) => this.adminIncidenciasSignal.set(incidencias)),
       );
   }
 
@@ -87,6 +94,38 @@ export class AdminHomeService {
     return this.http
       .get<DailyFichajeCountDto[]>(`${this.BASE_URL}time-entries/weeklyChart`, { params })
       .pipe(tap((weeklyChart) => this.weeklyChartSignal.set(weeklyChart)));
+  }
+
+  obtenerFichajesPorDia(fecha: Date | string): Observable<AdminFichajeDiaDto[]> {
+    const params = new HttpParams().set('fecha', this.toIsoDate(fecha));
+    return this.http.get<AdminFichajeDiaDto[]>(`${this.BASE_URL}time-entries/admin/by-day`, {
+      params,
+    });
+  }
+
+  exportarInformeEmpresaPdf(fechaInicio: Date | string, fechaFin: Date | string): Observable<Blob> {
+    const params = new HttpParams()
+      .set('fechaInicio', this.toIsoDate(fechaInicio))
+      .set('fechaFin', this.toIsoDate(fechaFin));
+
+    return this.http.get(`${this.BASE_URL}time-entries/admin/export/pdf`, {
+      params,
+      responseType: 'blob',
+    });
+  }
+
+  exportarInformeEmpresaExcel(
+    fechaInicio: Date | string,
+    fechaFin: Date | string,
+  ): Observable<Blob> {
+    const params = new HttpParams()
+      .set('fechaInicio', this.toIsoDate(fechaInicio))
+      .set('fechaFin', this.toIsoDate(fechaFin));
+
+    return this.http.get(`${this.BASE_URL}time-entries/admin/export/excel`, {
+      params,
+      responseType: 'blob',
+    });
   }
 
   private toIsoDate(value: Date | string): string {
