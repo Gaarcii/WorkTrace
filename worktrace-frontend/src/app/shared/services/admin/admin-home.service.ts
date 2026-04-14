@@ -2,7 +2,11 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import { API_CONFIG } from '../../../core/api/api.config';
-import { ActiveWorkerDto, HorasTrabajadasHoyResponseDto } from '../../models/time-entry.model';
+import {
+  ActiveWorkerDto,
+  DailyFichajeCountDto,
+  HorasTrabajadasHoyResponseDto,
+} from '../../models/time-entry.model';
 import { AdminIncidenceResponseDto } from '../../models/incidence.model';
 
 interface SpringPageResponse<T> {
@@ -21,6 +25,7 @@ export class AdminHomeService {
   readonly adminIncidenciasSignal = signal<AdminIncidenceResponseDto[]>([]);
   readonly numFichajesHoySignal = signal<number | null>(null);
   readonly horasHoySignal = signal<HorasTrabajadasHoyResponseDto | null>(null);
+  readonly weeklyChartSignal = signal<DailyFichajeCountDto[]>([]);
 
   obtenerTrabajadoresActivos(): Observable<ActiveWorkerDto[]> {
     return this.http
@@ -61,5 +66,30 @@ export class AdminHomeService {
     return this.http
       .get<HorasTrabajadasHoyResponseDto>(`${this.BASE_URL}time-entries/horasHoy`)
       .pipe(tap((horas) => this.horasHoySignal.set(horas)));
+  }
+
+  obtenerWeeklyChart(
+    fechaInicio: Date | string,
+    fechaFin: Date | string,
+  ): Observable<DailyFichajeCountDto[]> {
+    const params = new HttpParams()
+      .set('fechaInicio', this.toIsoDate(fechaInicio))
+      .set('fechaFin', this.toIsoDate(fechaFin));
+
+    return this.http
+      .get<DailyFichajeCountDto[]>(`${this.BASE_URL}time-entries/weeklyChart`, { params })
+      .pipe(tap((weeklyChart) => this.weeklyChartSignal.set(weeklyChart)));
+  }
+
+  private toIsoDate(value: Date | string): string {
+    if (typeof value === 'string') {
+      return value;
+    }
+
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, '0');
+    const day = String(value.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 }

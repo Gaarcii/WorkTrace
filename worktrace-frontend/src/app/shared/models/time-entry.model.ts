@@ -61,3 +61,8 @@ export interface ActiveWorkerDto {
 export interface HorasTrabajadasHoyResponseDto {
   minutosTotales: number;
 }
+
+export interface DailyFichajeCountDto {
+  fecha: string;
+  numFichajes: number;
+}

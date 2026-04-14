@@ -1,0 +1,57 @@
+<div>
+  <div class="header-container mb-3">
+    <h3 class="section-title">Fichajes por Día</h3>
+    
+    <div class="nav-buttons">
+      <button class="nav-btn" (click)="onPrevWeek()" [disabled]="loading()">
+        <span class="material-icons">chevron_left</span>
+      </button>
+      <button class="nav-btn" (click)="onOpenCalendar()" [disabled]="loading()">
+        <span class="material-icons">calendar_today</span>
+      </button>
+      <button class="nav-btn" (click)="onNextWeek()" [disabled]="loading()">
+        <span class="material-icons">chevron_right</span>
+      </button>
+    </div>
+    
+    <ng-content select="[date-input]"></ng-content>
+  </div>
+
+  <div class="stat-card mb-6 pa-6">
+    <div class="date-range mb-8">
+      {{ rangoSemana() }}
+    </div>
+    
+    <div class="chart-container">
+      <div class="chart-bars">
+        @for (dia of fichajesSemana(); track dia.dateStr) {
+          <div class="chart-bar-wrapper" (click)="onSelectDay(dia)">
+            <div 
+              class="chart-bar" 
+              [class.chart-bar-active]="dia.seleccionado"
+              [style.height.%]="dia.porcentaje"
+            >
+              <div class="chart-tooltip">{{ dia.valor }}</div>
+            </div>
+          </div>
+        }
+      </div>
+      
+      <div class="chart-labels">
+        @for (dia of fichajesSemana(); track dia.dateStr) {
+          <span 
+            class="chart-label" 
+            [class.chart-label-active]="dia.seleccionado"
+          >
+            {{ dia.diaName }}
+          </span>
+        }
+      </div>
+    </div>
+    
+    <div class="legend-container mt-4">
+      <div class="legend-box"></div>
+      <span>Registros totales por día</span>
+    </div>
+  </div>
+</div>
