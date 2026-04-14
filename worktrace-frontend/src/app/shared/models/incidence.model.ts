@@ -17,6 +17,7 @@ export interface IncidenceRequest {
 export interface AdminIncidenceResponseDto {
   id: string;
   nombreTrabajador: string;
+  puestoTrabajo?: string;
   tipoIncidencia: string;
   comentario: string;
   estado: string;
@@ -24,4 +25,11 @@ export interface AdminIncidenceResponseDto {
   creacion: string;
   avatarUrl: string;
   adminResponse: string;
+}
+
+export type AdminIncidenceBackendStatus = 'PENDING' | 'RESOLVED' | 'REJECTED';
+
+export interface AdminIncidenceManageRequestDto {
+  estado: AdminIncidenceBackendStatus;
+  respuestaAdmin: string;
 }

@@ -1,0 +1,20 @@
+.page-container {
+  background-color: #e9eaec;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+.main-content {
+  background-color: #e9eaec;
+  min-height: calc(100vh - 64px);
+}
+
+.container-fluid {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.pa-4 {
+  padding: 16px;
+}

@@ -1,1 +1,40 @@
-<p>incidencias.component works!</p>
+<div class="page-container">
+  <div class="main-content">
+    <div class="container-fluid pa-4">
+      <app-admin-incidencias-header [modelValue]="tab()" (updateModelValue)="setTab($event)" />
+
+      @if (loading()) {
+        <app-admin-incidencias-loading />
+      } @else if (incidenciasFiltradas().length === 0) {
+        <app-admin-incidencias-empty [tab]="tab()" />
+      } @else {
+        <app-admin-incidencias-list
+          [incidencias]="incidenciasFiltradas()"
+          [getStatusColor]="getStatusColor"
+          [getStatusChipColor]="getStatusChipColor"
+          [getInitials]="getInitials"
+          [formatTiempo]="formatTiempo"
+          (abrirDetalle)="abrirDetalle($event)"
+        />
+      }
+    </div>
+  </div>
+
+  <app-admin-incidencias-dialog
+    [modelValue]="dialogo()"
+    [incidenciaSeleccionada]="incidenciaSeleccionada()"
+    [respuestaAdmin]="respuestaAdmin()"
+    [guardando]="guardando()"
+    [getInitials]="getInitials"
+    [formatFechaCompleta]="formatFechaCompleta"
+    (updateModelValue)="$event ? dialogo.set(true) : cerrarDialogo()"
+    (updateRespuestaAdmin)="respuestaAdmin.set($event)"
+    (gestionarIncidencia)="gestionarIncidencia($event)"
+  />
+
+  <app-admin-incidencias-snackbar
+    [modelValue]="snackbar()"
+    [snackbarMessage]="snackbarMessage()"
+    (updateModelValue)="snackbar.set($event)"
+  />
+</div>
