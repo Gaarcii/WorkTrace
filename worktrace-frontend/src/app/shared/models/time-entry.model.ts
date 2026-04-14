@@ -78,3 +78,34 @@ export interface AdminFichajeDiaDto {
   salida: string | null;
   minutosTrabajados: number | null;
 }
+
+export interface FichajeTablaResponseDto {
+  id: string;
+  fecha: string;
+  entrada: string;
+  salida: string | null;
+  latEntrada: number | null;
+  lngEntrada: number | null;
+  latSalida: number | null;
+  lngSalida: number | null;
+  horasTrabajadas: number | null;
+  deletedAt?: string | null;
+  work_date?: string;
+  start_at?: string;
+  end_at?: string | null;
+  start_lat?: number | null;
+  start_lng?: number | null;
+  end_lat?: number | null;
+  end_lng?: number | null;
+  deleted_at?: string | null;
+}
+
+export interface EditTimeEntryRequestDto {
+  entrada: string;
+  salida: string | null;
+  justificacion: string;
+}
+
+export interface AnularTimeEntryRequestDto {
+  justificacion: string;
+}

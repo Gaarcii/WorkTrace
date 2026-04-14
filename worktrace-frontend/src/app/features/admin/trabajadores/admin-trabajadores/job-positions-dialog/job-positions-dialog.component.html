@@ -1,0 +1,67 @@
+@if (isOpen()) {
+  <div class="modal-overlay" (click)="onClose()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header d-flex justify-space-between align-center">
+        <span class="d-flex align-center">
+          <span class="material-icons mr-2">work</span>
+          Gestionar Puestos de Trabajo
+        </span>
+        <button class="btn-icon" (click)="onClose()">
+          <span class="material-icons text-white">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body pt-4">
+        <form (submit)="onSubmit($event)" class="mb-4">
+          <div class="d-flex gap-2">
+            <div class="input-with-icon flex-grow-1">
+              <span class="material-icons">add_business</span>
+              <input
+                type="text"
+                [formControl]="newPositionControl"
+                class="form-control"
+                placeholder="Nuevo puesto de trabajo"
+              />
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="newPositionControl.invalid || loading()"
+            >
+              {{ loading() ? '...' : 'Añadir' }}
+            </button>
+          </div>
+          @if (newPositionControl.touched && newPositionControl.invalid) {
+            <div class="alert alert-info mt-2">Introduce un nombre de puesto válido</div>
+          }
+        </form>
+
+        <hr class="divider mb-4" />
+
+        <div class="text-subtitle mb-2">Puestos existentes:</div>
+
+        @if (jobPositions().length > 0) {
+          <ul class="list-group">
+            @for (puesto of jobPositions(); track puesto.id) {
+              <li class="list-item d-flex justify-space-between align-center mb-1">
+                <span class="d-flex align-center">
+                  <span class="material-icons icon-primary mr-2">work_outline</span>
+                  {{ puesto.title }}
+                </span>
+                <button class="btn-icon btn-error" (click)="confirmDelete.emit(puesto)">
+                  <span class="material-icons">delete</span>
+                </button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <div class="alert alert-info">No hay puestos de trabajo registrados</div>
+        }
+      </div>
+
+      <div class="modal-footer d-flex justify-end">
+        <button class="btn btn-text" (click)="onClose()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,109 @@
+.v-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -12px;
+}
+
+.v-col {
+  padding: 0 12px;
+  flex: 1 1 auto;
+}
+
+.v-card {
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.v-card-title {
+  padding: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.v-card-text {
+  padding: 16px;
+}
+
+.v-data-table {
+  background-color: transparent;
+}
+
+.v-data-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.v-data-table th,
+.v-data-table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+}
+
+.clickable-table tbody tr {
+  cursor: pointer;
+}
+
+.clickable-table tbody tr:hover {
+  background-color: rgba(0, 0, 38, 0.05) !important;
+}
+
+.v-chip {
+  font-size: 12px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  display: inline-block;
+}
+
+.chip-warning {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.chip-success {
+  background: #d4edda;
+  color: #155724;
+}
+
+.state-text {
+  color: #666;
+}
+
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  color: #616161;
+  font-size: 0.875rem;
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pager-btn {
+  border: 1px solid #d6d6d6;
+  background: #fff;
+  color: #000026;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.pager-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.mdi {
+  font-size: 20px;
+}

@@ -23,3 +23,50 @@ export interface DepartmentStatDto {
   totalTrabajadores: number;
   trabajadoresActivos: number;
 }
+
+export interface EmployeeResponseDto {
+  id: string;
+  nombre: string;
+  dni: string;
+  email: string;
+  avatarUrl: string;
+  telefono: string;
+  puesto: string;
+  horasSemanales: string;
+  estado: string;
+  fechaAlta: string;
+  positionId?: string | null;
+}
+
+export interface JobPositionResponseDto {
+  id: string;
+  nombre: string;
+}
+
+export interface JobPositionUiDto {
+  id: string;
+  title: string;
+}
+
+export interface EditEmployeeWorkDataRequestDto {
+  positionId: string;
+  weeklyHours: number;
+}
+
+export interface CreateEmployeeProfileRequestDto {
+  fullName: string;
+  employeeCode: string;
+  phone: string;
+  positionId: string;
+  weeklyHours: number;
+}
+
+export interface CreateEmployeeRequestDto {
+  email: string;
+  profile: CreateEmployeeProfileRequestDto;
+}
+
+export interface SpringPageResponse<T> {
+  content: T[];
+  totalElements?: number;
+}

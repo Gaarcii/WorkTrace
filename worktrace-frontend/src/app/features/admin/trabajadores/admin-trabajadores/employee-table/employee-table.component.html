@@ -1,0 +1,91 @@
+<div class="v-row">
+  <div class="v-col cols-12">
+    <div class="v-card elevation-2">
+      <div class="v-card-title" style="background-color: #000026; color: white">
+        <i class="mdi mdi-account-multiple mr-2"></i>
+        Empleados Registrados
+      </div>
+      <div class="v-card-text">
+        @if (loading()) {
+          <div class="state-text">Cargando empleados...</div>
+        } @else if (items().length === 0) {
+          <div class="state-text">No hay empleados registrados</div>
+        } @else {
+          <div class="v-data-table clickable-table">
+            <table>
+              <thead>
+                <tr>
+                  @for (header of headers(); track header.key) {
+                    <th>{{ header.title }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of pagedItems; track item.id) {
+                  <tr (click)="rowClick.emit(item)">
+                    @for (header of headers(); track header.key) {
+                      <td>
+                        @if (header.key === 'jobTitle') {
+                          @if (item.jobTitle) {
+                            {{ item.jobTitle }}
+                          } @else {
+                            <span class="text-grey">-</span>
+                          }
+                        } @else if (header.key === 'weeklyHours') {
+                          @if (item.weeklyHours) {
+                            {{ item.weeklyHours }}h
+                          } @else {
+                            <span class="text-grey">-</span>
+                          }
+                        } @else if (header.key === 'isFirstLogin') {
+                          <span
+                            class="v-chip"
+                            [class.chip-warning]="item.isFirstLogin"
+                            [class.chip-success]="!item.isFirstLogin"
+                          >
+                            {{ item.isFirstLogin ? 'Pendiente' : 'Activo' }}
+                          </span>
+                        } @else if (header.key === 'createdAt') {
+                          {{ formatDate()(item.createdAt) }}
+                        } @else {
+                          {{ getCellValue(item, header.key) }}
+                        }
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            @if (items().length > itemsPerPage) {
+              <div class="table-footer">
+                <span class="footer-range"
+                  >{{ pageStart }}-{{ pageEnd }} de {{ items().length }}</span
+                >
+                <div class="footer-actions">
+                  <button
+                    type="button"
+                    class="pager-btn"
+                    [disabled]="currentPage === 1"
+                    (click)="prevPage()"
+                  >
+                    Anterior
+                  </button>
+                  <span class="footer-page">{{ currentPage }} / {{ totalPages }}</span>
+                  <button
+                    type="button"
+                    class="pager-btn"
+                    [disabled]="currentPage === totalPages"
+                    (click)="nextPage()"
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

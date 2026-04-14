@@ -77,8 +77,17 @@ export const routes: Routes = [
   {
     path: 'admin/trabajadores',
     loadComponent: () =>
-      import('./features/admin/trabajadores/admin-trabajadores.component').then(
+      import('./features/admin/trabajadores/admin-trabajadores/admin-trabajadores.component').then(
         (m) => m.AdminTrabajadoresComponent,
+      ),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_ADMIN', 'ADMIN'] },
+  },
+  {
+    path: 'admin/trabajadores/:id',
+    loadComponent: () =>
+      import('./features/admin/trabajadores/admin-employee-detail/admin-employee-detail.component').then(
+        (m) => m.AdminEmployeeDetailComponent,
       ),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['ROLE_ADMIN', 'ADMIN'] },

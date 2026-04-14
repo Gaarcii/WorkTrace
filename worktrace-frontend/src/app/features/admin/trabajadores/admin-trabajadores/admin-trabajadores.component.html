@@ -1,0 +1,65 @@
+<div class="page-container">
+  <div class="main-content">
+    <div class="container-fluid pa-4">
+      <app-employee-header (create)="abrirModalCrear()"></app-employee-header>
+
+      <app-employees-table
+        [headers]="headers"
+        [items]="empleados()"
+        [loading]="loading()"
+        [formatDate]="formatDate"
+        (rowClick)="verDetalleEmpleado($event)"
+      ></app-employees-table>
+    </div>
+  </div>
+</div>
+
+<app-create-employee-dialog
+  [modelValue]="dialogCrear()"
+  [loading]="loading()"
+  [mostrarCredenciales]="false"
+  [formData]="formData"
+  [rules]="{}"
+  [credencialesRecientes]="null"
+  [error]="null"
+  [puestosTrabajo]="puestosTrabajo()"
+  (close)="cerrarModalCrearSeguro()"
+  (submit)="crearEmpleado()"
+  (openJobPositions)="abrirModalPuestosDesdeCrear()"
+></app-create-employee-dialog>
+
+<app-job-positions-dialog
+  [isOpen]="dialogPuestos()"
+  [loading]="loading()"
+  [jobPositions]="puestosTrabajo()"
+  (updateIsOpen)="dialogPuestos.set($event)"
+  (create)="onCreatePuestoEvent($event)"
+  (confirmDelete)="confirmarBorrarPuesto($event)"
+></app-job-positions-dialog>
+
+<app-confirm-delete-position-dialog
+  [modelValue]="dialogConfirmarBorrar()"
+  [loading]="loading()"
+  [puestoABorrar]="puestoABorrar()"
+  (modelValueChange)="dialogConfirmarBorrar.set($event)"
+  (confirm)="borrarPuesto()"
+  (cancel)="dialogConfirmarBorrar.set(false)"
+></app-confirm-delete-position-dialog>
+
+@if (snackbar().show) {
+  <div
+    class="snackbar"
+    [class.error]="snackbar().color === 'error'"
+    [class.warning]="snackbar().color === 'warning'"
+    [class.info]="snackbar().color === 'info'"
+  >
+    <span>{{ snackbar().message }}</span>
+    <button
+      class="snackbar-action"
+      type="button"
+      (click)="snackbar.set({ ...snackbar(), show: false })"
+    >
+      CERRAR
+    </button>
+  </div>
+}
