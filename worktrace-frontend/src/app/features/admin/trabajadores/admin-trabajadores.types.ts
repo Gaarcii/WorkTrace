@@ -45,3 +45,8 @@ export interface EditFichajeForm {
   endTime: string;
   modificationReason: string;
 }
+
+export interface TableHeader {
+  key: string;
+  title: string;
+}

@@ -1,0 +1,152 @@
+@if (!empleado()) {
+  <div class="loading-container">
+    <div class="stat-card rounded-lg text-center pa-6">
+      <div class="spinner"></div>
+      <p class="mt-4 text-grey">Cargando información del empleado...</p>
+    </div>
+  </div>
+} @else {
+  <div class="employee-detail-container">
+    <div class="hero-card stat-card rounded-lg pa-6 relative">
+      <button class="btn-icon edit-btn" (click)="onEditProfile()">
+        <span class="material-icons primary-dark-text">edit</span>
+      </button>
+
+      <div class="hero-content">
+        <div class="avatar-container">
+          <div class="avatar-badge-wrapper">
+            @if (empleado()?.avatarUrl) {
+              <img [src]="empleado()?.avatarUrl" alt="Avatar" class="avatar-main" />
+            } @else {
+              <div class="avatar-main avatar-placeholder">
+                <span class="material-icons text-grey icon-huge">account_circle</span>
+              </div>
+            }
+            <span
+              class="status-dot"
+              [class.bg-success]="empleado()?.estado?.toLowerCase() !== 'inactivo'"
+              [class.bg-error]="empleado()?.estado?.toLowerCase() === 'inactivo'"
+            ></span>
+          </div>
+        </div>
+
+        <div class="hero-info">
+          <h1 class="hero-title">
+            {{ empleado()?.nombre || 'Cargando...' }}
+          </h1>
+          <h2 class="hero-subtitle">
+            <span class="material-icons icon-small mr-1">work</span>
+            {{ empleado()?.puesto || 'Sin puesto asignado' }}
+          </h2>
+          <div class="status-chip-container">
+            <span
+              class="chip"
+              [class.chip-success]="empleado()?.estado?.toLowerCase() !== 'inactivo'"
+              [class.chip-error]="empleado()?.estado?.toLowerCase() === 'inactivo'"
+            >
+              <span class="material-icons icon-x-small mr-1">circle</span>
+              {{ empleado()?.estado?.toLowerCase() === 'inactivo' ? 'Inactivo' : 'Activo' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-tonal action-btn" (click)="onGoSchedule()">
+          <span class="material-icons mr-1">edit_calendar</span>
+          <span class="d-none d-sm-inline">Horarios</span>
+        </button>
+
+        @if (empleado()?.email) {
+          <a [href]="'mailto:' + empleado()?.email" class="btn btn-tonal action-btn">
+            <span class="material-icons mr-1">mail_outline</span>
+            <span class="d-none d-sm-inline">Email</span>
+          </a>
+        }
+
+        @if (empleado()?.telefono) {
+          <a [href]="'tel:' + empleado()?.telefono" class="btn btn-tonal action-btn">
+            <span class="material-icons mr-1">phone</span>
+            <span class="d-none d-sm-inline">Llamar</span>
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="bento-grid">
+      <div class="info-card stat-card rounded-lg pa-4">
+        <div class="card-header">
+          <span class="material-icons primary-dark-text icon-small">contact_mail</span>
+          <h3 class="card-title">Información de Contacto</h3>
+        </div>
+
+        <div class="card-content">
+          <div class="info-item">
+            <span class="material-icons text-grey icon-medium">email</span>
+            <div class="info-details">
+              <span class="info-label">Email</span>
+              <a [href]="'mailto:' + (empleado()?.email || '')" class="info-value">
+                {{ empleado()?.email || 'No especificado' }}
+              </a>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <span class="material-icons text-grey icon-medium">phone</span>
+            <div class="info-details">
+              <span class="info-label">Teléfono</span>
+              @if (empleado()?.telefono) {
+                <a [href]="'tel:' + empleado()?.telefono" class="info-value">
+                  {{ empleado()?.telefono }}
+                </a>
+              } @else {
+                <span class="info-value text-grey">No especificado</span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card stat-card rounded-lg pa-4">
+        <div class="card-header">
+          <span class="material-icons primary-dark-text icon-small">work_outline</span>
+          <h3 class="card-title">Datos de Contrato</h3>
+        </div>
+
+        <div class="card-content">
+          <div class="info-item">
+            <span class="material-icons text-grey icon-medium">badge</span>
+            <div class="info-details">
+              <span class="info-label">DNI / Código</span>
+              <span class="info-value font-weight-bold">
+                {{ empleado()?.dni || 'N/A' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <span class="material-icons text-grey icon-medium">event_available</span>
+            <div class="info-details">
+              <span class="info-label">Fecha de Alta</span>
+              <span class="info-value">
+                {{ empleado()?.fechaAlta ? (empleado()?.fechaAlta | date: 'shortDate') : 'N/A' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-hours-card stat-card rounded-lg pa-4">
+        <div class="d-flex align-center mb-2 text-grey">
+          <span class="material-icons icon-small mr-1">schedule</span>
+          <span class="text-caption">Jornada</span>
+        </div>
+        <div class="text-h3 font-weight-bold mb-1">
+          {{ empleado()?.horasSemanales || 'N/A' }}
+          <span class="text-h6 font-weight-medium text-grey-darken">h/sem</span>
+        </div>
+        <div class="text-caption text-grey">horas semanales</div>
+      </div>
+    </div>
+  </div>
+}

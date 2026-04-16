@@ -1,0 +1,18 @@
+<div class="card elevation-2">
+  <div class="card-title">
+    <span class="material-icons mr-2">place</span>
+    Mapa de Ubicaciones de Fichajes
+  </div>
+
+  <div class="card-text">
+    <div class="map-wrapper elevation-2 rounded-lg">
+      <div #mapContainer class="map-container"></div>
+
+      @if (fichajes().length === 0) {
+        <div class="empty-map-overlay">
+          <span class="text-grey">No hay datos de ubicación para mostrar</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>

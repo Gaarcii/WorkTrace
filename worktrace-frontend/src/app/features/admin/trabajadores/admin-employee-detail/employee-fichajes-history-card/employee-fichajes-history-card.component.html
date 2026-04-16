@@ -1,0 +1,119 @@
+<div class="card elevation-2">
+  <div
+    class="card-title d-flex flex-column flex-sm-row justify-space-between align-start align-sm-center pa-3 pa-sm-4"
+  >
+    <span class="mb-2 mb-sm-0 d-flex align-center">
+      <span class="material-icons mr-2">schedule</span>
+      <span class="d-none d-sm-inline">Historial de Fichajes</span>
+      <span class="d-inline d-sm-none">Fichajes</span>
+    </span>
+  </div>
+
+  <div class="card-text">
+    @if (loading()) {
+      <div class="empty-state text-center pa-4 text-grey">Cargando fichajes...</div>
+    } @else if (fichajes().length === 0) {
+      <div class="empty-state text-center pa-4 text-grey">No hay fichajes registrados</div>
+    } @else {
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              @for (header of fichajeHeaders(); track header.key) {
+                <th>{{ header.title }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of fichajes(); track item.id) {
+              <tr [ngClass]="{ 'deleted-fichaje-row': !!item.deleted_at }">
+                <td>
+                  <div
+                    [ngClass]="{ 'deleted-text': !!item.deleted_at }"
+                    class="d-flex align-center"
+                  >
+                    {{ getFecha(item) ? (getFecha(item) | date: 'dd/MM/yyyy') : '-' }}
+                    @if (item.deleted_at) {
+                      <span class="chip chip-error ml-2">Anulado</span>
+                    }
+                  </div>
+                </td>
+
+                <td>
+                  {{ getEntrada(item) ? (getEntrada(item) | date: 'HH:mm') : '-' }}
+                </td>
+
+                <td>{{ getSalida(item) ? (getSalida(item) | date: 'HH:mm') : '-' }}</td>
+
+                <td>
+                  @if (getLatitud(item, 'start') != null && getLongitud(item, 'start') != null) {
+                    <div class="location-cell">
+                      <span class="material-icons icon-small text-success mr-1">place</span>
+                      <span class="text-caption">
+                        {{
+                          getDireccionFichaje()(
+                            item.id,
+                            getLatitud(item, 'start') ?? 0,
+                            getLongitud(item, 'start') ?? 0,
+                            'start'
+                          )
+                        }}
+                      </span>
+                    </div>
+                  } @else {
+                    <span class="text-grey">-</span>
+                  }
+                </td>
+
+                <td>
+                  @if (getLatitud(item, 'end') != null && getLongitud(item, 'end') != null) {
+                    <div class="location-cell">
+                      <span class="material-icons icon-small text-error mr-1">place</span>
+                      <span class="text-caption">
+                        {{
+                          getDireccionFichaje()(
+                            item.id,
+                            getLatitud(item, 'end') ?? 0,
+                            getLongitud(item, 'end') ?? 0,
+                            'end'
+                          )
+                        }}
+                      </span>
+                    </div>
+                  } @else {
+                    <span class="text-grey">-</span>
+                  }
+                </td>
+
+                <td>
+                  {{ calcularHoras()(getEntrada(item), getSalida(item)) }}
+                </td>
+
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      class="btn-icon primary-dark-text"
+                      (click)="onEdit(item)"
+                      title="Editar"
+                    >
+                      <span class="material-icons icon-small">edit</span>
+                    </button>
+
+                    <button
+                      class="btn-icon text-error"
+                      (click)="onDelete(item)"
+                      [disabled]="!!item.deleted_at"
+                      title="Anular"
+                    >
+                      <span class="material-icons icon-small">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

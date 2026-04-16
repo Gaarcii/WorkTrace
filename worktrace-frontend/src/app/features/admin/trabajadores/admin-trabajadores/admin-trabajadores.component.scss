@@ -1,12 +1,9 @@
-/* --- Layout Principal --- */
 .page-container {
   min-height: 100vh;
-  background-color: #f5f5f5; /* Mismo fondo gris claro de Vuetify */
+  background-color: #f5f5f5;
   display: flex;
   flex-direction: column;
   position: relative;
-  /* Si app-admin-bottom-nav es absolute/fixed, mantén el padding. 
-     Si es parte del flujo flex, puedes quitar este padding-bottom */
   padding-bottom: 80px;
 }
 
@@ -26,15 +23,14 @@
   padding: 16px;
 }
 
-/* --- Modal (Emulando v-dialog de Vuetify) --- */
 .dialog-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 2400; /* Vuetify usa z-index altos para dialogs */
+  z-index: 2400;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(33, 33, 33, 0.46); /* Opacidad exacta de Vuetify */
+  background: rgba(33, 33, 33, 0.46);
   padding: 24px;
   animation: fadeIn 0.2s ease-out;
 }
@@ -42,10 +38,9 @@
 .dialog-card {
   width: 100%;
   max-width: 760px;
-  border-radius: 4px; /* Vuetify border-radius */
+  border-radius: 4px;
   overflow: hidden;
   background: #ffffff;
-  /* Vuetify elevation-24 para modales */
   box-shadow:
     0px 11px 15px -7px rgba(0, 0, 0, 0.2),
     0px 24px 38px 3px rgba(0, 0, 0, 0.14),
@@ -95,7 +90,7 @@
 
 .v-input {
   width: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.38); /* Borde estándar material */
+  border: 1px solid rgba(0, 0, 0, 0.38);
   border-radius: 4px;
   padding: 10px 12px;
   font-size: 1rem;
@@ -106,7 +101,7 @@
     outline: none;
     border-color: #000026;
     border-width: 2px;
-    padding: 9px 11px; /* Compensa el borde extra */
+    padding: 9px 11px;
   }
 }
 
@@ -121,7 +116,6 @@
   padding: 0;
 }
 
-/* --- Botones (Emulando v-btn) --- */
 .dialog-actions {
   display: flex;
   justify-content: flex-end;
@@ -138,7 +132,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: 0.0892857143em;
-  text-transform: uppercase; /* Clásico de Material/Vuetify */
+  text-transform: uppercase;
   cursor: pointer;
   transition:
     background-color 0.2s,
@@ -157,7 +151,6 @@
 .btn-primary {
   background: #000026;
   color: #ffffff;
-  /* Vuetify elevation-2 */
   box-shadow:
     0px 3px 1px -2px rgba(0, 0, 0, 0.2),
     0px 2px 2px 0px rgba(0, 0, 0, 0.14),
@@ -175,15 +168,14 @@
   }
 }
 
-/* --- Snackbar (Emulando v-snackbar) --- */
 .snackbar {
   position: fixed;
   left: 50%;
-  bottom: 88px; /* Respetando la barra inferior */
+  bottom: 88px;
   transform: translateX(-50%);
   min-width: 344px;
   max-width: 672px;
-  background: #4caf50; /* Success default de vuetify */
+  background: #4caf50;
   color: #ffffff;
   border-radius: 4px;
   padding: 14px 16px;
@@ -194,7 +186,6 @@
   z-index: 3000;
   font-family: 'Roboto', sans-serif;
   font-size: 0.875rem;
-  /* Elevation 6 */
   box-shadow:
     0px 3px 5px -1px rgba(0, 0, 0, 0.2),
     0px 6px 10px 0px rgba(0, 0, 0, 0.14),

@@ -1,0 +1,24 @@
+@if (isOpen()) {
+  <div class="modal-overlay" (click)="onCancel()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header bg-error text-white d-flex align-center">
+        <span class="material-icons mr-2">warning</span>
+        Confirmar eliminación
+      </div>
+
+      <div class="modal-body pt-4">
+        ¿Estás seguro de que deseas eliminar el puesto
+        <strong>"{{ jobPosition()?.title }}"</strong>?
+      </div>
+
+      <div class="modal-footer d-flex justify-end gap-2">
+        <button type="button" class="btn btn-text" (click)="onCancel()" [disabled]="loading()">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-error" (click)="onConfirm()" [disabled]="loading()">
+          {{ loading() ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

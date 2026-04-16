@@ -1,0 +1,63 @@
+@if (isOpen()) {
+  <div class="modal-overlay" (click)="onClose()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header d-flex align-center">
+        <span class="material-icons mr-2">manage_accounts</span>
+        Editar Perfil del Empleado
+      </div>
+
+      <div class="modal-body pt-4">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="form-group mb-3">
+            <label>Puesto de trabajo</label>
+            <div class="input-with-icon">
+              <span class="material-icons">work</span>
+              <select formControlName="positionId" class="form-control">
+                <option [ngValue]="null">Seleccione un puesto...</option>
+                @for (puesto of jobPositions(); track puesto.id) {
+                  <option [ngValue]="puesto.id">{{ puesto.title }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group mb-4">
+            <label>Horas semanales</label>
+            <div class="input-with-icon">
+              <span class="material-icons">schedule</span>
+              <input
+                type="number"
+                formControlName="weeklyHours"
+                class="form-control"
+                step="0.5"
+                min="0"
+                max="168"
+              />
+            </div>
+
+            @if (form.controls.weeklyHours.touched && form.controls.weeklyHours.invalid) {
+              <span class="error-text"
+                >Las horas son obligatorias y deben estar entre 0 y 40.</span
+              >
+            }
+          </div>
+
+          @if (error()) {
+            <div class="alert alert-error mb-4">
+              {{ error() }}
+            </div>
+          }
+
+          <div class="modal-footer d-flex justify-end gap-2">
+            <button type="button" class="btn btn-text" (click)="onClose()" [disabled]="loading()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="loading() || form.invalid">
+              {{ loading() ? 'Guardando...' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}

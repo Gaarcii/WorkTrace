@@ -1,0 +1,113 @@
+$error: #d32f2f;
+$grey-dark: #616161;
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: white;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 8px;
+  box-shadow:
+    0 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0 24px 38px 3px rgba(0, 0, 0, 0.14),
+    0 9px 46px 8px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 16px 24px;
+  font-size: 1.25rem;
+  font-weight: 500;
+
+  &.bg-error {
+    background-color: $error;
+  }
+}
+
+.modal-body {
+  padding: 0 24px 24px;
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.87);
+  line-height: 1.5;
+}
+
+.modal-footer {
+  padding: 8px 16px 16px;
+}
+
+.d-flex {
+  display: flex;
+}
+.align-center {
+  align-items: center;
+}
+.justify-end {
+  justify-content: flex-end;
+}
+.pt-4 {
+  padding-top: 16px;
+}
+.mr-2 {
+  margin-right: 8px;
+}
+.gap-2 {
+  gap: 8px;
+}
+.text-white {
+  color: white;
+}
+
+.btn {
+  padding: 0 16px;
+  height: 36px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  transition:
+    opacity 0.2s,
+    background-color 0.2s;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &-text {
+    background-color: transparent;
+    color: $grey-dark;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+  }
+
+  &-error {
+    background-color: $error;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: darken($error, 10%);
+    }
+  }
+}

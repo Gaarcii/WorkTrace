@@ -17,9 +17,9 @@ import {
 } from '../admin-trabajadores.types';
 import { EmployeesTableComponent } from './employee-table/employee-table.component';
 import { JobPositionsDialogComponent } from './job-positions-dialog/job-positions-dialog.component';
-import { ConfirmDeletePositionDialogComponent } from '../admin-employee-detail/confirm-delete-position-dialog/confirm-delete-position-dialog.component';
 import { CreateEmployeeDialogComponent } from './admin-crearTrabajador/create-employee-dialog.component';
 import { EmployeeHeaderComponent } from './employee-header/employee-header.component';
+import { ConfirmDeleteDialogComponent } from '../admin-employee-detail/confirm-delete-position-dialog/confirm-delete-dialog.component';
 
 @Component({
   selector: 'app-trabajadores.component',
@@ -29,7 +29,7 @@ import { EmployeeHeaderComponent } from './employee-header/employee-header.compo
     EmployeeHeaderComponent,
     EmployeesTableComponent,
     JobPositionsDialogComponent,
-    ConfirmDeletePositionDialogComponent,
+    ConfirmDeleteDialogComponent,
     CreateEmployeeDialogComponent,
   ],
   templateUrl: './admin-trabajadores.component.html',
@@ -115,7 +115,6 @@ export class AdminTrabajadoresComponent implements OnInit {
   }
 
   cerrarModalCrearSeguro(): void {
-    // Avoid click-through closing both dialogs when the job positions modal is open.
     if (this.dialogPuestos()) {
       return;
     }

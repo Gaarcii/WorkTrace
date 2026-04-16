@@ -37,14 +37,13 @@
   (confirmDelete)="confirmarBorrarPuesto($event)"
 ></app-job-positions-dialog>
 
-<app-confirm-delete-position-dialog
-  [modelValue]="dialogConfirmarBorrar()"
+<app-confirm-delete-dialog
+  [isOpen]="dialogConfirmarBorrar()"
   [loading]="loading()"
-  [puestoABorrar]="puestoABorrar()"
-  (modelValueChange)="dialogConfirmarBorrar.set($event)"
-  (confirm)="borrarPuesto()"
-  (cancel)="dialogConfirmarBorrar.set(false)"
-></app-confirm-delete-position-dialog>
+  [jobPosition]="puestoABorrar()"
+  (confirmAction)="borrarPuesto()"
+  (cancelAction)="dialogConfirmarBorrar.set(false)"
+></app-confirm-delete-dialog>
 
 @if (snackbar().show) {
   <div

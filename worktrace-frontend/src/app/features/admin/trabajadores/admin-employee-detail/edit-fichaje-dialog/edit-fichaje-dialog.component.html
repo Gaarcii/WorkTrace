@@ -1,0 +1,90 @@
+@if (isOpen()) {
+  <div class="modal-overlay" (click)="onClose()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header d-flex align-center">
+        <span class="material-icons mr-2">edit</span>
+        Editar Fichaje
+      </div>
+
+      <div class="modal-body pt-4">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="form-group mb-3">
+            <label>Fecha del Turno</label>
+            <div class="input-with-icon">
+              <span class="material-icons">calendar_today</span>
+              <input type="date" formControlName="date" class="form-control" />
+            </div>
+            @if (form.controls.date.touched && form.controls.date.invalid) {
+              <span class="error-text">La fecha es obligatoria.</span>
+            }
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-6">
+              <div class="form-group">
+                <label>Hora Entrada</label>
+                <div class="input-with-icon">
+                  <span class="material-icons">login</span>
+                  <input type="time" formControlName="startTime" class="form-control" />
+                </div>
+                @if (form.controls.startTime.touched && form.controls.startTime.invalid) {
+                  <span class="error-text">Hora requerida.</span>
+                }
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label>Hora Salida</label>
+                <div class="input-with-icon">
+                  <span class="material-icons">logout</span>
+                  <input type="time" formControlName="endTime" class="form-control" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group mb-4">
+            <label>Motivo del cambio / Justificación (mínimo 10 caracteres)</label>
+            <div class="input-with-icon textarea-icon">
+              <span class="material-icons">sticky_note_2</span>
+              <textarea
+                formControlName="modificationReason"
+                class="form-control"
+                rows="2"
+                placeholder="Explica el motivo de la modificación..."
+              ></textarea>
+            </div>
+
+            <div class="d-flex justify-space-between mt-1">
+              @if (
+                form.controls.modificationReason.touched && form.controls.modificationReason.invalid
+              ) {
+                <span class="error-text">El motivo es obligatorio y requiere 10 caracteres.</span>
+              } @else {
+                <span></span>
+              }
+              <span class="text-caption text-grey">
+                {{ form.controls.modificationReason.value.length }} / 500
+              </span>
+            </div>
+          </div>
+
+          @if (error()) {
+            <div class="alert alert-error mb-4">
+              {{ error() }}
+            </div>
+          }
+
+          <div class="modal-footer d-flex justify-end gap-2">
+            <button type="button" class="btn btn-text" (click)="onClose()" [disabled]="loading()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="loading() || form.invalid">
+              {{ loading() ? 'Guardando...' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
