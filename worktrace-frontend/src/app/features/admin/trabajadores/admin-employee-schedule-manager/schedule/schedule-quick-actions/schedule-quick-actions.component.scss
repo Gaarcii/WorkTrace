@@ -1,0 +1,154 @@
+.quick-actions-card {
+  background: #ffffff;
+  border: 1px solid #dedede;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.quick-actions-title {
+  background: #000026;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.quick-actions-body {
+  padding: 16px;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.button-grid.two-columns {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.template-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4e4e4e;
+  margin-bottom: 8px;
+}
+
+.divider {
+  margin: 16px 0;
+  border-top: 1px solid #e5e5e5;
+}
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-height: 40px;
+  padding: 10px;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-success {
+  background: #e8f5e9;
+  color: #256029;
+  border: 1px solid #81c784;
+}
+
+.btn-danger {
+  background: #ffebee;
+  color: #8e1b1b;
+  border: 1px solid #ef9a9a;
+}
+
+.btn-primary {
+  background: #000026;
+  color: #ffffff;
+}
+
+.btn-outline {
+  background: #f7f8fb;
+  color: #223;
+  border: 1px solid #bec4d2;
+}
+
+.btn-text {
+  background: transparent;
+  color: #565656;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 2500;
+}
+
+.modal-card {
+  width: min(520px, 100%);
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  background: #000026;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 12px 16px;
+}
+
+.modal-body {
+  padding: 16px;
+}
+
+.modal-actions {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.field-select {
+  width: 100%;
+  border: 1px solid #c8ccd8;
+  border-radius: 8px;
+  min-height: 40px;
+  padding: 0 10px;
+}
+
+.error-text {
+  color: #b3261e;
+  font-size: 0.8rem;
+  margin-top: 6px;
+}
+
+@media (max-width: 900px) {
+  .button-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .button-grid.two-columns {
+    grid-template-columns: 1fr;
+  }
+}

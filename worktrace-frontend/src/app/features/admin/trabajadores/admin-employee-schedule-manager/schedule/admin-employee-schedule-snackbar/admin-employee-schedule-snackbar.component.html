@@ -1,0 +1,8 @@
+@if (snackbar().show) {
+  <div class="snackbar-container">
+    <div class="snackbar" [class]="'snackbar-' + snackbar().color">
+      <span>{{ snackbar().message }}</span>
+      <button type="button" class="snackbar-close" (click)="onClose()">Cerrar</button>
+    </div>
+  </div>
+}

@@ -1,0 +1,64 @@
+<div class="quick-actions-card">
+  <div class="quick-actions-title">
+    <span class="material-icons mr-2">bolt</span>
+    Acciones Rapidas
+  </div>
+
+  <div class="quick-actions-body">
+    <div class="button-grid">
+      <button type="button" class="btn btn-success" (click)="onActivateAll()">Activar Todos</button>
+      <button type="button" class="btn btn-danger" (click)="onDeactivateAll()">
+        Desactivar Todos
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="!hasCompleteDay()"
+        (click)="onOpenWorkweekDialog()"
+      >
+        Aplicar a Semana Laboral
+      </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="template-label">Plantillas Rapidas:</div>
+    <div class="button-grid two-columns">
+      <button type="button" class="btn btn-outline" (click)="onApplyTemplate('morning')">
+        Jornada Matinal (8:00 - 15:00)
+      </button>
+      <button type="button" class="btn btn-outline" (click)="onApplyTemplate('full')">
+        Jornada Completa (9:00 - 18:00)
+      </button>
+    </div>
+  </div>
+</div>
+
+@if (showWorkweekDialog()) {
+  <div class="modal-overlay" (click)="onCloseWorkweekDialog()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">Aplicar a Semana Laboral</div>
+      <div class="modal-body">
+        <p class="mb-2">Selecciona el dia cuya configuracion quieres aplicar de lunes a viernes:</p>
+
+        <label class="field-label" for="dayBase">Dia base</label>
+        <select id="dayBase" [formControl]="selectedDayControl" class="field-select">
+          <option [ngValue]="null">Selecciona un dia</option>
+          @for (day of availableDays(); track day.value) {
+            <option [ngValue]="day.value">{{ day.label }}</option>
+          }
+        </select>
+
+        @if (selectedDayControl.touched && selectedDayControl.invalid) {
+          <div class="error-text">Debes seleccionar un dia base.</div>
+        }
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-text" (click)="onCloseWorkweekDialog()">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="onApplyToWorkweek()">Aplicar</button>
+      </div>
+    </div>
+  </div>
+}

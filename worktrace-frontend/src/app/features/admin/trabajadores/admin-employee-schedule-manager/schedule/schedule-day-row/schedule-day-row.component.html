@@ -1,0 +1,53 @@
+<div class="day-row-card">
+  <form [formGroup]="scheduleForm">
+    <div class="day-grid">
+      <div class="day-toggle">
+        <label class="switch" aria-label="Activar dia">
+          <input
+            type="checkbox"
+            [checked]="scheduleForm.controls.isActive.value"
+            (change)="onActiveChanged($event)"
+          />
+          <span class="slider"></span>
+        </label>
+        <span class="day-name">{{ dayName() }}</span>
+      </div>
+
+      <div class="field">
+        <label>Centro de trabajo</label>
+        <select formControlName="siteId" (change)="onFieldChanged()">
+          <option value="">Selecciona un centro</option>
+          @for (site of workSites(); track site.id) {
+            <option [value]="site.id">{{ site.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Inicio</label>
+        <input type="time" formControlName="startTime" (input)="onFieldChanged()" />
+      </div>
+
+      <div class="field">
+        <label>Fin</label>
+        <input type="time" formControlName="endTime" (input)="onFieldChanged()" />
+      </div>
+
+      <div class="field field-copy">
+        <button
+          type="button"
+          class="copy-btn"
+          [disabled]="!scheduleForm.controls.isActive.value || !isConfigComplete()"
+          (click)="onCopyToAll()"
+          title="Copiar configuracion a toda la semana"
+        >
+          <span class="material-icons">content_copy</span>
+        </button>
+      </div>
+    </div>
+
+    @if (scheduleForm.controls.isActive.value && !isConfigComplete()) {
+      <div class="row-warning">Completa centro, hora de inicio y hora de fin para este dia.</div>
+    }
+  </form>
+</div>

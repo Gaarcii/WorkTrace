@@ -1,0 +1,54 @@
+.linear-loader {
+  width: 100%;
+  height: 4px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: #d5d5d5;
+}
+
+.linear-loader-track {
+  width: 40%;
+  height: 100%;
+  background: #000026;
+  animation: loading-slide 1.2s linear infinite;
+}
+
+@keyframes loading-slide {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+.alert-error {
+  background: #fde8e8;
+  border: 1px solid #f59c9c;
+  color: #7c1414;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.schedule-card {
+  background: #ffffff;
+  border: 1px solid #dedede;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.schedule-title {
+  background: #f0f2f5;
+  color: #000026;
+  font-weight: 700;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.schedule-list {
+  padding: 12px;
+}

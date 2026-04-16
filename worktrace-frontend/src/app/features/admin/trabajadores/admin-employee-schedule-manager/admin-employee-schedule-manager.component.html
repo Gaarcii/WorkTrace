@@ -1,0 +1,35 @@
+<div class="page-container">
+  <div class="main-content">
+    <div class="container pa-4">
+      <button type="button" class="back-btn mb-4 d-flex align-center" (click)="volverADetalle()">
+        <span class="material-icons mr-2">arrow_back</span>
+        <span>Volver a Detalle del Empleado</span>
+      </button>
+
+      <app-admin-employee-schedule-header-card [empleado]="empleado()" />
+
+      <app-admin-employee-schedule-content
+        [loading]="loading()"
+        [error]="error()"
+        [schedules]="schedules()"
+        [workSites]="workSites()"
+        (activateAll)="activarTodos()"
+        (deactivateAll)="desactivarTodos()"
+        (applyToWorkweek)="aplicarASemanaLaboral($event)"
+        (applyTemplate)="aplicarPlantilla($event)"
+        (updateSchedule)="actualizarHorario($event)"
+        (copyToAll)="copiarATodos($event)"
+      />
+
+      <app-admin-employee-schedule-actions-card
+        [loading]="loading()"
+        [guardando]="guardando()"
+        [hayModificaciones]="hayModificaciones()"
+        (cancel)="volverADetalle()"
+        (save)="guardarHorarios()"
+      />
+    </div>
+  </div>
+</div>
+
+<app-admin-employee-schedule-snackbar [snackbar]="snackbar()" (close)="closeSnackbar()" />

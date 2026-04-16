@@ -1,0 +1,11 @@
+<div class="header-card">
+  <div class="header-title d-flex align-center text-white">
+    <span class="material-icons mr-2">calendar_month</span>
+    <div>
+      <div class="title-main">Horarios y Ubicaciones</div>
+      @if (empleado()) {
+        <div class="title-subtitle">{{ empleado()?.nombre }} - {{ empleado()?.dni }}</div>
+      }
+    </div>
+  </div>
+</div>

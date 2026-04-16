@@ -1,0 +1,36 @@
+@if (loading()) {
+  <div class="linear-loader">
+    <div class="linear-loader-track"></div>
+  </div>
+}
+
+@if (error()) {
+  <div class="alert-error">{{ error() }}</div>
+}
+
+@if (!loading()) {
+  <app-schedule-quick-actions
+    [schedules]="schedules()"
+    (activateAll)="onActivateAll()"
+    (deactivateAll)="onDeactivateAll()"
+    (applyToWorkweek)="onApplyToWorkweek($event)"
+    (applyTemplate)="onApplyTemplate($event)"
+  />
+
+  <div class="schedule-card">
+    <div class="schedule-title">
+      <span class="material-icons mr-2">calendar_view_week</span>
+      Configuracion Semanal
+    </div>
+    <div class="schedule-list">
+      @for (schedule of schedules(); track schedule.dayKey) {
+        <app-schedule-day-row
+          [schedule]="schedule"
+          [workSites]="workSites()"
+          (updateSchedule)="onUpdateSchedule($event)"
+          (copyToAll)="onCopyToAll($event)"
+        />
+      }
+    </div>
+  </div>
+}

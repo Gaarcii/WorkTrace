@@ -15,6 +15,11 @@ import {
   EditTimeEntryRequestDto,
   FichajeTablaResponseDto,
 } from '../../models/time-entry.model';
+import {
+  WorkScheduleRequest,
+  WorkScheduleResponse,
+  WorkSiteResponseDto,
+} from '../../models/work-schedule.model';
 
 @Injectable({
   providedIn: 'root',
@@ -108,5 +113,17 @@ export class AdminWorkersService {
 
   editarPuestoYHorasEmpleado(id: string, dto: EditEmployeeWorkDataRequestDto): Observable<void> {
     return this.http.patch<void>(`${this.BASE_URL}user/employees/${id}/work-data`, dto);
+  }
+
+  obtenerCentrosTrabajo(): Observable<WorkSiteResponseDto[]> {
+    return this.http.get<WorkSiteResponseDto[]>(`${this.BASE_URL}WorkSites`);
+  }
+
+  obtenerHorariosEmpleado(employeeId: string): Observable<WorkScheduleResponse[]> {
+    return this.http.get<WorkScheduleResponse[]>(`${this.BASE_URL}horario/employee/${employeeId}`);
+  }
+
+  asignarHorario(dto: WorkScheduleRequest): Observable<void> {
+    return this.http.post<void>(`${this.BASE_URL}horario/asignar`, dto);
   }
 }

@@ -1,0 +1,38 @@
+.actions-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #dedede;
+  margin-top: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.btn-text {
+  background: transparent;
+  color: #4f4f4f;
+}
+
+.btn-primary {
+  background: #000026;
+  color: #ffffff;
+}

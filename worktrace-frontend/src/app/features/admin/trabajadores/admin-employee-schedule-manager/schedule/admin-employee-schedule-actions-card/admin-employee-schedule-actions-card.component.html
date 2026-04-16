@@ -1,0 +1,21 @@
+@if (!loading()) {
+  <div class="actions-card">
+    <div class="actions-row">
+      <button type="button" class="btn btn-text" [disabled]="guardando()" (click)="onCancel()">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="guardando() || !hayModificaciones()"
+        (click)="onSave()"
+      >
+        @if (guardando()) {
+          Guardando...
+        } @else {
+          Guardar Cambios
+        }
+      </button>
+    </div>
+  </div>
+}

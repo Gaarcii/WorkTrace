@@ -123,7 +123,7 @@ export class AdminEmployeeDetailComponent implements OnInit {
   public irAHorarios(): void {
     const id = this.employeeId();
     if (id) {
-      this.router.navigate(['/admin/horarios', id]);
+      void this.router.navigate(['/admin/trabajadores', id, 'horarios']);
     }
   }
 

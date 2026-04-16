@@ -1,0 +1,22 @@
+.header-card {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.header-title {
+  background: linear-gradient(100deg, #000026 0%, #12125f 100%);
+  padding: 18px;
+}
+
+.title-main {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.title-subtitle {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}

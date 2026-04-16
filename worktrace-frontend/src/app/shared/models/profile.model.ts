@@ -36,6 +36,7 @@ export interface EmployeeResponseDto {
   estado: string;
   fechaAlta: string;
   positionId?: string | null;
+  horario?: WorkScheduleResponse[];
 }
 
 export interface JobPositionResponseDto {

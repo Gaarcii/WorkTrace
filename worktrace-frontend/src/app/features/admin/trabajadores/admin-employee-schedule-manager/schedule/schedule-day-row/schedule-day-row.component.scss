@@ -1,0 +1,144 @@
+.day-row-card {
+  border: 1px solid #e1e4ec;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  transition: box-shadow 0.2s ease;
+}
+
+.day-row-card:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.day-grid {
+  display: grid;
+  grid-template-columns: 170px 1.8fr 1fr 1fr 70px;
+  gap: 10px;
+  align-items: end;
+}
+
+.day-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.day-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.field input,
+.field select {
+  min-height: 38px;
+  border: 1px solid #cbd0dd;
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 0.9rem;
+  background: #fff;
+}
+
+.field input:disabled,
+.field select:disabled {
+  background: #f4f5f7;
+  color: #999;
+}
+
+.field-copy {
+  align-items: center;
+}
+
+.copy-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: #e9ecff;
+  color: #000026;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.row-warning {
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #f6d28f;
+  background: #fff6e7;
+  color: #8a5d00;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #c7c7c7;
+  transition: 0.2s;
+  border-radius: 999px;
+}
+
+.slider::before {
+  position: absolute;
+  content: '';
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  top: 3px;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #000026;
+}
+
+input:checked + .slider::before {
+  transform: translateX(18px);
+}
+
+@media (max-width: 1080px) {
+  .day-grid {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .field-copy {
+    align-items: flex-start;
+  }
+}

@@ -84,6 +84,15 @@ export const routes: Routes = [
     data: { roles: ['ROLE_ADMIN', 'ADMIN'] },
   },
   {
+    path: 'admin/trabajadores/:idTrabajador/horarios',
+    loadComponent: () =>
+      import('./features/admin/trabajadores/admin-employee-schedule-manager/admin-employee-schedule-manager.component').then(
+        (m) => m.AdminEmployeeScheduleManagerComponent,
+      ),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_ADMIN', 'ADMIN'] },
+  },
+  {
     path: 'admin/trabajadores/:id',
     loadComponent: () =>
       import('./features/admin/trabajadores/admin-employee-detail/admin-employee-detail.component').then(
