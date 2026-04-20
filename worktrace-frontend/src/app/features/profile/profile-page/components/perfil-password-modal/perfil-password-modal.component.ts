@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-worker-perfil-password-modal',
+  selector: 'app-perfil-password-modal',
   imports: [
     ReactiveFormsModule,
     MatIconModule,
@@ -16,11 +16,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatInputModule,
     MatProgressSpinnerModule,
   ],
-  templateUrl: './worker-perfil-password-modal.component.html',
-  styleUrls: ['./worker-perfil-password-modal.component.scss'],
+  templateUrl: './perfil-password-modal.component.html',
+  styleUrls: ['./perfil-password-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorkerPerfilPasswordModalComponent {
+export class PerfilPasswordModalComponent {
   readonly passwordForm = input.required<FormGroup>();
   readonly passwordError = input.required<string>();
   readonly loading = input.required<boolean>();

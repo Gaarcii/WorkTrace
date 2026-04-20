@@ -1,0 +1,67 @@
+<div class="page-container">
+  <div class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Mi Perfil</h1>
+      <p class="page-subtitle">{{ subtitle() }}</p>
+    </div>
+
+    <div class="top-grid">
+      <div class="left-panel">
+        <app-perfil-identity
+          [avatarUrl]="profile()?.avatarUrl"
+          [nombreCompleto]="profile()?.nombreCompleto"
+          [puestoTrabajo]="profile()?.puestoTrabajo"
+          (editAvatar)="abrirSelectorAvatar()"
+        />
+      </div>
+
+      <div class="right-panel">
+        <app-perfil-contact [form]="form" [loading]="loading()" (save)="guardarPerfil()" />
+
+        <app-perfil-security (changePassword)="abrirModalPassword()" />
+      </div>
+    </div>
+
+    @if (showSchedule()) {
+      <app-perfil-schedule [horario]="horarioSemanal()" [loading]="loading()" />
+    }
+  </div>
+
+  @if (mostrarConfirmacion()) {
+    <div class="snackbar-success">Operacion realizada correctamente</div>
+  }
+  @if (mostrarError()) {
+    <div class="snackbar-error">{{ errorMessage() }}</div>
+  }
+</div>
+
+@if (mostrarPedirPasswordEmail()) {
+  <app-perfil-email-modal
+    [passwordControl]="passwordConfirmacion"
+    [loading]="loading()"
+    (close)="cerrarModalPasswordEmail()"
+    (confirm)="confirmarGuardarConPassword()"
+  />
+}
+
+@if (mostrarSelectorAvatar()) {
+  <app-perfil-avatar-modal
+    [avatarUrl]="profile()?.avatarUrl"
+    [avatarPreview]="avatarPreview()"
+    [loading]="loading()"
+    (close)="cerrarSelectorAvatar()"
+    (fileSelected)="procesarArchivo($event)"
+    (delete)="eliminarFoto()"
+    (save)="guardarPerfil()"
+  />
+}
+
+@if (mostrarCambiarPassword()) {
+  <app-perfil-password-modal
+    [passwordForm]="passwordForm"
+    [passwordError]="passwordError()"
+    [loading]="loadingPassword()"
+    (close)="cerrarModalPassword()"
+    (save)="actualizarPassword()"
+  />
+}

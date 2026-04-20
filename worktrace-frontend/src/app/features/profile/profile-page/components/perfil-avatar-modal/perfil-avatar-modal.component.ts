@@ -4,13 +4,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-worker-perfil-avatar-modal',
+  selector: 'app-perfil-avatar-modal',
   imports: [MatIconModule, MatButtonModule, MatProgressSpinnerModule],
-  templateUrl: './worker-perfil-avatar-modal.component.html',
-  styleUrls: ['./worker-perfil-avatar-modal.component.scss'],
+  templateUrl: './perfil-avatar-modal.component.html',
+  styleUrls: ['./perfil-avatar-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorkerPerfilAvatarModalComponent {
+export class PerfilAvatarModalComponent {
   readonly avatarUrl = input<string | undefined | null>(null);
   readonly avatarPreview = input.required<string>();
   readonly loading = input.required<boolean>();

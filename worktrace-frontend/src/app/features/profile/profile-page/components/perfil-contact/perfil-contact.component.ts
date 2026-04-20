@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-worker-perfil-contact',
+  selector: 'app-perfil-contact',
   imports: [
     ReactiveFormsModule,
     MatIconModule,
@@ -16,11 +16,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatInputModule,
     MatProgressSpinnerModule,
   ],
-  templateUrl: './worker-perfil-contact.component.html',
-  styleUrls: ['./worker-perfil-contact.component.scss'],
+  templateUrl: './perfil-contact.component.html',
+  styleUrls: ['./perfil-contact.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorkerPerfilContactComponent {
+export class PerfilContactComponent {
   readonly form = input.required<FormGroup>();
   readonly loading = input.required<boolean>();
 

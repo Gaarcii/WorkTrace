@@ -3,13 +3,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'app-worker-perfil-security',
+  selector: 'app-perfil-security',
   imports: [MatIconModule, MatButtonModule],
-  templateUrl: './worker-perfil-security.component.html',
-  styleUrls: ['./worker-perfil-security.component.scss'],
+  templateUrl: './perfil-security.component.html',
+  styleUrls: ['./perfil-security.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorkerPerfilSecurityComponent {
+export class PerfilSecurityComponent {
   readonly changePassword = output<void>();
 
   onChange(): void {

@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-worker-perfil-email-modal',
+  selector: 'app-perfil-email-modal',
   imports: [
     ReactiveFormsModule,
     MatIconModule,
@@ -16,11 +16,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatInputModule,
     MatProgressSpinnerModule,
   ],
-  templateUrl: './worker-perfil-email-modal.component.html',
-  styleUrls: ['./worker-perfil-email-modal.component.scss'],
+  templateUrl: './perfil-email-modal.component.html',
+  styleUrls: ['./perfil-email-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorkerPerfilEmailModalComponent {
+export class PerfilEmailModalComponent {
   readonly passwordControl = input.required<FormControl>();
   readonly loading = input.required<boolean>();
 

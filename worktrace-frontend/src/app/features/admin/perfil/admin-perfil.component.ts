@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { ProfilePageComponent } from '../../profile/profile-page/profile-page.component';
 
 @Component({
-  selector: 'app-perfil.component',
-  imports: [],
+  selector: 'app-admin-perfil',
+  standalone: true,
+  imports: [ProfilePageComponent],
   templateUrl: './admin-perfil.component.html',
-  styleUrl: './admin-perfil.component.scss',
+  styleUrls: ['./admin-perfil.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminPerfilComponent {
-
-}
+export class AdminPerfilComponent {}
