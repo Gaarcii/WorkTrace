@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.controller.company;
 
+import com.worktrace.worktracebackend.dto.company.CompanyResponseDto;
 import com.worktrace.worktracebackend.dto.company.UpdateCompanyDto;
 import com.worktrace.worktracebackend.service.company.CompanyService;
 import jakarta.validation.Valid;
@@ -18,6 +19,12 @@ import java.util.Map;
 public class CompanyController {
 
     private final CompanyService companyService;
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CompanyResponseDto> getMyCompanyData() {
+        return ResponseEntity.ok(companyService.getMyCompanyData());
+    }
 
     @PatchMapping(value = "/logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")

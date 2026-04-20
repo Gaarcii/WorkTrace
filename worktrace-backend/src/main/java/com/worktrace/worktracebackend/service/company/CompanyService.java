@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.service.company;
 
+import com.worktrace.worktracebackend.dto.company.CompanyResponseDto;
 import com.worktrace.worktracebackend.dto.company.UpdateCompanyDto;
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.User;
@@ -20,6 +21,25 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
     private final StorageService storageService;
     private final UserService userService;
+
+    @Transactional(readOnly = true)
+    public CompanyResponseDto getMyCompanyData() {
+        User admin = userService.getAuthenticatedUser();
+        Company myCompany = admin.getCompany();
+
+        if (myCompany == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Este administrador no tiene ninguna empresa asignada"
+            );
+        }
+
+        return new CompanyResponseDto(
+                myCompany.getCompanyName(),
+                myCompany.getCif(),
+                myCompany.getLogoUrl()
+        );
+    }
 
     @Transactional
     public String updateMyCompanyLogo(MultipartFile file) {
@@ -49,7 +69,7 @@ public class CompanyService {
         return newLogoUrl;
     }
 
-@Transactional
+    @Transactional
     public void updateMyCompanyData(UpdateCompanyDto dto) {
         User admin = userService.getAuthenticatedUser();
         Company myCompany = admin.getCompany();
