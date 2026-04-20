@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { ProfilePageComponent } from '../../profile/profile-page/profile-page.component';
+import { ProfilePageComponent } from '../../profile-page/profile-page.component';
 
 @Component({
   selector: 'app-admin-perfil',

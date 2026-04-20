@@ -10,11 +10,11 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { take, finalize } from 'rxjs/operators';
-import { ProfileService } from '../../../shared/services/profile.service';
-import { AuthService } from '../../../core/auth/auth.service';
-import { ProfileRequest, ProfileResponse } from '../../../shared/models/profile.model';
-import { PasswordChangeRequest } from '../../../shared/models/auth.model';
-import { DiaHorario } from '../../../shared/models/work-schedule.model';
+import { ProfileService } from '../../shared/services/profile.service';
+import { AuthService } from '../../core/auth/auth.service';
+import { ProfileRequest, ProfileResponse } from '../../shared/models/profile.model';
+import { PasswordChangeRequest } from '../../shared/models/auth.model';
+import { DiaHorario } from '../../shared/models/work-schedule.model';
 import { PerfilIdentityComponent } from './components/perfil-identity/perfil-identity.component';
 import { PerfilContactComponent } from './components/perfil-contact/perfil-contact.component';
 import { PerfilSecurityComponent } from './components/perfil-security/perfil-security.component';
