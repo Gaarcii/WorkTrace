@@ -1,0 +1,190 @@
+<div class="incidencias-settings fade-in">
+  <div class="section-header">
+    <div class="header-left">
+      <h3 class="section-title">Tipos de Incidencias</h3>
+      <p class="section-subtitle">
+        Gestiona los motivos de ausencia o alertas disponibles en el sistema
+      </p>
+    </div>
+  </div>
+
+  <div class="new-type-card">
+    <div class="new-type-row">
+      <div class="input-wrapper">
+        <span class="material-icons input-icon">sell</span>
+        <input
+          class="modern-input"
+          type="text"
+          [value]="newTypeName()"
+          (input)="onTypeNameChange($any($event.target).value)"
+          (keyup.enter)="createType.emit()"
+          placeholder="Ej: Baja médica, Permiso retribuido..."
+          aria-label="Nuevo tipo de incidencia"
+        />
+        <div class="focus-border"></div>
+      </div>
+      <button
+        type="button"
+        class="btn-primary"
+        [disabled]="loading() || !newTypeName().trim()"
+        (click)="createType.emit()"
+      >
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          <span>Añadiendo...</span>
+        } @else {
+          <span class="material-icons">add</span>
+          <span>Añadir Tipo</span>
+        }
+      </button>
+    </div>
+  </div>
+
+  @if (loadingInitial()) {
+    <div class="loading-container">
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="loading-text">Cargando tipos de incidencia...</p>
+    </div>
+  } @else if (incidenceTypes().length > 0) {
+    <div class="tipos-list">
+      @for (tipo of incidenceTypes(); track tipo.id) {
+        <article class="tipo-card">
+          <div class="tipo-row">
+            @if (editingId() === tipo.id) {
+              <div class="tipo-edit-row">
+                <div class="input-wrapper edit-input-wrapper">
+                  <span class="material-icons input-icon">edit</span>
+                  <input
+                    class="modern-input"
+                    type="text"
+                    [value]="editingName()"
+                    (input)="onEditNameChange($any($event.target).value)"
+                    (keyup.enter)="saveEdit(tipo)"
+                    placeholder="Nombre del tipo"
+                    aria-label="Editar nombre del tipo de incidencia"
+                  />
+                  <div class="focus-border"></div>
+                </div>
+
+                <div class="tipo-edit-actions">
+                  <button
+                    type="button"
+                    class="icon-btn neutral-hover"
+                    [disabled]="loading()"
+                    (click)="cancelEdit()"
+                    aria-label="Cancelar edición"
+                  >
+                    <span class="material-icons">close</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="icon-btn save-hover"
+                    [disabled]="loading() || !editingName().trim()"
+                    (click)="saveEdit(tipo)"
+                    aria-label="Guardar tipo"
+                  >
+                    <span class="material-icons">check</span>
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <div class="tipo-left">
+                <div class="tag-icon-wrapper" aria-hidden="true">
+                  <span class="material-icons">label_important</span>
+                </div>
+                <span class="tipo-nombre">{{ tipo.name }}</span>
+              </div>
+
+              <div class="tipo-actions">
+                <button
+                  type="button"
+                  class="icon-btn neutral-hover tooltip-host"
+                  [disabled]="loading()"
+                  (click)="startEdit(tipo)"
+                  aria-label="Editar tipo"
+                >
+                  <span class="material-icons">edit</span>
+                  <span class="tooltip-text">Editar</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="icon-btn danger-hover tooltip-host"
+                  [disabled]="loading()"
+                  (click)="confirmDelete.emit(tipo)"
+                  aria-label="Eliminar tipo"
+                >
+                  @if (deletingId() === tipo.id || updatingId() === tipo.id) {
+                    <span class="btn-spinner red-spinner"></span>
+                  } @else {
+                    <span class="material-icons">delete_outline</span>
+                    <span class="tooltip-text">Eliminar</span>
+                  }
+                </button>
+              </div>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <div class="empty-icon-wrapper">
+        <span class="material-icons empty-icon">assignment_late</span>
+      </div>
+      <h4>Sin configuración</h4>
+      <p>No hay tipos de incidencia configurados en la plataforma.</p>
+      <small>Añade el primer tipo usando el formulario superior.</small>
+    </div>
+  }
+
+  @if (deleteDialogOpen()) {
+    <div class="modal-overlay" (click)="closeDeleteDialog.emit()">
+      <div class="modal-card small spring-in" (click)="$event.stopPropagation()">
+        <div class="modal-header danger-header">
+          <div class="header-title-group">
+            <span class="material-icons text-danger">warning_amber</span>
+            <h4>Eliminar incidencia</h4>
+          </div>
+        </div>
+
+        <div class="modal-body py-6">
+          <p class="delete-confirmation-text text-center">
+            ¿Estás seguro de que deseas eliminar el tipo<br />
+            <strong class="text-danger">"{{ typeToDelete()?.name }}"</strong>?
+          </p>
+
+          <div class="warning-box mt-4">
+            <span class="material-icons warning-icon">info</span>
+            <div class="warning-content">
+              <strong>Atención:</strong> Esta acción no se puede deshacer. Las incidencias de los
+              empleados que ya tengan este tipo <strong>no se eliminarán</strong>, pero dejará de
+              estar disponible para el futuro.
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions bg-gray-50">
+          <button type="button" class="btn-ghost" (click)="closeDeleteDialog.emit()">
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn-danger"
+            [disabled]="loading()"
+            (click)="deleteType.emit()"
+          >
+            @if (loading()) {
+              <span class="btn-spinner border-white"></span>
+              <span>Eliminando...</span>
+            } @else {
+              <span class="material-icons">delete_forever</span>
+              <span>Eliminar Tipo</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

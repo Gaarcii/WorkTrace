@@ -86,7 +86,6 @@ export class AdminHomeComponent implements OnInit {
     { icono: 'mdi-account-plus', texto: 'Añadir' },
     { icono: 'mdi-calendar-blank', texto: 'Horarios' },
     { icono: 'mdi-bell-outline', texto: 'Incidencias' },
-    { icono: 'mdi-cog-outline', texto: 'Configuración' },
   ]);
 
   readonly trabajadoresListFiltrados = computed<ActiveWorkerCard[]>(() => {
@@ -257,10 +256,6 @@ export class AdminHomeComponent implements OnInit {
     if (accion.texto === 'Filtrar') {
       console.log('Filtrar clicked');
       return;
-    }
-
-    if (accion.texto === 'Config') {
-      void this.router.navigate(['/admin/config']);
     }
   }
 

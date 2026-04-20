@@ -48,6 +48,8 @@ export class AdminNavbarComponent implements OnInit {
       this.activeTab.set('trabajadores');
     } else if (url.includes('/admin/perfil')) {
       this.activeTab.set('perfil');
+      } else if (url.includes('/admin/config')) {
+      this.activeTab.set('configuracion');
     } else {
       this.activeTab.set('home');
     }

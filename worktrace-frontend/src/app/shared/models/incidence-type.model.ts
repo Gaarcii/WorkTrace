@@ -6,3 +6,12 @@ export interface IncidenceTypeProjection {
 export interface IncidenceTypeResponseDto {
   tipos: IncidenceTypeProjection[];
 }
+
+export interface IncidenceTypeRequestDto {
+  name: string;
+}
+
+export interface IncidenceTypeItemDto {
+  id: string;
+  name: string;
+}

@@ -1,0 +1,98 @@
+<div class="page-container">
+  <div class="config-layout">
+    <app-admin-config-header
+      [sections]="sections()"
+      [activeSection]="activeSection()"
+      (sectionChange)="setActiveSection($event)"
+    />
+
+    <main class="config-content">
+      <div class="content-wrapper">
+        <div class="section-container fade-in">
+          @switch (activeSection()) {
+            @case ('general') {
+              <app-admin-config-general-settings
+                [isLoading]="companyLoading()"
+                [isSaving]="companySaving()"
+                [loadError]="companyLoadError()"
+                [logoPreview]="companyLogoPreview()"
+                [formData]="companyFormData()"
+                (companyNameChange)="onCompanyNameChange($event)"
+                (cifChange)="onCompanyCifChange($event)"
+                (fileSelected)="onLogoSelected($event)"
+                (removeLogo)="removeCurrentLogo()"
+                (saveSettings)="saveCompanySettings()"
+              />
+            }
+
+            @case ('sedes') {
+              <app-admin-config-work-sites
+                [loading]="workSitesLoading()"
+                [workSites]="workSites()"
+                [saving]="workSiteSaving()"
+                [deleting]="workSiteDeleting()"
+                [dialogCreateOpen]="workSiteDialogCreateOpen()"
+                [dialogDeleteOpen]="workSiteDialogDeleteOpen()"
+                [formData]="workSiteFormData()"
+                [editingSite]="editingWorkSite()"
+                [siteToDelete]="workSiteToDelete()"
+                [errorMessage]="workSiteErrorMessage()"
+                (openCreateDialog)="openCreateWorkSiteDialog()"
+                (closeCreateDialog)="closeWorkSiteDialog()"
+                (submitSite)="saveWorkSite()"
+                (editSite)="openEditWorkSiteDialog($event)"
+                (confirmDeleteSite)="openDeleteWorkSiteDialog($event)"
+                (closeDeleteDialog)="closeDeleteWorkSiteDialog()"
+                (deleteSite)="deleteWorkSite()"
+                (formNameChange)="onWorkSiteNameChange($event)"
+                (formAddressChange)="onWorkSiteAddressChange($event)"
+              />
+            }
+
+            @case ('incidencias') {
+              <app-admin-config-incidence-types
+                [loadingInitial]="incidenceTypesLoadingInitial()"
+                [loading]="incidenceTypesLoading()"
+                [incidenceTypes]="incidenceTypes()"
+                [updatingId]="incidenceTypeUpdatingId()"
+                [deletingId]="incidenceTypeDeletingId()"
+                [newTypeName]="newIncidenceTypeName()"
+                [deleteDialogOpen]="incidenceTypeDialogDeleteOpen()"
+                [typeToDelete]="incidenceTypeToDelete()"
+                (newTypeNameChange)="onNewIncidenceTypeNameChange($event)"
+                (createType)="createIncidenceType()"
+                (updateType)="updateIncidenceType($event)"
+                (confirmDelete)="openDeleteIncidenceTypeDialog($event)"
+                (closeDeleteDialog)="closeDeleteIncidenceTypeDialog()"
+                (deleteType)="deleteIncidenceType()"
+              />
+            }
+          }
+        </div>
+      </div>
+    </main>
+  </div>
+
+  @if (uiMessage().show) {
+    <div
+      class="snackbar slide-in-bottom"
+      [class.error]="uiMessage().color === 'error'"
+      role="status"
+      aria-live="polite"
+    >
+      <div class="snackbar-icon">
+        @if (uiMessage().color === 'error') {
+          <span class="material-icons">error_outline</span>
+        } @else {
+          <span class="material-icons">check_circle_outline</span>
+        }
+      </div>
+
+      <span class="snackbar-text">{{ uiMessage().message }}</span>
+
+      <button type="button" class="snackbar-close" (click)="closeMessage()" aria-label="Cerrar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  }
+</div>

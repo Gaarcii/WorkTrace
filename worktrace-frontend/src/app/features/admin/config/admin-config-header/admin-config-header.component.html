@@ -1,0 +1,23 @@
+<header class="config-header">
+  <div class="header-container">
+    <div class="header-title-section">
+      <div class="title-icon-wrapper">
+        <span class="material-icons header-icon" aria-hidden="true">settings</span>
+      </div>
+      <h2 class="page-title">Configuración</h2>
+    </div>
+
+    <nav class="horizontal-nav" aria-label="Secciones de configuración">
+      @for (section of sections(); track section.key) {
+        <button
+          type="button"
+          class="nav-item"
+          [class.active]="activeSection() === section.key"
+          (click)="setSection(section.key)"
+        >
+          <span class="nav-label">{{ section.label }}</span>
+        </button>
+      }
+    </nav>
+  </div>
+</header>

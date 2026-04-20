@@ -102,6 +102,13 @@ export const routes: Routes = [
     data: { roles: ['ROLE_ADMIN', 'ADMIN'] },
   },
   {
+    path: 'admin/config',
+    loadComponent: () =>
+      import('./features/admin/config/admin-congif.component').then((m) => m.AdminCongifComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_ADMIN', 'ADMIN'] },
+  },
+  {
     path: 'change-password',
     loadComponent: () =>
       import('./features/auth/password-change/password-change.component').then(
