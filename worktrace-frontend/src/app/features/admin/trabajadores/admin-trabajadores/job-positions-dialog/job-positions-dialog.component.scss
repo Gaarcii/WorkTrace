@@ -1,3 +1,4 @@
+@use "sass:color";
 $primary-dark: #000026;
 $grey-dark: #616161;
 $grey-light: #e0e0e0;
@@ -178,12 +179,12 @@ $error-text: #d32f2f;
   }
 
   &-primary {
-    background-color: $primary-dark;
-    color: white;
-    &:hover:not(:disabled) {
-      background-color: lighten($primary-dark, 10%);
-    }
+  background-color: $primary-dark;
+  color: white;
+  &:hover:not(:disabled) {
+    background-color: color.scale($primary-dark, $lightness: 10.8%);
   }
+}
 
   &-text {
     background-color: transparent;

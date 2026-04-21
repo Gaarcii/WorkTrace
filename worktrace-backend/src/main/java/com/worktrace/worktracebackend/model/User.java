@@ -1,7 +1,9 @@
 package com.worktrace.worktracebackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,20 +46,24 @@ public class User implements UserDetails {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Profile profile;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
     private java.util.List<TimeEntry> createdTimeEntries;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "deletedBy", fetch = FetchType.LAZY)
     private java.util.List<TimeEntry> deletedTimeEntries;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "resolvedBy", fetch = FetchType.LAZY)
     private java.util.List<Incidence> resolvedIncidences;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
@@ -67,28 +73,8 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
+    public @NonNull String getUsername() {
         return email;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.isEnabled;
-    }
 }

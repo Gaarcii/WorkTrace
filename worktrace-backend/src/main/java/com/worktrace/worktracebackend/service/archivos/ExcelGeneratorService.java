@@ -1,7 +1,7 @@
 package com.worktrace.worktracebackend.service.archivos;
 
 
-import com.worktrace.worktracebackend.dto.auditTimeEntries.AuditRecordDto;
+import com.worktrace.worktracebackend.dto.auditTimeEntry.AuditRecordDto;
 import com.worktrace.worktracebackend.model.TimeEntry;
 
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.worktrace.worktracebackend.service.timeEntry;
 
-import com.worktrace.worktracebackend.dto.auditTimeEntries.AuditRecordDto;
+import com.worktrace.worktracebackend.dto.auditTimeEntry.AuditRecordDto;
 import com.worktrace.worktracebackend.dto.incidence.WorkerIncidenceResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.exception.NotFoundException;
@@ -11,6 +11,7 @@ import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
 import com.worktrace.worktracebackend.service.archivos.AdminPdfGeneratorService;
 import com.worktrace.worktracebackend.service.archivos.EmployeePdfGeneratorService;
 import com.worktrace.worktracebackend.service.archivos.ExcelGeneratorService;
+import com.worktrace.worktracebackend.service.auditTimeEntry.AuditTimeEntryService;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
 import com.worktrace.worktracebackend.service.incidence.IncidenceService;
@@ -20,6 +21,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.time.*;
@@ -39,6 +42,8 @@ public class TimeEntryService {
     private final AdminPdfGeneratorService adminPdfGeneratorService;
     private final ExcelGeneratorService excelGeneratorService;
     private final IncidenceService incidenceService;
+    private final ObjectMapper objectMapper;
+    private final AuditTimeEntryService auditTimeEntryService;
 
     @Transactional
     public TimeEntryResponseDto procesarFichaje(TimeEntryRequestDto requestDto, String ip, String userAgent) {
@@ -411,35 +416,64 @@ public class TimeEntryService {
 
     @Transactional
     public void editarFichaje(UUID id, EditTimeEntryRequestDto dto) {
+        if (dto.getJustificacion() == null || dto.getJustificacion().trim().length() < 10) {
+            throw new IllegalArgumentException("La justificación es obligatoria y debe tener al menos 10 caracteres.");
+        }
+
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
         TimeEntry fichaje = comprobarFichaje(id, company);
 
-        fichaje.setStartAt(dto.getEntrada());
-        fichaje.setWorkDate(dto.getEntrada().toLocalDate());
+        try {
+            String oldDataJson = objectMapper.writeValueAsString(fichaje);
 
-        if (dto.getSalida() != null) {
-            fichaje.setEndAt(dto.getSalida());
-            fichaje.setEstadoFichaje(EstadoFichaje.CLOSED);
-        } else {
-            fichaje.setEndAt(null);
-            fichaje.setEstadoFichaje(EstadoFichaje.OPEN);
+            fichaje.setStartAt(dto.getEntrada());
+            fichaje.setWorkDate(dto.getEntrada().toLocalDate());
+
+            if (dto.getSalida() != null) {
+                fichaje.setEndAt(dto.getSalida());
+                fichaje.setEstadoFichaje(EstadoFichaje.CLOSED);
+            } else {
+                fichaje.setEndAt(null);
+                fichaje.setEstadoFichaje(EstadoFichaje.OPEN);
+            }
+
+            fichaje.setModificationReason(dto.getJustificacion());
+            fichaje.setUpdatedAt(OffsetDateTime.now());
+
+            String newDataJson = objectMapper.writeValueAsString(fichaje);
+
+            auditTimeEntryService.logTimeEntryChange("ADMIN_ADJUST", dto.getJustificacion(), oldDataJson, newDataJson, fichaje.getId());
+
+        } catch (JacksonException e) {
+            throw new RuntimeException("Error al generar los datos de auditoría", e);
         }
-
-        fichaje.setModificationReason(dto.getJustificacion());
-        fichaje.setUpdatedAt(OffsetDateTime.now());
     }
 
     @Transactional
     public void anularFichaje(UUID id, AnularTimeEntryRequestDto dto) {
+        if (dto.getJustificacion() == null || dto.getJustificacion().trim().length() < 10) {
+            throw new IllegalArgumentException("El motivo de anulación es obligatorio y debe tener al menos 10 caracteres.");
+        }
+
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
         TimeEntry fichaje = comprobarFichaje(id, company);
 
-        fichaje.setDeletedAt(OffsetDateTime.now());
-        fichaje.setDeletedBy(info.getUser());
-        fichaje.setDeleteReason(dto.getJustificacion());
-        fichaje.setUpdatedAt(OffsetDateTime.now());
+        try {
+            String oldDataJson = objectMapper.writeValueAsString(fichaje);
+
+            fichaje.setDeletedAt(OffsetDateTime.now());
+            fichaje.setDeletedBy(info.getUser());
+            fichaje.setDeleteReason(dto.getJustificacion());
+            fichaje.setUpdatedAt(OffsetDateTime.now());
+
+            String newDataJson = objectMapper.writeValueAsString(fichaje);
+
+            auditTimeEntryService.logTimeEntryChange("SOFT_DELETE", dto.getJustificacion(), oldDataJson, newDataJson, fichaje.getId());
+        } catch (JacksonException e) {
+            throw new RuntimeException("Error al generar los datos de auditoría", e);
+        }
     }
 
     @Transactional(readOnly = true)

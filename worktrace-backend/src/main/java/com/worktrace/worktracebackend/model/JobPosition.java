@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,10 +28,12 @@ public class JobPosition {
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "position", fetch = FetchType.LAZY)
     private java.util.List<Profile> profiles;
 }

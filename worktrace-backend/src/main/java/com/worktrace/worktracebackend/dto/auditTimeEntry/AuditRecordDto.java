@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.dto.auditTimeEntries;
+package com.worktrace.worktracebackend.dto.auditTimeEntry;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

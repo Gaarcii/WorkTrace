@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,6 +44,7 @@ public class Profile {
     @Column(name = "weekly_hours")
     private BigDecimal weeklyHours;
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
@@ -52,12 +54,15 @@ public class Profile {
     @JoinColumn(name = "position_id")
     private JobPosition position;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private java.util.List<WorkSchedule> workSchedules;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private java.util.List<TimeEntry> timeEntries;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
     private java.util.List<Incidence> incidences;
 }
