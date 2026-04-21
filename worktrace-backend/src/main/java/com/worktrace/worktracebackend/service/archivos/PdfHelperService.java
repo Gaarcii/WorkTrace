@@ -1,32 +1,23 @@
 package com.worktrace.worktracebackend.service.archivos;
 
 import com.worktrace.worktracebackend.model.Company;
+import com.worktrace.worktracebackend.service.hash.HashService;
+import lombok.RequiredArgsConstructor;
 import org.openpdf.text.*;
 import org.openpdf.text.pdf.*;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Service
+@RequiredArgsConstructor
 public class PdfHelperService {
 
+    private final HashService hashService;
+
     public String generarHashSha256(String rawData) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(rawData.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (Exception e) {
-            return "ERROR_HASH_GENERATION";
-        }
+        return hashService.sha256Hex(rawData);
     }
 
     public void addCompanyHeader(Document document, Company company, String reportTitle) throws DocumentException {

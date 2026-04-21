@@ -135,4 +135,8 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
         List<TimeEntry> findByCompany_IdAndWorkDateOrderByStartAtDesc(UUID companyId, LocalDate workDate);
 
     List<TimeEntry> findByCompany_IdAndWorkDateBetweenOrderByWorkDateDesc(UUID companyId, LocalDate startDate, LocalDate endDate);
+
+    List<TimeEntry> findByCompanyIdAndWorkDateOrderByCreatedAtAsc(UUID companyId, LocalDate workDate);
+
+    long countByCompanyIdAndWorkDateAndEstadoFichaje(UUID companyId, LocalDate workDate, EstadoFichaje estadoFichaje);
 }
