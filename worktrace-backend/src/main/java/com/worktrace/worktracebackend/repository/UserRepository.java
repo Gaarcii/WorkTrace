@@ -1,7 +1,10 @@
 package com.worktrace.worktracebackend.repository;
 
 import com.worktrace.worktracebackend.dto.user.DepartmentStatProjection;
+import com.worktrace.worktracebackend.model.Role;
 import com.worktrace.worktracebackend.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +19,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
 
     Long countUsersByCompany_Id(UUID companyId);
+
+    Page<User> findByCompanyIdAndRole(UUID companyId, Role role, Pageable pageable);
+
+    Optional<User> findByIdAndCompanyId(UUID id, UUID companyId);
 
     @Query(value = """
             SELECT j.title AS departamento,
