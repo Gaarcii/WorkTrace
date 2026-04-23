@@ -94,6 +94,20 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
 
     List<TimeEntry> getAllByCompany_IdAndEndAtIsNull(UUID companyId);
 
+    @Query("""
+            SELECT COUNT(DISTINCT t.employee.userId)
+            FROM TimeEntry t
+            WHERE t.company.id = :companyId
+              AND t.workDate = :workDate
+              AND t.endAt IS NULL
+              AND t.estadoFichaje = :estadoFichaje
+            """)
+    long countDistinctActiveWorkersByCompanyAndWorkDate(
+            @Param("companyId") UUID companyId,
+            @Param("workDate") LocalDate workDate,
+            @Param("estadoFichaje") EstadoFichaje estadoFichaje
+    );
+
     @Query(value = """
             SELECT COALESCE(SUM(
                 CASE

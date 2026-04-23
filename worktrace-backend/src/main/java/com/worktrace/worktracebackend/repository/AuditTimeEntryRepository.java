@@ -10,6 +10,8 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public interface AuditTimeEntryRepository extends JpaRepository<AuditTimeEntry, UUID> {
+    long countByCompanyId(UUID companyId);
+
     @Query("SELECT COUNT(a) > 0 FROM AuditTimeEntry a " +
             "WHERE a.companyId = :companyId " +
             "AND a.createdAt > :closureTime " +
