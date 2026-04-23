@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -31,8 +32,10 @@ public class InspectorController {
 
     @GetMapping("/empleados")
     @PreAuthorize("hasRole('INSPECTOR')")
-    public ResponseEntity<Page<EmpleadoDto>> getEmpleados(Pageable pageable) {
-        return ResponseEntity.ok(inspectorService.getEmpleados(pageable));
+    public ResponseEntity<Page<EmpleadoDto>> getEmpleados(
+            Pageable pageable, 
+            @RequestParam(required = false) String search) {
+        return ResponseEntity.ok(inspectorService.getEmpleados(pageable, search));
     }
 
     @GetMapping("/empleados/{id}")

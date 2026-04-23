@@ -22,6 +22,19 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Page<User> findByCompanyIdAndRole(UUID companyId, Role role, Pageable pageable);
 
+    @Query("SELECT u " +
+            "FROM User u" +
+            " WHERE u.company.id = :companyId " +
+            "AND u.role = :role " +
+            "AND LOWER(u.profile.fullName) " +
+            "LIKE LOWER(CONCAT(:search, '%'))")
+    Page<User> searchByCompanyIdAndRoleAndFullName(
+            @Param("companyId") UUID companyId,
+            @Param("role") Role role,
+            @Param("search") String search,
+            Pageable pageable
+    );
+
     Optional<User> findByIdAndCompanyId(UUID id, UUID companyId);
 
     @Query(value = """

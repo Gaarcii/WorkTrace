@@ -14,7 +14,6 @@ import com.worktrace.worktracebackend.repository.UserRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -58,24 +57,25 @@ public class InspectorService {
         );
     }
 
-
     @Transactional(readOnly = true)
-    public Page<EmpleadoDto> getEmpleados(Pageable pageable) {
-        return getEmpleadoDtos(pageable, userService, userRepository);
-    }
-
-    @NonNull
-    static Page<EmpleadoDto> getEmpleadoDtos(Pageable pageable, UserService userService, UserRepository userRepository) {
+    public Page<EmpleadoDto> getEmpleados(Pageable pageable, String search) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         var companyId = info.getCompany().getId();
 
-        Page<User> users = userRepository.findByCompanyIdAndRole(companyId, Role.WORKER, pageable);
+        Page<User> users;
 
+        if (search != null && !search.trim().isEmpty()) {
+            users = userRepository.searchByCompanyIdAndRoleAndFullName
+                    (companyId, Role.WORKER, search.trim(), pageable);
+        } else {
+            users = userRepository.findByCompanyIdAndRole(companyId, Role.WORKER, pageable);
+        }
         return users.map(user -> EmpleadoDto.builder()
                 .id(user.getId())
                 .photo(user.getProfile().getAvatarUrl())
                 .name(user.getProfile().getFullName())
-                .jobPosition(user.getProfile().getPosition() != null ? user.getProfile().getPosition().getTitle() : null)
+                .jobPosition(user.getProfile().getPosition() != null ?
+                        user.getProfile().getPosition().getTitle() : null)
                 .email(user.getEmail())
                 .phone(user.getProfile().getPhone())
                 .employeeCode(user.getProfile().getEmployeeCode())
