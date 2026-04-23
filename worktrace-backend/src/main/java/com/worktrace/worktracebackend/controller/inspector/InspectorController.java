@@ -3,6 +3,7 @@ package com.worktrace.worktracebackend.controller.inspector;
 import com.worktrace.worktracebackend.dto.inspector.EmpleadoDetalleDto;
 import com.worktrace.worktracebackend.dto.inspector.EmpleadoDto;
 import com.worktrace.worktracebackend.dto.inspector.InspectorHomeResponseDto;
+import com.worktrace.worktracebackend.dto.inspector.InspectorIncidenceDto;
 import com.worktrace.worktracebackend.service.inspector.InspectorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,5 +44,17 @@ public class InspectorController {
     public ResponseEntity<EmpleadoDetalleDto> getEmpleadoDetalle(@PathVariable UUID id) {
         return ResponseEntity.ok(inspectorService.getEmpleadoDetalle(id));
     }
-}
 
+    @GetMapping("/incidencias")
+    @PreAuthorize("hasRole('INSPECTOR')")
+    public ResponseEntity<Page<InspectorIncidenceDto>> getIncidencias(
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) UUID tipoIncidenciaId,
+            @RequestParam(required = false) String busqueda,
+            Pageable pageable) {
+        
+        return ResponseEntity.ok(
+                inspectorService.getIncidenciasFiltradas(estado, tipoIncidenciaId, busqueda, pageable)
+        );
+    }
+}

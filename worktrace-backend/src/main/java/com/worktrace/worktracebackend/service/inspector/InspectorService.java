@@ -3,10 +3,9 @@ package com.worktrace.worktracebackend.service.inspector;
 import com.worktrace.worktracebackend.dto.inspector.EmpleadoDetalleDto;
 import com.worktrace.worktracebackend.dto.inspector.EmpleadoDto;
 import com.worktrace.worktracebackend.dto.inspector.InspectorHomeResponseDto;
+import com.worktrace.worktracebackend.dto.inspector.InspectorIncidenceDto;
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleResponseDto;
-import com.worktrace.worktracebackend.model.EstadoFichaje;
-import com.worktrace.worktracebackend.model.Role;
-import com.worktrace.worktracebackend.model.User;
+import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.AuditTimeEntryRepository;
 import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
@@ -70,17 +69,16 @@ public class InspectorService {
         } else {
             users = userRepository.findByCompanyIdAndRole(companyId, Role.WORKER, pageable);
         }
-        return users.map(user -> EmpleadoDto.builder()
-                .id(user.getId())
-                .photo(user.getProfile().getAvatarUrl())
-                .name(user.getProfile().getFullName())
-                .jobPosition(user.getProfile().getPosition() != null ?
-                        user.getProfile().getPosition().getTitle() : null)
-                .email(user.getEmail())
-                .phone(user.getProfile().getPhone())
-                .employeeCode(user.getProfile().getEmployeeCode())
-                .role(user.getRole())
-                .build());
+        return users.map(user -> new EmpleadoDto(
+                user.getId(),
+                user.getProfile().getAvatarUrl(),
+                user.getProfile().getFullName(),
+                user.getProfile().getPosition() != null ? user.getProfile().getPosition().getTitle() : null,
+                user.getEmail(),
+                user.getProfile().getPhone(),
+                user.getProfile().getEmployeeCode(),
+                user.getRole()
+        ));
     }
 
     @Transactional(readOnly = true)
@@ -95,12 +93,12 @@ public class InspectorService {
     }
 
     private EmpleadoDetalleDto getEmpleadoDetalleDto(User user) {
-        return EmpleadoDetalleDto.builder()
-                .id(user.getId())
-                .registrationDate(user.getCreatedAt())
-                .weeklyHours(user.getProfile().getWeeklyHours())
-                .isActive(user.getProfile().getIsActive())
-                .workSchedules(user.getProfile().getWorkSchedules().stream()
+        return new EmpleadoDetalleDto(
+                user.getId(),
+                user.getCreatedAt(),
+                user.getProfile().getWeeklyHours(),
+                user.getProfile().getIsActive(),
+                user.getProfile().getWorkSchedules().stream()
                         .map(ws -> {
                             long horas = Duration.between(ws.getStartTime(), ws.getEndTime()).toHours();
                             return new WorkScheduleResponseDto(
@@ -112,8 +110,52 @@ public class InspectorService {
                                     horas
                             );
                         })
-                        .collect(Collectors.toList()))
-                .build();
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<InspectorIncidenceDto> getIncidenciasFiltradas(
+            String estado,
+            UUID tipoIncidenciaId,
+            String busqueda,
+            Pageable pageable) {
+
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        var companyId = info.getCompany().getId();
+
+        EstadoIncidencia estadoEnum = null;
+        if (estado != null && !estado.trim().isEmpty()) {
+            try {
+                estadoEnum = EstadoIncidencia.valueOf(estado.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Estado no válido: " + estado);
+            }
+        }
+
+        Page<Incidence> incidences = incidenceRepository.findFilteredIncidences(
+                companyId,
+                estadoEnum,
+                tipoIncidenciaId,
+                (busqueda != null && !busqueda.trim().isEmpty()) ? busqueda.trim() : null,
+                pageable
+        );
+
+        return incidences.map(this::mapToInspectorIncidenceDto);
+    }
+
+    private InspectorIncidenceDto mapToInspectorIncidenceDto(Incidence incidence) {
+        return new InspectorIncidenceDto(
+                incidence.getProfile().getFullName(),
+                incidence.getProfile().getUser().getEmail(),
+                incidence.getProfile().getAvatarUrl(),
+                incidence.getType().getName(),
+                incidence.getCreatedAt(),
+                incidence.getStatus().name(),
+                incidence.getComment(),
+                incidence.getResolvedBy() != null ?
+                        incidence.getResolvedBy().getProfile().getFullName() : null
+        );
     }
 
 }

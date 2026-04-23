@@ -42,4 +42,17 @@ public interface IncidenceRepository extends JpaRepository<Incidence, UUID> {
 
     boolean existsByType_IdAndCompany_Id(UUID typeId, UUID companyId);
 
+    @Query("SELECT i FROM Incidence i " +
+            "WHERE i.company.id = :companyId " +
+            "AND (:estado IS NULL OR i.status = :estado) " +
+            "AND (cast(:tipoIncidenciaId as uuid) IS NULL OR i.type.id = :tipoIncidenciaId) " +
+            "AND (cast(:busqueda as string) IS NULL OR LOWER(i.profile.fullName) " +
+            "LIKE LOWER(CONCAT('%', cast(:busqueda as string), '%')))")
+    Page<Incidence> findFilteredIncidences(
+            @Param("companyId") UUID companyId,
+            @Param("estado") EstadoIncidencia estado,
+            @Param("tipoIncidenciaId") UUID tipoIncidenciaId,
+            @Param("busqueda") String busqueda,
+            Pageable pageable
+    );
 }

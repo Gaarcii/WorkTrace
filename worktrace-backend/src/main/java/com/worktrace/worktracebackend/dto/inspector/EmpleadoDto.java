@@ -1,13 +1,14 @@
 package com.worktrace.worktracebackend.dto.inspector;
 
 import com.worktrace.worktracebackend.model.Role;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.util.UUID;
 
-@Data
-@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmpleadoDto {
     private UUID id;
     private String photo;
