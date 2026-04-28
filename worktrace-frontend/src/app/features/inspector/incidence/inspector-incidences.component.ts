@@ -10,16 +10,14 @@ import { FormControl } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { combineLatest } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize, startWith, take } from 'rxjs/operators';
-
-import { InspectorWorkerService } from '../../../shared/services/inspector/inspector-worker.service';
 import { InspectorIncidenceDto } from '../../../shared/models/inspector.model';
 import { WorkerIncidenceTypesService } from '../../../shared/services/worker/worker-tipos-incidencias.service';
-
 import {
   IncidencesFilterComponent,
   StatusOption,
 } from './incidences-filter/incidences-filter.component';
 import { IncidencesListComponent } from './incidences-list/incidences-list.component';
+import { InspectorIncidenciaService } from '../../../shared/services/inspector/inspector-incidencias.service';
 
 @Component({
   selector: 'app-inspector-incidences',
@@ -29,7 +27,7 @@ import { IncidencesListComponent } from './incidences-list/incidences-list.compo
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InspectorIncidencesComponent implements OnInit {
-  private readonly inspectorWorkerService = inject(InspectorWorkerService);
+  private readonly inspectorWorkerService = inject(InspectorIncidenciaService);
   private readonly incidenceTypesService = inject(WorkerIncidenceTypesService);
   private readonly destroyRef = inject(DestroyRef);
 

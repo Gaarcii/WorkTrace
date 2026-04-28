@@ -14,13 +14,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, finalize, take } from 'rxjs/operators';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-
-import { InspectorWorkerService } from '../../../shared/services/inspector/inspector-worker.service';
 import { InspectorAuditDto, InspectorAuditDetailDto } from '../../../shared/models/inspector.model';
 import { AuditDetailComponent } from './audit-detail/audit-detail.component';
 import { AuditFilterComponent, ActionOption } from './audit-filter/audit-filter.component';
 import { AuditTableComponent } from './audit-table/audit-table.component';
-
+import { InspectorAuditoriaService } from '../../../shared/services/inspector/inspector-auditoria.service';
 
 @Component({
   selector: 'app-inspector-audit',
@@ -36,7 +34,7 @@ import { AuditTableComponent } from './audit-table/audit-table.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InspectorAuditComponent implements OnInit {
-  private readonly inspectorWorkerService = inject(InspectorWorkerService);
+  private readonly inspectorWorkerService = inject(InspectorAuditoriaService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialog = inject(MatDialog);
 

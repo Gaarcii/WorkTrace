@@ -167,7 +167,7 @@ public class TimeEntryController {
     }
 
     @GetMapping("/admin/export/pdf")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSPECTOR')")
     public ResponseEntity<byte[]> exportarInformeEmpresaPdf(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
@@ -186,7 +186,7 @@ public class TimeEntryController {
     }
 
     @GetMapping("/admin/export/excel")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSPECTOR')")
     public ResponseEntity<byte[]> exportarInformeEmpresaExcel(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {

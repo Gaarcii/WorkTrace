@@ -1,0 +1,91 @@
+<div class="export-widget-container">
+  <div class="widget-header">
+    <div class="icon-circle">
+      <mat-icon>download</mat-icon>
+    </div>
+    <div class="header-text">
+      <h2>Centro de Exportación Oficial</h2>
+      <p>Generación de informes con firma criptográfica SHA-256 (Art. 34.9 ET)</p>
+    </div>
+  </div>
+
+  <div class="widget-body">
+    <div class="section-block format-section">
+      <span class="section-title">1. FORMATO DEL DOCUMENTO</span>
+      <div class="format-options">
+        <button
+          class="format-btn"
+          [class.active]="selectedFormat() === 'PDF'"
+          (click)="setFormat('PDF')"
+          [disabled]="isExporting()"
+        >
+          <mat-icon class="icon-pdf">picture_as_pdf</mat-icon>
+          <strong>Documento PDF</strong>
+        </button>
+        <button
+          class="format-btn"
+          [class.active]="selectedFormat() === 'EXCEL'"
+          (click)="setFormat('EXCEL')"
+          [disabled]="isExporting()"
+        >
+          <mat-icon class="icon-excel">table_view</mat-icon>
+          <span>Hoja Excel</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section-block period-section">
+      <span class="section-title">2. PERIODO A AUDITAR</span>
+      <div class="period-options">
+        <div
+          class="period-card"
+          [class.active]="selectedPeriod() === 'TODAY'"
+          [class.disabled]="isExporting()"
+          (click)="setPeriod('TODAY')"
+        >
+          <mat-icon>event</mat-icon>
+          <span>Hoy</span>
+        </div>
+        <div
+          class="period-card"
+          [class.active]="selectedPeriod() === 'MONTH'"
+          [class.disabled]="isExporting()"
+          (click)="setPeriod('MONTH')"
+        >
+          <mat-icon>calendar_month</mat-icon>
+          <span>Este Mes</span>
+        </div>
+        <div
+          class="period-card"
+          [class.active]="selectedPeriod() === 'YEAR'"
+          [class.disabled]="isExporting()"
+          (click)="setPeriod('YEAR')"
+        >
+          <mat-icon>date_range</mat-icon>
+          <span>Este Año</span>
+        </div>
+        <div
+          class="period-card"
+          [class.active]="selectedPeriod() === 'ALL'"
+          [class.disabled]="isExporting()"
+          (click)="setPeriod('ALL')"
+        >
+          <mat-icon>history</mat-icon>
+          <span>Histórico (4 años)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block action-section">
+      <button class="download-btn" (click)="onExport()" [disabled]="isExporting()">
+        @if (isExporting()) {
+          <mat-spinner diameter="20" class="spinner-white"></mat-spinner>
+          <span>Firmando...</span>
+        } @else {
+          <mat-icon>download</mat-icon>
+          <span>Descargar Informe</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

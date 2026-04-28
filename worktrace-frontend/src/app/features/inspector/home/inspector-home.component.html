@@ -13,6 +13,10 @@
   } @else if (stats(); as currentStats) {
     <app-inspector-stats-grid [stats]="currentStats" />
 
+    <div class="export-widget-wrapper">
+      <app-inspector-export-card [isExporting]="isExporting()" (export)="handleExport($event)" />
+    </div>
+
     <app-inspector-info-grid />
   }
 </div>

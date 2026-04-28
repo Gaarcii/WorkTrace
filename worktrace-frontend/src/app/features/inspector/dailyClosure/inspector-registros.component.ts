@@ -11,12 +11,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, finalize, startWith, take } from 'rxjs/operators';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-
-import { InspectorWorkerService } from '../../../shared/services/inspector/inspector-worker.service';
 import { InspectorDailyClosureDto } from '../../../shared/models/inspector.model';
-
 import { RegistrosFilterComponent } from './registros-filter/registros-filter.component';
 import { RegistrosTableComponent } from './registros-table/registros-table.component';
+import { InspectorRegistroDiarioService } from '../../../shared/services/inspector/inspector-registro-diario.service';
 
 @Component({
   selector: 'app-inspector-registros',
@@ -26,7 +24,7 @@ import { RegistrosTableComponent } from './registros-table/registros-table.compo
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InspectorRegistrosComponent implements OnInit {
-  private readonly inspectorWorkerService = inject(InspectorWorkerService);
+  private readonly inspectorWorkerService = inject(InspectorRegistroDiarioService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly filterForm = new FormGroup({
