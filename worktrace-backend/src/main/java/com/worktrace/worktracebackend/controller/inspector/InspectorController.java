@@ -61,4 +61,16 @@ public class InspectorController {
 
         return ResponseEntity.ok(inspectorService.getRegistrosDiarios(startDate, endDate, pageable));
     }
+
+    @GetMapping("/auditoria")
+    @PreAuthorize("hasRole('INSPECTOR')")
+    public ResponseEntity<Page<InspectorAuditDto>> getAuditorias(Pageable pageable) {
+        return ResponseEntity.ok(inspectorService.getAuditorias(pageable));
+    }
+
+    @GetMapping("/auditoria/{id}")
+    @PreAuthorize("hasRole('INSPECTOR')")
+    public ResponseEntity<InspectorAuditDetailDto> getAuditoriaDetalle(@PathVariable UUID id) {
+        return ResponseEntity.ok(inspectorService.getAuditoriaDetalle(id));
+    }
 }

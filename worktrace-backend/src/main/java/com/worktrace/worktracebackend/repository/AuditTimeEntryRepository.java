@@ -1,6 +1,8 @@
 package com.worktrace.worktracebackend.repository;
 
 import com.worktrace.worktracebackend.model.AuditTimeEntry;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +21,6 @@ public interface AuditTimeEntryRepository extends JpaRepository<AuditTimeEntry, 
     boolean existsEditsAfterClosure(@Param("companyId") UUID companyId,
                                     @Param("workDate") LocalDate workDate,
                                     @Param("closureTime") OffsetDateTime closureTime);
+
+    Page<AuditTimeEntry> findByCompanyIdOrderByCreatedAtDesc(UUID companyId, Pageable pageable);
 }

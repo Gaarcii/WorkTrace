@@ -176,4 +176,51 @@ public class InspectorService {
                 closure.getComputedAt()
         ));
     }
+
+    @Transactional(readOnly = true)
+    public Page<InspectorAuditDto> getAuditorias(Pageable pageable) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        var companyId = info.getCompany().getId();
+
+        Page<AuditTimeEntry> audits = auditTimeEntryRepository.findByCompanyIdOrderByCreatedAtDesc(companyId, pageable);
+
+        return audits.map(audit -> {
+            String actorName = userRepository.findById(audit.getActorUserId())
+                    .map(u -> u.getProfile().getFullName())
+                    .orElse("Usuario Desconocido");
+
+            return new InspectorAuditDto(
+                    audit.getId(),
+                    audit.getCreatedAt(),
+                    audit.getAction(),
+                    audit.getReason(),
+                    actorName
+            );
+        });
+    }
+
+    @Transactional(readOnly = true)
+    public InspectorAuditDetailDto getAuditoriaDetalle(UUID auditId) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        var companyId = info.getCompany().getId();
+
+        AuditTimeEntry audit = auditTimeEntryRepository.findById(auditId)
+                .orElseThrow(() -> new RuntimeException("Registro de auditoría no encontrado"));
+
+        if (!audit.getCompanyId().equals(companyId)) {
+            throw new RuntimeException("No tienes permiso para ver este registro");
+        }
+
+        String actorName = userRepository.findById(audit.getActorUserId())
+                .map(u -> u.getProfile().getFullName())
+                .orElse("Usuario Desconocido");
+
+        return new InspectorAuditDetailDto(
+                audit.getId(),
+                audit.getCreatedAt(),
+                audit.getReason(),
+                actorName,
+                audit.getOldData()
+        );
+    }
 }
