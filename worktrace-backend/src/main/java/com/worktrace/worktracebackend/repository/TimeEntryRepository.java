@@ -146,11 +146,11 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
 
     Page<TimeEntry> findByEmployee_UserIdAndDeletedAtIsNullOrderByWorkDateDesc(UUID userId, Pageable pageable);
 
-        List<TimeEntry> findByCompany_IdAndWorkDateOrderByStartAtDesc(UUID companyId, LocalDate workDate);
+    List<TimeEntry> findByCompany_IdAndWorkDateOrderByStartAtDesc(UUID companyId, LocalDate workDate);
 
     List<TimeEntry> findByCompany_IdAndWorkDateBetweenOrderByWorkDateDesc(UUID companyId, LocalDate startDate, LocalDate endDate);
 
-    List<TimeEntry> findByCompanyIdAndWorkDateOrderByCreatedAtAsc(UUID companyId, LocalDate workDate);
+    List<TimeEntry> findByCompanyIdAndWorkDateOrderByStartAtAscIdAsc(UUID companyId, LocalDate date);
 
     long countByCompanyIdAndWorkDateAndEstadoFichaje(UUID companyId, LocalDate workDate, EstadoFichaje estadoFichaje);
 }

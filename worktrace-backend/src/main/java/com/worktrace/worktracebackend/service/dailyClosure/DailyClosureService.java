@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,8 +44,6 @@ public class DailyClosureService {
         LocalDate targetDate = LocalDate.now().minusDays(1);
         List<Company> companies = companyRepository.findAll();
 
-        log.info("Iniciando cierre diario automático para {} empresas. Fecha: {}", companies.size(), targetDate);
-
         for (Company company : companies) {
             try {
                 procesarCierreIndividual(company, targetDate);
@@ -52,10 +51,12 @@ public class DailyClosureService {
                 log.error("Fallo en cierre de empresa {}: {}", company.getCompanyName(), e.getMessage());
             }
         }
-    }
+   }
 
     private void procesarCierreIndividual(Company company, LocalDate targetDate) {
-        if (dailyClosureRepository.existsByCompanyIdAndWorkDate(company.getId(), targetDate)) return;
+        if (dailyClosureRepository.existsByCompanyIdAndWorkDate(company.getId(), targetDate)) {
+            throw new RuntimeException("El cierre para la fecha " + targetDate + " ya está realizado.");
+        }
 
         long openShifts = timeEntryRepository.countByCompanyIdAndWorkDateAndEstadoFichaje(
                 company.getId(), targetDate, EstadoFichaje.OPEN);
@@ -69,7 +70,7 @@ public class DailyClosureService {
                 .map(DailyClosure::getDayHash)
                 .orElse("GENESIS_HASH_0000000000000000000000000000");
 
-        List<TimeEntry> entries = timeEntryRepository.findByCompanyIdAndWorkDateOrderByCreatedAtAsc(
+        List<TimeEntry> entries = timeEntryRepository.findByCompanyIdAndWorkDateOrderByStartAtAscIdAsc(
                 company.getId(), targetDate);
 
         String newHash = generarHashDelDia(entries, previousHash);
@@ -83,7 +84,6 @@ public class DailyClosureService {
         closure.setComputedAt(OffsetDateTime.now());
 
         dailyClosureRepository.save(closure);
-        log.info("Cierre guardado para {}: {}", company.getCompanyName(), newHash);
     }
 
     public String verificarIntegridad(LocalDate date) {
@@ -92,7 +92,7 @@ public class DailyClosureService {
         DailyClosure closure = dailyClosureRepository.findByCompanyIdAndWorkDate(companyId, date)
                 .orElseThrow(() -> new RuntimeException("No hay cierre para esta fecha"));
 
-        List<TimeEntry> entries = timeEntryRepository.findByCompanyIdAndWorkDateOrderByCreatedAtAsc(companyId, date);
+        List<TimeEntry> entries = timeEntryRepository.findByCompanyIdAndWorkDateOrderByStartAtAscIdAsc(companyId, date);
 
         String currentHash = generarHashDelDia(entries, closure.getPrevDayHash());
         String storedHash = closure.getDayHash();
@@ -120,8 +120,8 @@ public class DailyClosureService {
                 rawData.append(entry.getId())
                         .append(entry.getEmployee().getUserId())
                         .append(entry.getWorkDate())
-                        .append(entry.getStartAt())
-                        .append(entry.getEndAt() != null ? entry.getEndAt() : "NULL")
+                        .append(entry.getStartAt() != null ? entry.getStartAt().truncatedTo(ChronoUnit.SECONDS) : "NULL")
+                        .append(entry.getEndAt() != null ? entry.getEndAt().truncatedTo(ChronoUnit.SECONDS) : "NULL")
                         .append(entry.getStartLat())
                         .append(entry.getStartLng())
                         .append(entry.getEndLat() != null ? entry.getEndLat() : "NULL")
@@ -136,18 +136,16 @@ public class DailyClosureService {
                         .append(entry.getEndGeoip() != null ? entry.getEndGeoip() : "NULL")
                         .append(entry.getFlags() != null ? entry.getFlags() : "NULL")
                         .append(entry.getEstadoFichaje())
-                        .append(entry.getDeletedAt() != null ? entry.getDeletedAt() : "NULL")
-                        .append(entry.getDeletedBy() != null ? entry.getDeletedBy() : "NULL")
-                        .append(entry.getDeleteReason() != null ? entry.getDeleteReason() : "NULL")
-                        .append(entry.getCreatedAt())
-                        .append(entry.getCreatedBy())
-                        .append(entry.getUpdatedAt() != null ? entry.getUpdatedAt() : "NULL")
+                        .append(entry.getDeletedAt() != null ? entry.getDeletedAt().truncatedTo(ChronoUnit.SECONDS) : "NULL")
+                        .append(entry.getDeletedBy() != null ? entry.getDeletedBy().getId() : "NULL").append(entry.getDeleteReason() != null ? entry.getDeleteReason() : "NULL")
+                        .append(entry.getCreatedAt() != null ? entry.getCreatedAt().truncatedTo(ChronoUnit.SECONDS) : "NULL")
+                        .append(entry.getCreatedBy() != null ? entry.getCreatedBy().getId() : "NULL").append(entry.getUpdatedAt() != null ? entry.getUpdatedAt().truncatedTo(ChronoUnit.SECONDS) : "NULL")
                         .append(entry.getModificationReason() != null ? entry.getModificationReason() : "NULL")
-                        .append(entry.getCompany());
-
+                        .append(entry.getCompany() != null ? entry.getCompany().getId() : "NULL");
             }
         }
-        return hashService.sha256Hex(prevHash + rawData);
+
+        String stringGigante = prevHash + rawData;
+        return hashService.sha256Hex(stringGigante);
     }
 }
-

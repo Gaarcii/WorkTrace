@@ -1,17 +1,12 @@
 package com.worktrace.worktracebackend.service.inspector;
 
-import com.worktrace.worktracebackend.dto.inspector.EmpleadoDetalleDto;
-import com.worktrace.worktracebackend.dto.inspector.EmpleadoDto;
-import com.worktrace.worktracebackend.dto.inspector.InspectorHomeResponseDto;
-import com.worktrace.worktracebackend.dto.inspector.InspectorIncidenceDto;
+import com.worktrace.worktracebackend.dto.inspector.*;
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleResponseDto;
 import com.worktrace.worktracebackend.model.*;
-import com.worktrace.worktracebackend.repository.AuditTimeEntryRepository;
-import com.worktrace.worktracebackend.repository.IncidenceRepository;
-import com.worktrace.worktracebackend.repository.TimeEntryRepository;
-import com.worktrace.worktracebackend.repository.UserRepository;
+import com.worktrace.worktracebackend.repository.*;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
+import com.worktrace.worktracebackend.service.dailyClosure.DailyClosureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +27,8 @@ public class InspectorService {
     private final IncidenceRepository incidenceRepository;
     private final TimeEntryRepository timeEntryRepository;
     private final AuditTimeEntryRepository auditTimeEntryRepository;
+    private final DailyClosureRepository dailyClosureRepository;
+    private final DailyClosureService dailyClosureService;
 
     @Transactional(readOnly = true)
     public InspectorHomeResponseDto getHome() {
@@ -135,9 +132,9 @@ public class InspectorService {
 
         Page<Incidence> incidences = incidenceRepository.findFilteredIncidences(
                 companyId,
-                estadoEnum,
+                estadoEnum != null ? EstadoIncidencia.valueOf(estadoEnum.name()) : null,
                 tipoIncidenciaId,
-                (busqueda != null && !busqueda.trim().isEmpty()) ? busqueda.trim() : null,
+                (busqueda != null && !busqueda.trim().isEmpty()) ? busqueda.trim() : "",
                 pageable
         );
 
@@ -158,4 +155,25 @@ public class InspectorService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public Page<InspectorDailyClosureDto> getRegistrosDiarios(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        var companyId = info.getCompany().getId();
+
+        Page<DailyClosure> closures = dailyClosureRepository.findFilteredClosures(
+                companyId,
+                startDate,
+                endDate,
+                pageable
+        );
+
+        return closures.map(closure -> new InspectorDailyClosureDto(
+                closure.getWorkDate(),
+                dailyClosureService.verificarIntegridad(closure.getWorkDate()),
+                closure.getRecordsCount(),
+                closure.getDayHash(),
+                closure.getPrevDayHash(),
+                closure.getComputedAt()
+        ));
+    }
 }
