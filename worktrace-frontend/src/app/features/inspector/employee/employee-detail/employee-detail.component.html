@@ -1,0 +1,125 @@
+<div class="dialog-header">
+  <div class="avatar-circle large">
+    @if (employee().photo) {
+      <img [src]="employee().photo" alt="Avatar" />
+    } @else {
+      <mat-icon>person</mat-icon>
+    }
+  </div>
+  <div class="header-text">
+    <h2>{{ employee().name }}</h2>
+    <p>{{ employee().jobPosition || 'Sin cargo' }}</p>
+  </div>
+  <button mat-icon-button class="close-btn" (click)="close.emit()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="dialog-content">
+  <div class="section-block">
+    <h3 class="section-title">
+      <mat-icon color="primary">contact_mail</mat-icon>
+      Información Personal
+    </h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <mat-icon>email</mat-icon>
+        <div class="info-data">
+          <label>Email</label>
+          <span>{{ employee().email || 'N/A' }}</span>
+        </div>
+      </div>
+      @if (employee().phone) {
+        <div class="info-item">
+          <mat-icon>phone</mat-icon>
+          <div class="info-data">
+            <label>Teléfono</label>
+            <span>{{ employee().phone }}</span>
+          </div>
+        </div>
+      }
+      @if (employee().employeeCode) {
+        <div class="info-item">
+          <mat-icon>badge</mat-icon>
+          <div class="info-data">
+            <label>DNI</label>
+            <span>{{ employee().employeeCode }}</span>
+          </div>
+        </div>
+      }
+      @if (detail()) {
+        <div class="info-item">
+          <mat-icon>calendar_today</mat-icon>
+          <div class="info-data">
+            <label>Fecha de Alta</label>
+            <span>{{ formatDate(detail()?.registrationDate) }}</span>
+          </div>
+        </div>
+        @if (detail()?.weeklyHours) {
+          <div class="info-item">
+            <mat-icon>schedule</mat-icon>
+            <div class="info-data">
+              <label>Horas Semanales</label>
+              <span>{{ detail()?.weeklyHours }} horas</span>
+            </div>
+          </div>
+        }
+        <div class="info-item">
+          <mat-icon>verified_user</mat-icon>
+          <div class="info-data">
+            <label>Estado</label>
+            <span class="info-data" [ngClass]="detail()?.isActive ? 'success' : 'error'">
+              {{ detail()?.isActive ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <mat-divider class="section-divider"></mat-divider>
+
+  <div class="section-block">
+    <h3 class="section-title">
+      <mat-icon color="primary">event_available</mat-icon>
+      Horario Laboral
+    </h3>
+
+    @if (loadingSchedule()) {
+      <div class="loading-state small">
+        <mat-spinner diameter="32" color="primary"></mat-spinner>
+        <p>Cargando horario...</p>
+      </div>
+    } @else if (!detail()?.workSchedules?.length) {
+      <div class="empty-state small">
+        <mat-icon>event_busy</mat-icon>
+        <span>El horario laboral aún no ha sido definido</span>
+      </div>
+    } @else {
+      <div class="schedule-list">
+        @for (schedule of detail()?.workSchedules; track schedule.diaSemana) {
+          <div class="schedule-card">
+            <div class="schedule-header">
+              <mat-icon color="primary">{{ getDayIcon(schedule.diaSemana) }}</mat-icon>
+              <strong>{{ getDayName(schedule.diaSemana) }}</strong>
+            </div>
+            <div class="schedule-time">
+              <mat-icon>schedule</mat-icon>
+              <span>{{ formatTime(schedule.start) }} &rarr; {{ formatTime(schedule.end) }}</span>
+              <span class="spacer"></span>
+              <span class="hours-badge">{{
+                schedule.horas || calculateHours(schedule.start, schedule.end)
+              }}</span>
+            </div>
+            @if (schedule.lugar || schedule.ubicacion) {
+              <div class="schedule-location">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ schedule.lugar || schedule.ubicacion }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

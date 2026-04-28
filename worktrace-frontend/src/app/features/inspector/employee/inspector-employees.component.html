@@ -1,0 +1,29 @@
+<div class="page-container">
+  <div class="main-content">
+    <div class="content-wrapper">
+      <h1 class="page-title">Empleados</h1>
+      <p class="page-subtitle">Vista de solo lectura de todos los empleados registrados</p>
+
+      <app-employee-search [searchControl]="searchControl"> </app-employee-search>
+
+      <app-employee-list
+        [employees]="employees()"
+        [loading]="loading()"
+        (employeeSelected)="openEmployeeDialog($event)"
+      >
+      </app-employee-list>
+    </div>
+  </div>
+</div>
+
+<ng-template #employeeDialogTemplate>
+  @if (selectedEmployeeBase()) {
+    <app-employee-detail
+      [employee]="selectedEmployeeBase()!"
+      [detail]="selectedEmployeeDetail()"
+      [loadingSchedule]="loadingSchedule()"
+      (close)="closeDialog()"
+    >
+    </app-employee-detail>
+  }
+</ng-template>

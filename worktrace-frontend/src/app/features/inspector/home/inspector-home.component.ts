@@ -3,10 +3,10 @@ import { take, finalize } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { InspectorHomeService } from '../../../shared/services/inspector/inspector-home.service';
 import { InspectorHomeResponseDto } from '../../../shared/models/inspector.model';
-import { InspectorHeaderComponent } from './InspectorHeader/inspector-header.component';
-import { InspectorAlertComponent } from './InspectorAlert/inspector-alert.component';
-import { InspectorStatsGridComponent } from './InspectorStatsGrid/inspector-stats-grid.component';
-import { InspectorInfoGridComponent } from './InspectorInfoGrid/inspector-info-grid.component';
+import { InspectorHeaderComponent } from './Inspector-header/inspector-header.component';
+import { InspectorAlertComponent } from './Inspector-alert/inspector-alert.component';
+import { InspectorStatsGridComponent } from './Inspector-stats-grid/inspector-stats-grid.component';
+import { InspectorInfoGridComponent } from './Inspector-info-grid/inspector-info-grid.component';
 
 @Component({
   selector: 'app-inspector-home',

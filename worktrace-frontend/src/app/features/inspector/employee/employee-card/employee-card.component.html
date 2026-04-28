@@ -1,0 +1,39 @@
+<mat-card class="employee-card" (click)="cardClick.emit(employee())">
+  <div class="card-header">
+    <div class="avatar-circle">
+      @if (employee().photo) {
+        <img [src]="employee().photo" alt="Avatar" />
+      } @else {
+        <mat-icon>person</mat-icon>
+      }
+    </div>
+    <div class="header-text">
+      <h3>{{ employee().name }}</h3>
+      <p>{{ employee().jobPosition || 'Sin cargo' }}</p>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="card-body">
+    <div class="info-row">
+      <mat-icon>email</mat-icon>
+      <span>{{ employee().email }}</span>
+    </div>
+    @if (employee().phone) {
+      <div class="info-row">
+        <mat-icon>phone</mat-icon>
+        <span>{{ employee().phone }}</span>
+      </div>
+    }
+    @if (employee().employeeCode) {
+      <div class="info-row">
+        <mat-icon>badge</mat-icon>
+        <span>DNI: {{ employee().employeeCode }}</span>
+      </div>
+    }
+    <div class="chip-container">
+      <span class="status-chip success">Trabajador</span>
+    </div>
+  </div>
+</mat-card>

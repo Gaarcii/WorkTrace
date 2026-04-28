@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../../core/api/api.config';
-import { EmpleadoDto } from '../../models/inspector.model';
+import { EmpleadoDetalleDto, EmpleadoDto } from '../../models/inspector.model';
 
 interface SpringPageResponse<T> {
   content: T[];
@@ -30,5 +30,9 @@ export class InspectorWorkerService {
     return this.http.get<SpringPageResponse<EmpleadoDto>>(`${this.BASE_URL}/empleados`, {
       params,
     });
+  }
+
+  getEmpleadoDetalle(id: string): Observable<EmpleadoDetalleDto> {
+    return this.http.get<EmpleadoDetalleDto>(`${this.BASE_URL}/empleados/${id}`);
   }
 }

@@ -1,0 +1,20 @@
+@if (loading()) {
+  <div class="loading-state">
+    <mat-spinner diameter="48" color="primary"></mat-spinner>
+    <p>Cargando empleados...</p>
+  </div>
+} @else if (employees().length === 0) {
+  <div class="empty-state">
+    <mat-icon>person_search</mat-icon>
+    <span>No se encontraron empleados</span>
+  </div>
+} @else {
+  <div class="cards-grid">
+    @for (employee of employees(); track employee.id) {
+      <app-employee-card 
+        [employee]="employee" 
+        (cardClick)="employeeSelected.emit($event)">
+      </app-employee-card>
+    }
+  </div>
+}

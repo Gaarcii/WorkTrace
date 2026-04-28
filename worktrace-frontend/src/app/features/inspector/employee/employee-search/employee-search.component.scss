@@ -1,0 +1,11 @@
+.search-card {
+  margin-bottom: 24px;
+  padding: 8px 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.w-100 {
+  width: 100%;
+}
+::ng-deep .no-bottom-space .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
