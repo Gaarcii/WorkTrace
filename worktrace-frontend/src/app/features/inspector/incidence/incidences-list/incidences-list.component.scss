@@ -1,0 +1,35 @@
+.state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  color: #666;
+  p {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+}
+
+.empty-alert {
+  background: #e3f2fd;
+  color: #0d47a1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  mat-icon {
+    color: #1976d2;
+  }
+  span {
+    font-size: 15px;
+    font-weight: 500;
+  }
+}
+
+.incidents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

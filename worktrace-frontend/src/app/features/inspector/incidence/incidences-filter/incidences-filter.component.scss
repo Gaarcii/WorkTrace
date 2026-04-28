@@ -1,0 +1,117 @@
+.filter-card {
+  margin-bottom: 24px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  align-items: center;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #000026;
+  }
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &.clickable {
+    cursor: pointer;
+  }
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #000026;
+  font-family: inherit;
+  background: #fafafa;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  appearance: none;
+
+  &:hover {
+    border-color: #999;
+    background: #fff;
+    cursor: pointer;
+  }
+}
+
+select.form-control {
+  padding-right: 72px;
+}
+
+input.form-control {
+  padding-left: 40px;
+  padding-right: 40px;
+  cursor: text;
+
+  &:hover {
+    cursor: text;
+  }
+}
+
+.input-leading-icon {
+  position: absolute;
+  left: 12px;
+  color: #9e9e9e;
+  display: inline-flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.input-icon {
+  position: absolute;
+  right: 12px;
+  color: #666;
+  pointer-events: none;
+}
+
+.clear-button {
+  position: absolute;
+  right: 36px;
+  border: none;
+  background: transparent;
+  color: #666;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: #000026;
+  }
+}
+
+.text-grey {
+  color: #9e9e9e;
+}
+.ml-2 {
+  margin-left: 8px;
+}

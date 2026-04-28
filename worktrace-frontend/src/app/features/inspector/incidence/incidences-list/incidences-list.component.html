@@ -1,0 +1,17 @@
+@if (loading()) {
+  <div class="state-container py-8">
+    <mat-spinner diameter="48" color="primary"></mat-spinner>
+    <p>Cargando incidencias...</p>
+  </div>
+} @else if (incidents().length === 0) {
+  <div class="empty-alert">
+    <mat-icon>info</mat-icon>
+    <span>No se encontraron incidencias</span>
+  </div>
+} @else {
+  <div class="incidents-list">
+    @for (incident of incidents(); track incident.fechaHora) {
+      <app-incidence-card [incident]="incident"></app-incidence-card>
+    }
+  </div>
+}

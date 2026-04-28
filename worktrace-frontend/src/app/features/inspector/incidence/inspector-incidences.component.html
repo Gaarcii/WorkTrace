@@ -1,0 +1,19 @@
+<div class="page-container">
+  <div class="main-content">
+    <div class="content-wrapper">
+      <h1 class="page-title">Incidencias</h1>
+      <p class="page-subtitle">Vista de solo lectura de todas las incidencias reportadas</p>
+
+      <app-incidences-filter
+        [statusControl]="statusControl"
+        [typeControl]="typeControl"
+        [searchControl]="searchControl"
+        [statusOptions]="statusOptions"
+        [tipos]="tipos()"
+      >
+      </app-incidences-filter>
+
+      <app-incidences-list [loading]="loading()" [incidents]="incidents()"> </app-incidences-list>
+    </div>
+  </div>
+</div>

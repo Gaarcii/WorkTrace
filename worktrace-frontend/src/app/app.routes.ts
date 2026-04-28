@@ -127,6 +127,15 @@ export const routes: Routes = [
     data: { roles: ['ROLE_INSPECTOR', 'INSPECTOR'] },
   },
   {
+    path: 'inspector/incidencias',
+    loadComponent: () =>
+      import('./features/inspector/incidence/inspector-incidences.component').then(
+        (m) => m.InspectorIncidencesComponent,
+      ),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_INSPECTOR', 'INSPECTOR'] },
+  },
+  {
     path: 'change-password',
     loadComponent: () =>
       import('./features/auth/password-change/password-change.component').then(

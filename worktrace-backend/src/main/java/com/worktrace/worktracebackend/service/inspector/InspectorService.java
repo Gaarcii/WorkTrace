@@ -37,7 +37,7 @@ public class InspectorService {
         LocalDate today = LocalDate.now();
 
         long totalEmpleados = userRepository.countUsersByCompany_Id(companyId);
-        long totalIncidencias = incidenceRepository.countByCompany_Id(companyId);
+        long totalIncidencias = incidenceRepository.countByCompany_IdAndStatus(companyId, EstadoIncidencia.PENDING);
         long trabajadoresActivosHoy = timeEntryRepository.countDistinctActiveWorkersByCompanyAndWorkDate(
                 companyId,
                 today,

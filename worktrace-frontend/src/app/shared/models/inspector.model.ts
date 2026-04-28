@@ -25,3 +25,13 @@ export interface EmpleadoDetalleDto {
   isActive: boolean;
   workSchedules: WorkScheduleResponse[];
 }
+export interface InspectorIncidenceDto {
+  nombre: string;
+  correo: string;
+  imagen: string;
+  tipoIncidencia: string;
+  fechaHora: string;
+  estado: string;
+  comentario: string;
+  resueltaPor: string;
+}

@@ -18,7 +18,7 @@ import java.util.UUID;
 public interface IncidenceRepository extends JpaRepository<Incidence, UUID> {
     List<Incidence> findByProfile_UserId(UUID userId);
 
-    long countByCompany_Id(UUID companyId);
+    long countByCompany_IdAndStatus(UUID companyId, EstadoIncidencia status);
 
     List<Incidence> getIncidencesByProfile_UserIdAndDateBetween(
             UUID profile_userId, LocalDate date, LocalDate date2
