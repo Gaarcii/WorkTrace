@@ -1,0 +1,20 @@
+<mat-card class="filter-card mb-4">
+  <form [formGroup]="filterForm()" class="filters-grid">
+    <div class="native-filter">
+      <label>Fecha Inicio</label>
+      <input type="date" formControlName="startDate" class="native-date-input" />
+    </div>
+    <div class="native-filter">
+      <label>Fecha Fin</label>
+      <input type="date" formControlName="endDate" class="native-date-input" />
+    </div>
+    <div class="filter-actions">
+      @if (filterForm().value.startDate || filterForm().value.endDate) {
+        <button type="button" class="btn-clear" (click)="clear.emit()">
+          <mat-icon>clear_all</mat-icon>
+          Limpiar
+        </button>
+      }
+    </div>
+  </form>
+</mat-card>

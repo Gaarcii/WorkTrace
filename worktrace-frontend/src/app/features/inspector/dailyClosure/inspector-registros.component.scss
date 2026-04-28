@@ -1,0 +1,78 @@
+/* --- DISEÑO BASE --- */
+.page-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-bottom: 40px;
+}
+.main-content {
+  padding-top: 24px;
+}
+.content-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* --- CABECERA --- */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .header-text {
+    .page-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #000026;
+      margin: 0;
+    }
+    .page-subtitle {
+      font-size: 14px;
+      color: #666;
+      margin: 4px 0 0 0;
+    }
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(0, 0, 38, 0.08);
+    color: #000026;
+    padding: 8px 16px;
+    border-radius: 24px;
+    font-weight: 500;
+    font-size: 15px;
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+/* --- ALERTA ERROR --- */
+.error-alert {
+  display: flex;
+  align-items: center;
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 4px solid #c62828;
+}
+
+/* Utilidades para Smart Component */
+.mb-1 {
+  margin-bottom: 4px;
+}
+.mb-4 {
+  margin-bottom: 16px;
+}
+.mr-2 {
+  margin-right: 8px;
+}
+.flex-grow-1 {
+  flex-grow: 1;
+}

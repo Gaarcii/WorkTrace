@@ -1,0 +1,78 @@
+.filter-card {
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filters-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.native-filter {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+
+  label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+    margin-left: 2px;
+  }
+
+  .native-date-input {
+    height: 48px;
+    padding: 0 12px;
+    border: 1px solid rgba(0, 0, 0, 0.38);
+    border-radius: 4px;
+    background-color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: #000026;
+      border-width: 2px;
+      padding: 0 11px;
+    }
+  }
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  height: 48px;
+
+  .btn-clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.mb-4 {
+  margin-bottom: 16px;
+}

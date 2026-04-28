@@ -5,6 +5,7 @@ import { API_CONFIG } from '../../../core/api/api.config';
 import {
   EmpleadoDetalleDto,
   EmpleadoDto,
+  InspectorDailyClosureDto,
   InspectorIncidenceDto,
 } from '../../models/inspector.model';
 import {
@@ -79,5 +80,43 @@ export class InspectorWorkerService {
         this.incidenceTypesSignal.set(response?.tipos ?? []);
       }),
     );
+  }
+
+  getRegistrosDiarios(
+    page: number = 0,
+    size: number = 10,
+    startDate?: string | Date,
+    endDate?: string | Date,
+  ): Observable<SpringPageResponse<InspectorDailyClosureDto>> {
+    let params = new HttpParams().set('page', page).set('size', size);
+
+    const normalizedStartDate = this.normalizeDateParam(startDate);
+    const normalizedEndDate = this.normalizeDateParam(endDate);
+
+    if (normalizedStartDate) {
+      params = params.set('startDate', normalizedStartDate);
+    }
+
+    if (normalizedEndDate) {
+      params = params.set('endDate', normalizedEndDate);
+    }
+
+    return this.http.get<SpringPageResponse<InspectorDailyClosureDto>>(
+      `${this.BASE_URL}/registros-diarios`,
+      { params },
+    );
+  }
+
+  private normalizeDateParam(value?: string | Date): string | undefined {
+    if (!value) {
+      return undefined;
+    }
+
+    if (value instanceof Date) {
+      return Number.isNaN(value.getTime()) ? undefined : value.toISOString().slice(0, 10);
+    }
+
+    const trimmedValue = value.trim();
+    return trimmedValue ? trimmedValue : undefined;
   }
 }

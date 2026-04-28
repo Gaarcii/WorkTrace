@@ -35,3 +35,12 @@ export interface InspectorIncidenceDto {
   comentario: string;
   resueltaPor: string;
 }
+
+export interface InspectorDailyClosureDto {
+  fecha: string;
+  estado: string;
+  numeroFichajes: number;
+  hashDelDia: string;
+  hashDiaAnterior: string;
+  computado: string;
+}

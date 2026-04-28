@@ -1,0 +1,36 @@
+<div class="page-container">
+  <div class="main-content">
+    <div class="content-wrapper">
+      <div class="page-header mb-4">
+        <div class="header-text">
+          <h1 class="page-title mb-1">Registros Diarios</h1>
+          <p class="page-subtitle">Hashes de verificación de fichajes</p>
+        </div>
+        <div class="header-badge">
+          <mat-icon class="mr-2">security</mat-icon>
+          Integridad de Datos
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="error-alert mb-4">
+          <mat-icon class="mr-2">error_outline</mat-icon>
+          <div class="flex-grow-1"><strong>Error:</strong> {{ error() }}</div>
+          <button mat-icon-button (click)="clearError()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+
+      <app-registros-filter [filterForm]="filterForm" (clear)="clearFilters()">
+      </app-registros-filter>
+
+      <app-registros-table
+        [loading]="loading()"
+        [registros]="registros()"
+        (copyHash)="copyToClipboard($event)"
+      >
+      </app-registros-table>
+    </div>
+  </div>
+</div>

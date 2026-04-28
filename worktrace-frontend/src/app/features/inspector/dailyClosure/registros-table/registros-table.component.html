@@ -1,0 +1,106 @@
+@if (loading()) {
+  <div class="state-container py-8">
+    <mat-spinner diameter="48" color="primary"></mat-spinner>
+    <p class="mt-4 text-grey">Cargando registros...</p>
+  </div>
+} @else {
+  <mat-card class="table-card">
+    <div class="card-title-bar">
+      <div class="d-flex align-center">
+        <mat-icon class="mr-2">verified</mat-icon>
+        <span class="table-title">Registros de Cierre Diario</span>
+      </div>
+      <div class="count-badge">{{ registros().length }} registros</div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    @if (registros().length === 0) {
+      <div class="empty-state">
+        <mat-icon class="huge-icon">folder_off</mat-icon>
+        <p>No hay registros disponibles en este rango de fechas.</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th class="text-center">Estado</th>
+              <th class="text-center">Fichajes</th>
+              <th>Hash del Día</th>
+              <th>Hash Día Anterior</th>
+              <th>Computado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of registros(); track item.fecha) {
+              <tr [ngClass]="getRowClass(item.estado)">
+                <td>
+                  <div class="d-flex align-center">
+                    <mat-icon class="icon-small mr-2 text-grey">calendar_today</mat-icon>
+                    <span>{{ formatDate(item.fecha) }}</span>
+                  </div>
+                </td>
+
+                <td class="text-center">
+                  <span class="status-chip" [ngClass]="getStatusColor(item.estado)">
+                    {{ getStatusLabel(item.estado) }}
+                  </span>
+                </td>
+
+                <td class="text-center">
+                  <span class="count-chip">{{ item.numeroFichajes }} fichajes</span>
+                </td>
+
+                <td>
+                  <div class="hash-container">
+                    <code class="hash-code">{{ item.hashDelDia || '—' }}</code>
+                    @if (item.hashDelDia) {
+                      <button
+                        mat-icon-button
+                        class="btn-copy"
+                        (click)="copyHash.emit(item.hashDelDia)"
+                        title="Copiar"
+                      >
+                        <mat-icon>content_copy</mat-icon>
+                      </button>
+                    }
+                  </div>
+                </td>
+
+                <td>
+                  <div class="hash-container">
+                    @if (
+                      item.hashDiaAnterior &&
+                      item.hashDiaAnterior !== 'GENESIS_HASH_0000000000000000000000000000'
+                    ) {
+                      <code class="hash-code prev-hash">{{ item.hashDiaAnterior }}</code>
+                      <button
+                        mat-icon-button
+                        class="btn-copy"
+                        (click)="copyHash.emit(item.hashDiaAnterior)"
+                        title="Copiar"
+                      >
+                        <mat-icon>content_copy</mat-icon>
+                      </button>
+                    } @else {
+                      <span class="text-grey ml-2">GÉNESIS (Inicial)</span>
+                    }
+                  </div>
+                </td>
+
+                <td>
+                  <div class="d-flex align-center">
+                    <mat-icon class="icon-small mr-2 text-grey">schedule</mat-icon>
+                    <span class="text-nowrap">{{ formatDateTime(item.computado) }}</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </mat-card>
+}
