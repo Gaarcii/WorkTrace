@@ -22,5 +22,16 @@ public interface AuditTimeEntryRepository extends JpaRepository<AuditTimeEntry, 
                                     @Param("workDate") LocalDate workDate,
                                     @Param("closureTime") OffsetDateTime closureTime);
 
-    Page<AuditTimeEntry> findByCompanyIdOrderByCreatedAtDesc(UUID companyId, Pageable pageable);
+    @Query("SELECT a FROM AuditTimeEntry a WHERE a.companyId = :companyId " +
+            "AND (cast(:action as string) IS NULL OR :action = '' OR LOWER(a.action) = LOWER(:action)) " +
+            "AND (cast(:startDate as date) IS NULL OR cast(a.createdAt as date) >= :startDate) " +
+            "AND (cast(:endDate as date) IS NULL OR cast(a.createdAt as date) <= :endDate) " +
+            "ORDER BY a.createdAt DESC")
+    Page<AuditTimeEntry> findFilteredAudits(
+            @Param("companyId") UUID companyId,
+            @Param("action") String action,
+            @Param("startDate") java.time.LocalDate startDate,
+            @Param("endDate") java.time.LocalDate endDate,
+            Pageable pageable
+    );
 }

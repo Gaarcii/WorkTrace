@@ -178,11 +178,17 @@ public class InspectorService {
     }
 
     @Transactional(readOnly = true)
-    public Page<InspectorAuditDto> getAuditorias(Pageable pageable) {
+    public Page<InspectorAuditDto> getAuditorias(String action, java.time.LocalDate startDate, java.time.LocalDate endDate, Pageable pageable) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         var companyId = info.getCompany().getId();
 
-        Page<AuditTimeEntry> audits = auditTimeEntryRepository.findByCompanyIdOrderByCreatedAtDesc(companyId, pageable);
+        Page<AuditTimeEntry> audits = auditTimeEntryRepository.findFilteredAudits(
+                companyId,
+                (action != null && !action.trim().isEmpty()) ? action.trim() : null,
+                startDate,
+                endDate,
+                pageable
+        );
 
         return audits.map(audit -> {
             String actorName = userRepository.findById(audit.getActorUserId())

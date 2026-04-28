@@ -135,11 +135,20 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['ROLE_INSPECTOR', 'INSPECTOR'] },
   },
-    {
+  {
     path: 'inspector/registros',
     loadComponent: () =>
       import('./features/inspector/dailyClosure/inspector-registros.component').then(
         (m) => m.InspectorRegistrosComponent,
+      ),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_INSPECTOR', 'INSPECTOR'] },
+  },
+  {
+    path: 'inspector/auditoria',
+    loadComponent: () =>
+      import('./features/inspector/auditoria/inspector-audit.component').then(
+        (m) => m.InspectorAuditComponent,
       ),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['ROLE_INSPECTOR', 'INSPECTOR'] },

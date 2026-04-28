@@ -1,0 +1,53 @@
+.page-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-bottom: 40px;
+}
+.main-content {
+  padding-top: 24px;
+}
+.content-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.page-header {
+  .page-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #424242;
+    margin: 0;
+  }
+  .page-subtitle {
+    font-size: 14px;
+    color: #757575;
+  }
+  .icon-large {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+}
+::ng-deep .custom-dialog-no-padding .mdc-dialog__surface {
+  padding: 0 !important;
+  border-radius: 12px !important;
+}
+/* Utilities */
+.mb-4 {
+  margin-bottom: 16px;
+}
+.mt-2 {
+  margin-top: 8px;
+}
+.d-flex {
+  display: flex;
+}
+.align-center {
+  align-items: center;
+}
+.mr-2 {
+  margin-right: 8px;
+}
+.text-grey-darken-3 {
+  color: #424242;
+}

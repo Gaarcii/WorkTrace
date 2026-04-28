@@ -1,0 +1,35 @@
+<mat-card class="filter-card mb-4">
+  <form [formGroup]="filterForm()" class="filters-grid">
+    <div class="native-filter">
+      <label>Tipo de Acción</label>
+      <select formControlName="action">
+        @for (option of actionOptions(); track $index) {
+          <option [value]="option.value">{{ option.title }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="native-filter">
+      <label>Fecha Inicio</label>
+      <input type="date" formControlName="startDate" />
+    </div>
+
+    <div class="native-filter">
+      <label>Fecha Fin</label>
+      <input type="date" formControlName="endDate" />
+    </div>
+
+    <div class="filter-actions">
+      <button
+        type="button"
+        class="btn-clear"
+        (click)="clear.emit()"
+        [disabled]="
+          !filterForm().value.action && !filterForm().value.startDate && !filterForm().value.endDate
+        "
+      >
+        Limpiar Filtros
+      </button>
+    </div>
+  </form>
+</mat-card>

@@ -1,0 +1,112 @@
+<div class="dialog-header bg-grey-lighten-4">
+  <div class="d-flex align-center w-100">
+    <mat-icon class="header-icon mr-3" [ngClass]="getActionColor(recordBase()?.accion || '')">
+      {{ recordBase()?.accion === 'SOFT_DELETE' ? 'delete' : 'edit' }}
+    </mat-icon>
+    <div class="flex-grow-1">
+      <h2 class="dialog-title">
+        {{ recordBase()?.accion === 'SOFT_DELETE' ? 'Registro Eliminado' : 'Modificación' }}
+      </h2>
+      <p class="dialog-subtitle">{{ formatFullDateTime(recordBase()?.fechaHora) }}</p>
+    </div>
+    <button mat-icon-button (click)="close.emit()"><mat-icon>close</mat-icon></button>
+  </div>
+</div>
+
+<div class="dialog-content pa-0">
+  <div class="pa-4 bg-amber-lighten-5">
+    <div class="text-overline mb-1">Justificación</div>
+    <p class="text-body-1 m-0">
+      {{ recordBase()?.justificacion || 'Sin justificación proporcionada' }}
+    </p>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  @if (loadingDetails()) {
+    <div class="state-container py-8">
+      <mat-spinner diameter="32" color="primary"></mat-spinner>
+      <p class="mt-4 text-caption text-grey">Cargando información ampliada...</p>
+    </div>
+  } @else if (recordDetail()) {
+    <div class="pa-4">
+      <div class="snapshot-card border-error mb-4">
+        <div class="card-header bg-red-lighten-5 text-error d-flex align-center">
+          <mat-icon class="mr-2">warning</mat-icon>
+          <strong>Información de la Operación</strong>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="pa-4">
+          <div class="detail-row mb-3">
+            <mat-icon class="icon-small text-grey mr-2">event_busy</mat-icon>
+            <div>
+              <div class="label">Fecha de eliminación/cambio:</div>
+              <div class="value">
+                {{ formatFullDateTime(recordDetail()?.fechaEliminacion) }}
+              </div>
+            </div>
+          </div>
+          <div class="detail-row mb-3">
+            <mat-icon class="icon-small text-grey mr-2">person_off</mat-icon>
+            <div>
+              <div class="label">Ejecutado por:</div>
+              <div class="value">{{ recordDetail()?.ejecutador || 'Desconocido' }}</div>
+            </div>
+          </div>
+          <div class="detail-row">
+            <mat-icon class="icon-small text-grey mr-2">notes</mat-icon>
+            <div>
+              <div class="label">Motivo interno:</div>
+              <div class="value">
+                {{ recordDetail()?.motivo || 'Sin motivo adicional' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-overline mb-3 mt-4">
+        <mat-icon class="icon-small mr-1">history</mat-icon> Datos contenidos en el registro
+        original:
+      </div>
+
+      @if (groupedOldData().length > 0) {
+        <div class="groups-grid">
+          @for (group of groupedOldData(); track group.title) {
+            <div class="audit-group-card">
+              <div class="group-header">
+                <mat-icon class="mr-2 icon-small">{{ group.icon }}</mat-icon>
+                <span>{{ group.title }}</span>
+              </div>
+              <div class="group-body">
+                @for (item of group.items; track item.label) {
+                  <div class="data-row">
+                    <span class="data-label">{{ item.label }}:</span>
+                    <span class="data-value">{{ item.value }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state small py-4 border-grey snapshot-card">
+          <p class="m-0 text-caption">No hay datos anteriores disponibles para mostrar.</p>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="pa-4">
+      <div class="empty-state small py-4">
+        <mat-icon class="mb-2 text-grey">info</mat-icon>
+        <p class="m-0 text-caption text-grey">
+          No se encontraron detalles ampliados para esta acción.
+        </p>
+      </div>
+    </div>
+  }
+</div>
+
+<div class="dialog-actions bg-grey-lighten-4">
+  <button mat-flat-button color="primary" (click)="close.emit()">CERRAR</button>
+</div>

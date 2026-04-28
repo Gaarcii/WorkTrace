@@ -1,0 +1,68 @@
+<mat-card class="table-card">
+  @if (loading()) {
+    <div class="state-container py-8">
+      <mat-spinner diameter="48" color="primary"></mat-spinner>
+    </div>
+  } @else if (records().length === 0) {
+    <div class="empty-state py-8">
+      <mat-icon class="huge-icon mb-4">search_off</mat-icon>
+      <p class="text-h6 text-grey-darken-1 m-0">No se encontraron registros</p>
+      <p class="text-caption text-grey m-0">Intenta ajustar los filtros de búsqueda</p>
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fecha/Hora</th>
+            <th>Acción</th>
+            <th>Justificación</th>
+            <th>Actor</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (record of records(); track record.id) {
+            <tr>
+              <td class="text-body-2">{{ formatDateTime(record.fechaHora) }}</td>
+              <td>
+                <span class="status-chip" [ngClass]="getActionColor(record.accion)">
+                  {{ getActionLabel(record.accion) }}
+                </span>
+              </td>
+              <td>
+                <div class="reason-text">
+                  {{ record.justificacion || 'Sin justificación' }}
+                </div>
+              </td>
+              <td>
+                <div class="d-flex align-center">
+                  <div class="avatar-circle small mr-2">
+                    <span>{{ getUserInitials(record.actor) }}</span>
+                  </div>
+                  <div class="text-body-2 font-weight-medium">
+                    {{ record.actor || 'Desconocido' }}
+                  </div>
+                </div>
+              </td>
+              <td class="text-center">
+                @if (record.accion !== 'LOGIN' && record.accion !== 'EXPORT') {
+                  <button
+                    mat-button
+                    color="primary"
+                    class="btn-details"
+                    (click)="viewDetails.emit(record)"
+                  >
+                    Ver detalles
+                  </button>
+                } @else {
+                  <span class="text-grey text-caption">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</mat-card>

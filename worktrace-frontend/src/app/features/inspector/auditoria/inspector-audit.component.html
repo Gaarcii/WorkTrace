@@ -1,0 +1,38 @@
+<div class="page-container">
+  <div class="main-content">
+    <div class="content-wrapper">
+      <div class="page-header mb-4">
+        <h1 class="page-title d-flex align-center">
+          <mat-icon class="mr-2 icon-large text-grey-darken-3">history</mat-icon>
+          Registro de Auditoría
+        </h1>
+        <p class="page-subtitle mt-2">Historial completo de cambios y acciones en el sistema</p>
+      </div>
+
+      <app-audit-filter
+        [filterForm]="filterForm"
+        [actionOptions]="actionOptions"
+        (clear)="clearFilters()"
+      >
+      </app-audit-filter>
+
+      <app-audit-table
+        [loading]="loading()"
+        [records]="filteredRecords()"
+        (viewDetails)="openDetails($event)"
+      >
+      </app-audit-table>
+    </div>
+  </div>
+</div>
+
+<ng-template #detailsDialogTemplate>
+  <app-audit-detail
+    [loadingDetails]="loadingDetails()"
+    [recordBase]="selectedRecordBase()"
+    [recordDetail]="selectedRecordDetail()"
+    [parsedOldData]="parsedOldData()"
+    (close)="closeDetails()"
+  >
+  </app-audit-detail>
+</ng-template>

@@ -5,6 +5,8 @@ import { API_CONFIG } from '../../../core/api/api.config';
 import {
   EmpleadoDetalleDto,
   EmpleadoDto,
+  InspectorAuditDetailDto,
+  InspectorAuditDto,
   InspectorDailyClosureDto,
   InspectorIncidenceDto,
 } from '../../models/inspector.model';
@@ -105,6 +107,39 @@ export class InspectorWorkerService {
       `${this.BASE_URL}/registros-diarios`,
       { params },
     );
+  }
+
+  getAuditorias(
+    page: number = 0,
+    size: number = 10,
+    action?: string,
+    startDate?: string | Date,
+    endDate?: string | Date,
+  ): Observable<SpringPageResponse<InspectorAuditDto>> {
+    let params = new HttpParams().set('page', page).set('size', size);
+
+    if (action && action.trim()) {
+      params = params.set('action', action.trim());
+    }
+
+    const normalizedStartDate = this.normalizeDateParam(startDate);
+    const normalizedEndDate = this.normalizeDateParam(endDate);
+
+    if (normalizedStartDate) {
+      params = params.set('startDate', normalizedStartDate);
+    }
+
+    if (normalizedEndDate) {
+      params = params.set('endDate', normalizedEndDate);
+    }
+
+    return this.http.get<SpringPageResponse<InspectorAuditDto>>(`${this.BASE_URL}/auditoria`, {
+      params,
+    });
+  }
+
+  getAuditoriaDetalle(id: string): Observable<InspectorAuditDetailDto> {
+    return this.http.get<InspectorAuditDetailDto>(`${this.BASE_URL}/auditoria/${id}`);
   }
 
   private normalizeDateParam(value?: string | Date): string | undefined {

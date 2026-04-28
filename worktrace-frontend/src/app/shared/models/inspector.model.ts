@@ -44,3 +44,18 @@ export interface InspectorDailyClosureDto {
   hashDiaAnterior: string;
   computado: string;
 }
+
+export interface InspectorAuditDto {
+  id: string;
+  fechaHora: string;
+  accion: string;
+  justificacion: string;
+  actor: string;
+}
+export interface InspectorAuditDetailDto {
+  id: string;
+  fechaEliminacion: string;
+  motivo: string;
+  ejecutador: string;
+  datosAntesModificacion: string;
+}

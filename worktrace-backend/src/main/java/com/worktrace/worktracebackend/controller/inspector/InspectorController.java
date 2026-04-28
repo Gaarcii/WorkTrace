@@ -64,8 +64,13 @@ public class InspectorController {
 
     @GetMapping("/auditoria")
     @PreAuthorize("hasRole('INSPECTOR')")
-    public ResponseEntity<Page<InspectorAuditDto>> getAuditorias(Pageable pageable) {
-        return ResponseEntity.ok(inspectorService.getAuditorias(pageable));
+    public ResponseEntity<Page<InspectorAuditDto>> getAuditorias(
+            @RequestParam(required = false) String action,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            Pageable pageable) {
+
+        return ResponseEntity.ok(inspectorService.getAuditorias(action, startDate, endDate, pageable));
     }
 
     @GetMapping("/auditoria/{id}")
