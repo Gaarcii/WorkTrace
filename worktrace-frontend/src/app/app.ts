@@ -5,11 +5,18 @@ import { filter } from 'rxjs/operators';
 import { HeaderBarComponent } from './shared/components/header-bar/header-bar.component';
 import { WorkerBottomNavComponent } from './features/worker/navbar/worker-navbar.component';
 import { AdminNavbarComponent } from './features/admin/navbar/admin-navbar.component';
+import { InspectorBottomNavComponent } from './features/inspector/navbar/inspector-navbar.component';
 import { TokenStorageService } from './core/auth/token-storage.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HeaderBarComponent, WorkerBottomNavComponent,AdminNavbarComponent],
+  imports: [
+    RouterOutlet,
+    HeaderBarComponent,
+    WorkerBottomNavComponent,
+    AdminNavbarComponent,
+    InspectorBottomNavComponent,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

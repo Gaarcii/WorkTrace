@@ -1,0 +1,54 @@
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.info-card {
+  border-radius: 12px;
+  height: 100%;
+
+  mat-card-header {
+    padding: 20px 20px 0 20px;
+  }
+
+  .header-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .dense-list mat-list-item {
+    height: 48px;
+  }
+
+  .interactive-list mat-list-item {
+    transition: background-color 0.2s;
+    border-radius: 8px;
+    margin-bottom: 4px;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+}
+
+.color-warning {
+  color: var(--c-warning);
+}
+.color-success {
+  color: var(--c-success);
+}
+.color-info {
+  color: var(--c-info);
+}
+
+.bg-primary-light {
+  background-color: rgba(63, 81, 181, 0.1);
+}
+.bg-success-light {
+  background-color: rgba(76, 175, 80, 0.1);
+}

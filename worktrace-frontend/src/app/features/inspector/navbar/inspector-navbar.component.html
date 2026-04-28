@@ -1,0 +1,41 @@
+<nav class="bottom-nav">
+  <a routerLink="/inspector" class="nav-btn" [class.active]="activeTab() === 'dashboard'" matRipple>
+    <mat-icon>dashboard</mat-icon>
+  </a>
+
+  <a
+    routerLink="/inspector/empleados"
+    class="nav-btn"
+    [class.active]="activeTab() === 'empleados'"
+    matRipple
+  >
+    <mat-icon>groups</mat-icon>
+  </a>
+
+  <a
+    routerLink="/inspector/incidencias"
+    class="nav-btn"
+    [class.active]="activeTab() === 'incidencias'"
+    matRipple
+  >
+    <mat-icon>warning_amber</mat-icon>
+  </a>
+
+  <a
+    routerLink="/inspector/registros"
+    class="nav-btn"
+    [class.active]="activeTab() === 'registros'"
+    matRipple
+  >
+    <mat-icon>storage</mat-icon>
+  </a>
+
+  <a
+    routerLink="/inspector/auditoria"
+    class="nav-btn"
+    [class.active]="activeTab() === 'auditoria'"
+    matRipple
+  >
+    <mat-icon>description</mat-icon>
+  </a>
+</nav>

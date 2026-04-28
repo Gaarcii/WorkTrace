@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TokenStorageService } from '../../../core/auth/token-storage.service';
+import { th } from 'date-fns/locale';
 
 @Component({
   selector: 'app-login',
@@ -33,9 +34,9 @@ export class LoginComponent {
   private router = inject(Router);
   private readonly tokenStorage = inject(TokenStorageService);
 
-   readonly errorMessage = signal<string | null>(null);
+  readonly errorMessage = signal<string | null>(null);
   readonly hidePassword = signal(true);
-    readonly isSubmitting = signal(false);
+  readonly isSubmitting = signal(false);
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -73,6 +74,8 @@ export class LoginComponent {
 
           if (response.role === 'ROLE_ADMIN' || response.role === 'ADMIN') {
             this.router.navigate(['/admin/home']);
+          } else if (response.role === 'ROLE_INSPECTOR' || response.role === 'INSPECTOR') {
+            this.router.navigate(['/inspector/home']);
           } else {
             this.router.navigate(['/worker/home']);
           }

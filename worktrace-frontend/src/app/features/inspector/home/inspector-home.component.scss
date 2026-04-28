@@ -1,0 +1,29 @@
+:host {
+  display: block;
+  --c-primary: #3f51b5;
+  --c-warning: #ff9800;
+  --c-success: #4caf50;
+  --c-info: #00bcd4;
+  --c-text-main: #202124;
+  --c-text-muted: #5f6368;
+}
+
+.dashboard-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.loading-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 0;
+
+  .loading-text {
+    margin-top: 16px;
+    color: var(--c-text-muted);
+    font-weight: 500;
+  }
+}

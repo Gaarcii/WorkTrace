@@ -8,6 +8,10 @@
   @if (userRole() === 'ROLE_ADMIN' || userRole() === 'ADMIN') {
     <app-admin-navbar />
   }
+
+  @if (userRole() === 'ROLE_INSPECTOR' || userRole() === 'INSPECTOR') {
+    <app-inspector-bottom-nav />
+  }
 }
 
 <main [class.layout-with-nav]="showHeader()">

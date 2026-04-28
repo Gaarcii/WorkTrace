@@ -1,0 +1,16 @@
+<mat-card class="alert-card error-alert">
+  <mat-card-content class="alert-content">
+    <div class="alert-message">
+      <mat-icon color="warn">error_outline</mat-icon>
+      <span><strong>Error de conexión:</strong> {{ error() }}</span>
+    </div>
+    <div class="alert-actions">
+      <button mat-button color="warn" (click)="retry()">
+        <mat-icon>refresh</mat-icon> REINTENTAR
+      </button>
+      <button mat-icon-button (click)="clearError()" aria-label="Cerrar alerta">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

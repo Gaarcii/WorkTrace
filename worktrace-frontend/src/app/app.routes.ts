@@ -108,6 +108,15 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['ROLE_ADMIN', 'ADMIN'] },
   },
+   {
+    path: 'inspector/home',
+    loadComponent: () =>
+      import('./features/inspector/home/inspector-home.component').then(
+        (m) => m.InspectorHomeComponent,
+      ),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_INSPECTOR', 'INSPECTOR'] },
+  },
   {
     path: 'change-password',
     loadComponent: () =>

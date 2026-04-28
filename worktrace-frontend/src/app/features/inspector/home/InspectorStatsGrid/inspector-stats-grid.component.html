@@ -1,0 +1,49 @@
+<section class="stats-grid">
+  <mat-card class="stat-card accent-primary">
+    <mat-card-content>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats().totalEmpleados }}</span>
+        <span class="stat-label">Empleados Totales</span>
+      </div>
+      <div class="stat-icon-wrapper bg-primary-light">
+        <mat-icon color="primary">groups</mat-icon>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="stat-card accent-warning">
+    <mat-card-content>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats().totalIncidencias }}</span>
+        <span class="stat-label">Incidencias Activas</span>
+      </div>
+      <div class="stat-icon-wrapper bg-warning-light">
+        <mat-icon class="color-warning">error_outline</mat-icon>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="stat-card accent-success">
+    <mat-card-content>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats().trabajadoresActivosHoy }}</span>
+        <span class="stat-label">Activos Hoy</span>
+      </div>
+      <div class="stat-icon-wrapper bg-success-light">
+        <mat-icon class="color-success">check_circle</mat-icon>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="stat-card accent-info">
+    <mat-card-content>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats().totalAuditLogs }}</span>
+        <span class="stat-label">Registros Auditoría</span>
+      </div>
+      <div class="stat-icon-wrapper bg-info-light">
+        <mat-icon class="color-info">description</mat-icon>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</section>

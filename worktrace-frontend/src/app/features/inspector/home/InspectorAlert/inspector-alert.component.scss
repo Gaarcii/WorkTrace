@@ -1,0 +1,28 @@
+.alert-card.error-alert {
+  background-color: #fef7f6;
+  border-left: 4px solid #f44336;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  .alert-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .alert-message {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #d32f2f;
+  }
+
+  .alert-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
