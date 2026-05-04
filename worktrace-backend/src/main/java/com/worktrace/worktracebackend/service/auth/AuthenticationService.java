@@ -5,11 +5,13 @@ import com.worktrace.worktracebackend.dto.auth.AuthResponseDto;
 import com.worktrace.worktracebackend.dto.company.CompanyRequestDto;
 import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
 import com.worktrace.worktracebackend.dto.user.PasswordChangeRequestDto;
+import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleRequestDto;
 import com.worktrace.worktracebackend.exception.InvalidCredentialsException;
 import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.*;
 import com.worktrace.worktracebackend.security.JwtService;
 import com.worktrace.worktracebackend.service.email.EmailService;
+import com.worktrace.worktracebackend.service.workSchedule.WorkScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +38,7 @@ public class AuthenticationService {
     private final EmailService emailService;
     private final JobPositionRepository jobPositionRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final WorkScheduleService workScheduleService;
 
 
     @Transactional
@@ -150,6 +153,13 @@ public class AuthenticationService {
                 .user(employee)
                 .build();
         profileRepository.saveAndFlush(profile);
+
+        if (requestDto.getSchedules() != null && !requestDto.getSchedules().isEmpty()) {
+            WorkScheduleRequestDto scheduleDto = new WorkScheduleRequestDto();
+            scheduleDto.setEmployeeId(employee.getId());
+            scheduleDto.setSchedules(requestDto.getSchedules());
+            workScheduleService.assignWorkSchedule(scheduleDto);
+        }
 
         emailService.sendNewEmployeeWelcomeEmail(
                 requestDto.getEmail(),

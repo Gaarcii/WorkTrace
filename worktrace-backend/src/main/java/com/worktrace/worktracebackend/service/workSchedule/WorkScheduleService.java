@@ -4,10 +4,12 @@ import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleRequestDto;
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleDayRequestDto;
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleResponseDto;
 import com.worktrace.worktracebackend.model.Company;
+import com.worktrace.worktracebackend.model.Profile;
 import com.worktrace.worktracebackend.model.User;
 import com.worktrace.worktracebackend.model.WorkSchedule;
 import com.worktrace.worktracebackend.model.WorkSite;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
+import com.worktrace.worktracebackend.repository.ProfileRepository;
 import com.worktrace.worktracebackend.repository.WorkSiteRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
@@ -33,6 +35,7 @@ import java.util.UUID;
 public class WorkScheduleService {
 
     private final WorkScheduleRepository workScheduleRepository;
+    private final ProfileRepository profileRepository;
     private final UserService userService;
     private final WorkSiteRepository workSiteRepository;
 
@@ -41,6 +44,8 @@ public class WorkScheduleService {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
         User worker = userService.getUserById(dto.getEmployeeId());
+        Profile employeeProfile = profileRepository.findById(dto.getEmployeeId())
+            .orElseThrow(() -> new IllegalArgumentException("Perfil del trabajador no encontrado"));
 
         if (!company.getId().equals(worker.getCompany().getId())) {
             throw new IllegalStateException("El trabajador no pertenece a tu empresa");
@@ -99,7 +104,7 @@ public class WorkScheduleService {
             }
 
             WorkSchedule newWorkSchedule = new WorkSchedule();
-            newWorkSchedule.setEmployee(worker.getProfile());
+            newWorkSchedule.setEmployee(employeeProfile);
             newWorkSchedule.setSite(workSite);
             newWorkSchedule.setDayOfWeek(day);
             newWorkSchedule.setStartTime(requestedSchedule.getStartTime());
@@ -111,7 +116,11 @@ public class WorkScheduleService {
         }
 
         if (!schedulesToCreate.isEmpty()) {
-            workScheduleRepository.saveAll(schedulesToCreate);
+            workScheduleRepository.saveAllAndFlush(schedulesToCreate);
+        }
+
+        if (!existingSchedules.isEmpty()) {
+            workScheduleRepository.saveAllAndFlush(existingSchedules);
         }
     }
 

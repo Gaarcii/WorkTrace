@@ -1,9 +1,7 @@
 @if (modelValue()) {
   <div class="dialog-backdrop" (click)="close.emit()">
     <div class="dialog-card" (click)="$event.stopPropagation()">
-      <div class="dialog-title">
-        Nuevo Empleado
-      </div>
+      <div class="dialog-title">Nuevo Empleado</div>
 
       <div class="dialog-content">
         <div class="field-grid">
@@ -89,16 +87,117 @@
         <button type="button" class="btn-link" (click)="openJobPositions.emit()">
           Gestionar puestos de trabajo
         </button>
+
+        <div class="schedule-section">
+          <button type="button" class="btn-link" (click)="toggleScheduleSection()">
+            {{
+              showScheduleSection()
+                ? '🔽 Ocultar horarios (opcional)'
+                : '▶️ Agregar horarios (opcional)'
+            }}
+          </button>
+
+          @if (showScheduleSection()) {
+            <div class="schedule-card">
+              <div class="schedule-title">
+                <span class="material-icons mr-2">calendar_view_week</span>
+                Configuración semanal
+              </div>
+
+              <div class="schedule-info">
+                <p>Define los horarios por día solo si quieres dejarlos creados al alta.</p>
+              </div>
+
+              <div class="schedule-list">
+                @for (schedule of weeklySchedules(); track schedule.dayKey; let i = $index) {
+                  <div class="day-row-card">
+                    <div class="day-grid">
+                      <div class="day-toggle">
+                        <label class="switch" [attr.aria-label]="'Activar ' + dayLabels[i]">
+                          <input
+                            type="checkbox"
+                            [checked]="schedule.isActive"
+                            (change)="
+                              onScheduleActiveChanged(schedule.dayKey, $any($event.target).checked)
+                            "
+                          />
+                          <span class="slider"></span>
+                        </label>
+                        <span class="day-name">{{ dayLabels[i] }}</span>
+                      </div>
+
+                      <div class="field">
+                        <label>Centro de trabajo</label>
+                        <select
+                          class="form-control"
+                          [disabled]="!schedule.isActive"
+                          [value]="schedule.siteId ?? ''"
+                          (change)="
+                            onScheduleFieldChanged(
+                              schedule.dayKey,
+                              'siteId',
+                              $any($event.target).value
+                            )
+                          "
+                        >
+                          <option value="">Selecciona un centro</option>
+                          @for (site of workSites(); track site.id) {
+                            <option [value]="site.id">{{ site.name }}</option>
+                          }
+                        </select>
+                      </div>
+
+                      <div class="field">
+                        <label>Inicio</label>
+                        <input
+                          type="time"
+                          class="form-control"
+                          [disabled]="!schedule.isActive"
+                          [value]="schedule.startTime"
+                          (input)="
+                            onScheduleFieldChanged(
+                              schedule.dayKey,
+                              'startTime',
+                              $any($event.target).value
+                            )
+                          "
+                        />
+                      </div>
+
+                      <div class="field">
+                        <label>Fin</label>
+                        <input
+                          type="time"
+                          class="form-control"
+                          [disabled]="!schedule.isActive"
+                          [value]="schedule.endTime"
+                          (input)="
+                            onScheduleFieldChanged(
+                              schedule.dayKey,
+                              'endTime',
+                              $any($event.target).value
+                            )
+                          "
+                        />
+                      </div>
+                    </div>
+
+                    @if (schedule.isActive && !isScheduleComplete(schedule)) {
+                      <div class="row-warning">
+                        Completa centro, hora de inicio y hora de fin para este dia.
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
       </div>
 
       <div class="dialog-actions">
-        <button type="button" class="btn btn-outlined" (click)="close.emit()">CANCELAR</button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          [disabled]="loading()"
-          (click)="submit.emit()"
-        >
+        <button type="button" class="btn btn-outlined" (click)="closeDialog()">CANCELAR</button>
+        <button type="button" class="btn btn-primary" [disabled]="loading()" (click)="submitForm()">
           {{ loading() ? 'GUARDANDO...' : 'CREAR EMPLEADO' }}
         </button>
       </div>

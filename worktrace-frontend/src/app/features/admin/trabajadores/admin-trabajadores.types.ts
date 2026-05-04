@@ -31,6 +31,12 @@ export interface CreateEmployeeForm {
   phone: string;
   weeklyHours: number | null;
   positionId: string | null;
+  schedules?: Array<{
+    dayOfWeek: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
+    startTime: string;
+    endTime: string;
+    siteId: string;
+  }>;
 }
 
 export interface EditProfileForm {

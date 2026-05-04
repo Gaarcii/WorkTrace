@@ -59,12 +59,18 @@ export interface CreateEmployeeProfileRequestDto {
   employeeCode: string;
   phone: string;
   positionId: string;
-  weeklyHours: number;
+  weeklyHours?: number;
 }
 
 export interface CreateEmployeeRequestDto {
   email: string;
   profile: CreateEmployeeProfileRequestDto;
+  schedules?: Array<{
+    dayOfWeek: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
+    startTime: string;
+    endTime: string;
+    siteId: string;
+  }>;
 }
 
 export interface SpringPageResponse<T> {

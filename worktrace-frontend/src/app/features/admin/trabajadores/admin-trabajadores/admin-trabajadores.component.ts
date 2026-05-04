@@ -16,6 +16,7 @@ import {
   EmployeeTableHeader,
   SnackbarState,
 } from '../admin-trabajadores.types';
+import { WorkSiteResponseDto } from '../../../../shared/models/work-schedule.model';
 import { EmployeesTableComponent } from './employee-table/employee-table.component';
 import { JobPositionsDialogComponent } from './job-positions-dialog/job-positions-dialog.component';
 import { CreateEmployeeDialogComponent } from './admin-crearTrabajador/create-employee-dialog.component';
@@ -56,6 +57,7 @@ export class AdminTrabajadoresComponent implements OnInit {
   readonly puestosTrabajo = signal<JobPositionUiDto[]>([]);
   readonly nuevoPuesto = signal<string>('');
   readonly puestoABorrar = signal<JobPositionUiDto | null>(null);
+  readonly workSites = signal<WorkSiteResponseDto[]>([]);
 
   readonly headers: EmployeeTableHeader[] = [
     { key: 'fullName', title: 'Nombre' },
@@ -72,10 +74,11 @@ export class AdminTrabajadoresComponent implements OnInit {
     phone: '',
     weeklyHours: null,
     positionId: null,
+    schedules: [],
   };
 
   ngOnInit(): void {
-    void Promise.all([this.loadEmployees(), this.loadPuestos()]).then(() => {
+    void Promise.all([this.loadEmployees(), this.loadPuestos(), this.loadWorkSites()]).then(() => {
       if (this.route.snapshot.queryParamMap.get('open') === 'true') {
         this.dialogCrear.set(true);
       }
@@ -113,6 +116,7 @@ export class AdminTrabajadoresComponent implements OnInit {
     this.formData.phone = '';
     this.formData.weeklyHours = null;
     this.formData.positionId = null;
+    this.formData.schedules = [];
   }
 
   cerrarModalCrearSeguro(): void {
@@ -126,17 +130,9 @@ export class AdminTrabajadoresComponent implements OnInit {
     void this.router.navigate(['/admin/trabajadores', item.id]);
   }
 
-  crearEmpleado(): void {
-    const form = this.formData;
-    if (
-      !form.fullName ||
-      !form.employeeCode ||
-      !form.email ||
-      !form.phone ||
-      !form.weeklyHours ||
-      !form.positionId
-    ) {
-      this.mostrarSnackbar('Completa todos los campos obligatorios', 'warning');
+  crearEmpleado(form: CreateEmployeeForm): void {
+    if (!form.fullName || !form.employeeCode || !form.email || !form.phone || !form.positionId) {
+      this.mostrarSnackbar('Completa los campos obligatorios', 'warning');
       return;
     }
 
@@ -146,10 +142,17 @@ export class AdminTrabajadoresComponent implements OnInit {
         fullName: form.fullName,
         employeeCode: form.employeeCode,
         phone: form.phone,
-        weeklyHours: form.weeklyHours,
+        weeklyHours: form.weeklyHours ?? undefined,
         positionId: form.positionId,
       },
     };
+
+    // Include schedules if provided
+    if (form.schedules && form.schedules.length > 0) {
+      payload.schedules = form.schedules;
+    }
+
+    console.log('[AdminTrabajadores] Crear empleado payload:', payload);
 
     this.loading.set(true);
     this.workersService
@@ -300,6 +303,24 @@ export class AdminTrabajadoresComponent implements OnInit {
           },
           error: () => {
             this.mostrarSnackbar('No se pudieron cargar los puestos', 'error');
+            resolve();
+          },
+        });
+    });
+  }
+
+  private async loadWorkSites(): Promise<void> {
+    await new Promise<void>((resolve) => {
+      this.workersService
+        .obtenerCentrosTrabajo()
+        .pipe(take(1))
+        .subscribe({
+          next: (sites) => {
+            this.workSites.set(sites);
+            resolve();
+          },
+          error: () => {
+            this.mostrarSnackbar('No se pudieron cargar los centros de trabajo', 'error');
             resolve();
           },
         });

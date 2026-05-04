@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.dto.user;
 
+import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleDayRequestDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -24,4 +27,7 @@ public class EmployeeRequestDto {
     @Valid
     @NotNull(message = "Los datos del trabajador son obligatorios")
     private ProfileRequestDto profile;
+
+    @Valid
+    private List<WorkScheduleDayRequestDto> schedules;
 }

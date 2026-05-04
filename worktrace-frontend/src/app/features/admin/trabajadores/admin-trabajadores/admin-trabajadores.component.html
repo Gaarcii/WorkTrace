@@ -23,8 +23,9 @@
   [credencialesRecientes]="null"
   [error]="null"
   [puestosTrabajo]="puestosTrabajo()"
+  [workSites]="workSites()"
   (close)="cerrarModalCrearSeguro()"
-  (submit)="crearEmpleado()"
+  (submit)="crearEmpleado($event)"
   (openJobPositions)="abrirModalPuestosDesdeCrear()"
 ></app-create-employee-dialog>
 

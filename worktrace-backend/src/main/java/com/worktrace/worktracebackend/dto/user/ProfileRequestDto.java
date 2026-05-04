@@ -19,7 +19,7 @@ public class ProfileRequestDto {
     private String fullName;
 
     @NotBlank(message = "El DNI es obligatorio")
-    @Pattern(regexp = "^[0-9]{8}[A-Za-z]$", message = "El DNI debe tener 8 números y 1 letra")
+    @Pattern(regexp = "^[0-9]{8}[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\\s]$", message = "El DNI debe tener 8 números y 1 letra")
     private String employeeCode;
 
     @NotBlank(message = "El teléfono es obligatorio")
@@ -31,6 +31,5 @@ public class ProfileRequestDto {
 
     @Positive(message = "Las horas semanales deben ser un número positivo")
     @Max(value = 168, message = "No hay más de 168 horas en una semana")
-    @NotNull(message = "Las horas semanales son obligatorias")
     private BigDecimal weeklyHours;
 }
