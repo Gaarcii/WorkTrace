@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom, take } from 'rxjs';
 import { format, formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { AdminHomeStatsComponent } from './stats/admin-home-stats.component';
@@ -29,6 +29,8 @@ import {
   SelectedDayEntry,
   WeekChartDay,
 } from './admin-home.types';
+import { InspectorRequestDto } from '../../../shared/models/inspector.model';
+import { AdminCreateInspectorDialogComponent } from './create-inspector-modal/admin-create-inspector-dialog.component';
 
 @Component({
   selector: 'app-admin-home',
@@ -41,6 +43,7 @@ import {
     AdminActiveWorkersComponent,
     AdminQuickActionsComponent,
     AdminExportLegalDialogComponent,
+    AdminCreateInspectorDialogComponent
   ],
   templateUrl: './admin-home.component.html',
   styleUrl: './admin-home.component.scss',
@@ -76,6 +79,8 @@ export class AdminHomeComponent implements OnInit {
   readonly diaSeleccionado = signal<string | null>(null);
   readonly fichajesDiaSeleccionado = signal<SelectedDayEntry[]>([]);
 
+  readonly dialogoInspector = signal<boolean>(false);
+  readonly cargandoInspector = signal<boolean>(false);
   readonly dialogoExportar = signal<boolean>(false);
   readonly rangoExportacion = signal<RangoExportacion>('mes');
   readonly formatoExportacion = signal<FormatoExportacion>('pdf');
@@ -86,6 +91,7 @@ export class AdminHomeComponent implements OnInit {
     { icono: 'mdi-account-plus', texto: 'Añadir' },
     { icono: 'mdi-calendar-blank', texto: 'Horarios' },
     { icono: 'mdi-bell-outline', texto: 'Incidencias' },
+    { icono: 'mdi-security', texto: 'Auditor' },
   ]);
 
   readonly trabajadoresListFiltrados = computed<ActiveWorkerCard[]>(() => {
@@ -253,8 +259,8 @@ export class AdminHomeComponent implements OnInit {
       return;
     }
 
-    if (accion.texto === 'Filtrar') {
-      console.log('Filtrar clicked');
+    if (accion.texto === 'Auditor') {
+      this.dialogoInspector.set(true);
       return;
     }
   }
@@ -286,6 +292,28 @@ export class AdminHomeComponent implements OnInit {
     } finally {
       this.cargandoExportacion.set(false);
     }
+  }
+
+  crearInspector(data: InspectorRequestDto): void {
+    if (this.cargandoInspector()) return;
+
+    this.cargandoInspector.set(true);
+    
+    this.adminHomeService.registerInspector(data)
+      .pipe(
+        take(1),
+        finalize(() => this.cargandoInspector.set(false))
+      )
+      .subscribe({
+        next: (response) => {
+          alert(response.message); 
+          this.dialogoInspector.set(false);
+        },
+        error: (err) => {
+          console.error('Error al procesar el inspector:', err);
+          alert('Hubo un error al crear o notificar al inspector.');
+        }
+      });
   }
 
   private async cargarDashboard(): Promise<void> {

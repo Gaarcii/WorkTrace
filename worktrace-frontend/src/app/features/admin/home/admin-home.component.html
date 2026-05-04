@@ -72,4 +72,10 @@
     (updateRangoExportacion)="rangoExportacion.set($event)"
     (confirm)="generarInformeLegal()"
   />
+  <app-admin-create-inspector-dialog
+    [modelValue]="dialogoInspector()"
+    [cargando]="cargandoInspector()"
+    (updateModelValue)="dialogoInspector.set($event)"
+    (confirm)="crearInspector($event)"
+  />
 </div>

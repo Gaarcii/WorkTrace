@@ -28,6 +28,8 @@ export class AdminQuickActionsComponent {
         return 'notifications';
       case 'mdi-cog-outline':
         return 'settings';
+      case 'mdi-security':
+        return 'admin_panel_settings';
       default:
         return 'apps';
     }

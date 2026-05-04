@@ -6,6 +6,7 @@ import com.worktrace.worktracebackend.dto.company.CompanyRequestDto;
 import com.worktrace.worktracebackend.dto.passewordResetToken.ForgotPasswordRequest;
 import com.worktrace.worktracebackend.dto.passewordResetToken.ResetPasswordRequest;
 import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
+import com.worktrace.worktracebackend.dto.user.InspectorRequestDto;
 import com.worktrace.worktracebackend.dto.user.PasswordChangeRequestDto;
 import com.worktrace.worktracebackend.service.auth.AuthenticationService;
 import jakarta.validation.Valid;
@@ -55,6 +56,14 @@ public class AuthController {
         authenticationService.registerEmployee(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "Empleado creado correctamente"));
+    }
+
+    @PostMapping("/register-inspector")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, String>> registerInspector(@Valid @RequestBody InspectorRequestDto requestDto) {
+        authenticationService.registerInspector(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "Inspector procesado correctamente. Si era nuevo se ha creado y enviado el correo. Si ya existía, se ha enviado el correo para reestablecer la contraseña."));
     }
 
     @PostMapping("/forgot-password")

@@ -10,6 +10,7 @@ import {
 } from '../../models/time-entry.model';
 import { AdminIncidenceResponseDto } from '../../models/incidence.model';
 import { DepartmentStatDto } from '../../models/profile.model';
+import { InspectorRequestDto } from '../../models/inspector.model';
 
 interface SpringPageResponse<T> {
   content: T[];
@@ -126,6 +127,10 @@ export class AdminHomeService {
       params,
       responseType: 'blob',
     });
+  }
+
+  registerInspector(data: InspectorRequestDto): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.BASE_URL}auth/register-inspector`, data);
   }
 
   private toIsoDate(value: Date | string): string {

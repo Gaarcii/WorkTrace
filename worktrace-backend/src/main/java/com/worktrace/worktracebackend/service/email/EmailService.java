@@ -61,6 +61,46 @@ public class EmailService {
     }
 
     @Async
+    public void sendNewInspectorWelcomeEmail(
+            String toEmail,
+            String inspectorName,
+            String plainPassword,
+            String empresaLogoUrl,
+            String empresaNombre,
+            String nombreAdmin,
+            String urlAccesoApp
+    ) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(senderEmail);
+            helper.setTo(toEmail);
+            helper.setSubject("Bienvenido a Worktrace - Acceso de Auditor");
+
+            Context context = new Context();
+            context.setVariable("nombre", inspectorName);
+            context.setVariable("email", toEmail);
+            context.setVariable("password", plainPassword);
+            context.setVariable("empresaLogoUrl", empresaLogoUrl);
+            context.setVariable("empresaNombre", empresaNombre);
+            context.setVariable("nombreAdmin", nombreAdmin);
+            context.setVariable("urlAccesoApp", urlAccesoApp);
+
+            String htmlContent = templateEngine.process("email-bienvenida-inspector", context);
+
+            helper.setText(htmlContent, true);
+
+            System.out.println("DEBUG: Iniciando envío de correo de bienvenida para inspector a " + toEmail);
+            mailSender.send(message);
+            System.out.println("DEBUG: ¡Correo de bienvenida para inspector enviado con éxito a " + toEmail + "!");
+
+        } catch (Exception e) {
+            System.err.println("Error al enviar el correo de bienvenida para inspector: " + e.getMessage());
+        }
+    }
+
+    @Async
     public void sendPasswordResetEmail(String to, String resetLink, String empresaNombre, String empresaLogoUrl) {
         try {
             MimeMessage message = mailSender.createMimeMessage();

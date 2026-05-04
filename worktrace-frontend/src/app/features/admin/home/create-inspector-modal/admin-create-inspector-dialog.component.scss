@@ -1,0 +1,162 @@
+.dialog-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.dialog-surface {
+  background: #fff;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #eee;
+}
+.dialog-body {
+  padding: 24px;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  background: #f9fafb;
+  border-top: 1px solid #eee;
+}
+
+.info-alert {
+  display: flex;
+  gap: 12px;
+  background-color: #e3f2fd;
+  color: #0277bd;
+  padding: 12px;
+  border-radius: 8px;
+  align-items: flex-start;
+}
+.info-icon {
+  font-size: 20px;
+}
+
+.native-filter {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.native-filter label {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.native-input {
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.native-input:focus {
+  border-color: #000026;
+  border-width: 2px;
+  padding: 0 11px;
+}
+
+.btn-text {
+  background: transparent;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  color: #666;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn-text:hover {
+  background: #f0f0f0;
+}
+.btn-text:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #000026;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+}
+.btn-primary:hover:not(:disabled) {
+  background: #1a1a40;
+}
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  padding: 4px;
+  border-radius: 50%;
+  color: #666;
+}
+.icon-btn:hover {
+  background: #f0f0f0;
+}
+
+.icon-small {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+.spinning {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.m-0 {
+  margin: 0;
+}
+.mb-3 {
+  margin-bottom: 12px;
+}
+.mb-4 {
+  margin-bottom: 16px;
+}
+.text-h6 {
+  font-size: 1.1rem;
+}
+.text-caption {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+.font-weight-bold {
+  font-weight: 700;
+}

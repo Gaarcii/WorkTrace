@@ -59,3 +59,9 @@ export interface InspectorAuditDetailDto {
   ejecutador: string;
   datosAntesModificacion: string;
 }
+
+export interface InspectorRequestDto {
+  email: string;
+  fullName: string;
+  phone: string;
+}

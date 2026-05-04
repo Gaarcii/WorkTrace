@@ -1,0 +1,66 @@
+@if (modelValue()) {
+  <div class="dialog-backdrop" (click)="closeDialog()">
+    <div class="dialog-surface" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2 class="m-0 text-h6 font-weight-bold">Accesos de Auditoría</h2>
+        <button type="button" class="icon-btn" (click)="closeDialog()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="dialog-body">
+          <div class="info-alert mb-4">
+            <span class="material-icons info-icon">info</span>
+            <p class="m-0 text-caption">
+              Si el inspector ya existe, se le reenviarán las credenciales. Si no existe, se creará
+              una cuenta nueva con rol AUDITOR.
+            </p>
+          </div>
+
+          <div class="native-filter mb-3">
+            <label>Nombre Completo</label>
+            <input
+              type="text"
+              formControlName="fullName"
+              class="native-input"
+              placeholder="Ej. Juan Pérez"
+            />
+          </div>
+
+          <div class="native-filter">
+            <label>Correo Electrónico</label>
+            <input
+              type="email"
+              formControlName="email"
+              class="native-input"
+              placeholder="auditor@worktrace.com"
+            />
+          </div>
+          <div class="native-filter mb-3">
+            <label>Teléfono</label>
+            <input
+              type="tel"
+              formControlName="phone"
+              class="native-input"
+              placeholder="Ej. 600 123 456"
+            />
+          </div>
+        </div>
+
+        <div class="dialog-actions">
+          <button type="button" class="btn-text" (click)="closeDialog()" [disabled]="cargando()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid || cargando()">
+            @if (cargando()) {
+              <span class="material-icons spinning icon-small">refresh</span>
+            } @else {
+              Confirmar Accesos
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

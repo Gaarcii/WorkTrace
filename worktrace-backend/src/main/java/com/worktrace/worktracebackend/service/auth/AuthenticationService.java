@@ -4,6 +4,7 @@ import com.worktrace.worktracebackend.dto.auth.AuthRequestDto;
 import com.worktrace.worktracebackend.dto.auth.AuthResponseDto;
 import com.worktrace.worktracebackend.dto.company.CompanyRequestDto;
 import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
+import com.worktrace.worktracebackend.dto.user.InspectorRequestDto;
 import com.worktrace.worktracebackend.dto.user.PasswordChangeRequestDto;
 import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleRequestDto;
 import com.worktrace.worktracebackend.exception.InvalidCredentialsException;
@@ -164,6 +165,56 @@ public class AuthenticationService {
         emailService.sendNewEmployeeWelcomeEmail(
                 requestDto.getEmail(),
                 requestDto.getProfile().getFullName(),
+                password,
+                company.getLogoUrl(),
+                company.getCompanyName(),
+                admin.getProfile().getFullName(),
+                "https://app.worktrace.com/login" //CAMBIAR A URL DEL DOMINIO
+        );
+    }
+
+    @Transactional
+    public void registerInspector(InspectorRequestDto requestDto) {
+        Optional<User> existingUserOpt = userRepository.findByEmail(requestDto.getEmail());
+
+        if (existingUserOpt.isPresent()) {
+            User existingUser = existingUserOpt.get();
+            if (existingUser.getRole() != Role.INSPECTOR) {
+                throw new IllegalArgumentException("Ya existe un usuario con este email y no es inspector.");
+            }
+            processForgotPassword(requestDto.getEmail());
+            return;
+        }
+
+        User admin = userService.getAuthenticatedUser();
+        Company company = admin.getCompany();
+
+        String password = generarPasswordSegura();
+
+        User inspector = User.builder()
+                .email(requestDto.getEmail())
+                .passwordHash(passwordEncoder.encode(password))
+                .role(Role.INSPECTOR)
+                .isEnabled(true)
+                .createdAt(OffsetDateTime.now())
+                .company(company)
+                .build();
+        userRepository.saveAndFlush(inspector);
+
+        Profile profile = Profile.builder()
+                .fullName(requestDto.getFullName())
+                .employeeCode("N/A")
+                .phone(requestDto.getPhone())
+                .isFirstLogin(false)
+                .isActive(true)
+                .updatedAt(OffsetDateTime.now())
+                .user(inspector)
+                .build();
+        profileRepository.saveAndFlush(profile);
+
+        emailService.sendNewInspectorWelcomeEmail(
+                requestDto.getEmail(),
+                requestDto.getFullName(),
                 password,
                 company.getLogoUrl(),
                 company.getCompanyName(),
