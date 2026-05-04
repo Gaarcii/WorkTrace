@@ -1,50 +1,66 @@
 @if (modelValue()) {
   <div class="dialog-backdrop" (click)="close.emit()">
-    <div class="dialog-card mat-elevation-z24" (click)="$event.stopPropagation()">
+    <div class="dialog-card" (click)="$event.stopPropagation()">
       <div class="dialog-title">
-        <mat-icon class="mr-2">person_add</mat-icon>
         Nuevo Empleado
       </div>
 
       <div class="dialog-content">
         <div class="field-grid">
-          <mat-form-field appearance="outline">
-            <mat-label>Nombre completo</mat-label>
+          <div class="field-group">
+            <label for="employee-fullName">Nombre completo</label>
             <input
-              matInput
+              id="employee-fullName"
+              class="form-control"
+              type="text"
+              placeholder="Introduce el nombre completo"
               [ngModel]="formData().fullName"
               (ngModelChange)="onFullNameChange($event)"
             />
-          </mat-form-field>
+          </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>DNI / Código</mat-label>
+          <div class="field-group">
+            <label for="employee-code">DNI</label>
             <input
-              matInput
+              id="employee-code"
+              class="form-control"
+              type="text"
+              placeholder="Introduce DNI"
               [ngModel]="formData().employeeCode"
               (ngModelChange)="onEmployeeCodeChange($event)"
             />
-          </mat-form-field>
+          </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Email</mat-label>
+          <div class="field-group">
+            <label for="employee-email">Email</label>
             <input
-              matInput
+              id="employee-email"
+              class="form-control"
+              placeholder="nombre@empresa.com"
               [ngModel]="formData().email"
               (ngModelChange)="onEmailChange($event)"
               type="email"
             />
-          </mat-form-field>
+          </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Teléfono</mat-label>
-            <input matInput [ngModel]="formData().phone" (ngModelChange)="onPhoneChange($event)" />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Horas semanales</mat-label>
+          <div class="field-group">
+            <label for="employee-phone">Teléfono</label>
             <input
-              matInput
+              id="employee-phone"
+              class="form-control"
+              type="text"
+              placeholder="Introduce teléfono"
+              [ngModel]="formData().phone"
+              (ngModelChange)="onPhoneChange($event)"
+            />
+          </div>
+
+          <div class="field-group">
+            <label for="employee-hours">Horas semanales</label>
+            <input
+              id="employee-hours"
+              class="form-control"
+              placeholder="Ejemplo: 40"
               [ngModel]="formData().weeklyHours"
               (ngModelChange)="onWeeklyHoursChange($event)"
               type="number"
@@ -52,30 +68,37 @@
               max="168"
               step="0.5"
             />
-          </mat-form-field>
+          </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Puesto</mat-label>
-            <mat-select
+          <div class="field-group">
+            <label for="employee-position">Puesto</label>
+            <select
+              id="employee-position"
+              class="form-control"
               [ngModel]="formData().positionId"
               (ngModelChange)="onPositionChange($event)"
             >
-              <mat-option [value]="null">Selecciona un puesto</mat-option>
+              <option [ngValue]="null">Selecciona un puesto</option>
               @for (puesto of puestosTrabajo(); track puesto.id) {
-                <mat-option [value]="puesto.id">{{ puesto.title }}</mat-option>
+                <option [ngValue]="puesto.id">{{ puesto.title }}</option>
               }
-            </mat-select>
-          </mat-form-field>
+            </select>
+          </div>
         </div>
 
-        <button mat-button color="primary" class="btn-link" (click)="openJobPositions.emit()">
+        <button type="button" class="btn-link" (click)="openJobPositions.emit()">
           Gestionar puestos de trabajo
         </button>
       </div>
 
       <div class="dialog-actions">
-        <button mat-button (click)="close.emit()">CANCELAR</button>
-        <button mat-flat-button color="primary" [disabled]="loading()" (click)="submit.emit()">
+        <button type="button" class="btn btn-outlined" (click)="close.emit()">CANCELAR</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="loading()"
+          (click)="submit.emit()"
+        >
           {{ loading() ? 'GUARDANDO...' : 'CREAR EMPLEADO' }}
         </button>
       </div>

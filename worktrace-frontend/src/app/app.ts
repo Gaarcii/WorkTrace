@@ -38,8 +38,9 @@ export class App implements OnInit {
         const url = event.urlAfterRedirects;
         const isLogin = url.includes('/login');
         const isChangePassword = url.includes('/change-password');
+        const isResetPassword = url.includes('/reset-password');
 
-        this.showHeader.set(!(isLogin || isChangePassword));
+        this.showHeader.set(!(isLogin || isChangePassword || isResetPassword));
         this.userRole.set(this.tokenStorage.getRole());
       });
   }

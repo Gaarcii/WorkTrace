@@ -108,7 +108,10 @@ export class AdminWorkersService {
   }
 
   crearEmpleado(dto: CreateEmployeeRequestDto): Observable<void> {
-    return this.http.post<void>(`${this.BASE_URL}auth/register-employee`, dto);
+    // Backend may return empty/text body on success; avoid JSON parse false-negatives.
+    return this.http
+      .post(`${this.BASE_URL}auth/register-employee`, dto, { responseType: 'text' })
+      .pipe(map(() => void 0));
   }
 
   editarPuestoYHorasEmpleado(id: string, dto: EditEmployeeWorkDataRequestDto): Observable<void> {

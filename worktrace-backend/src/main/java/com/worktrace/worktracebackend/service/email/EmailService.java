@@ -59,4 +59,32 @@ public class EmailService {
             System.err.println("Error al enviar el correo HTML: " + e.getMessage());
         }
     }
+
+    @Async
+    public void sendPasswordResetEmail(String to, String resetLink, String empresaNombre, String empresaLogoUrl) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(senderEmail);
+            helper.setTo(to);
+            helper.setSubject("WorkTrace - Restablecer Contraseña");
+
+            Context context = new Context();
+            context.setVariable("resetLink", resetLink);
+            context.setVariable("empresaNombre", empresaNombre != null ? empresaNombre : "WorkTrace");
+            context.setVariable("empresaLogoUrl", empresaLogoUrl);
+
+            String htmlContent = templateEngine.process("email-reset-password", context);
+
+            helper.setText(htmlContent, true);
+
+            System.out.println("DEBUG: Iniciando envío de correo HTML de reset a " + to);
+            mailSender.send(message);
+            System.out.println("DEBUG: ¡Correo HTML de reset enviado con éxito a " + to + "!");
+
+        } catch (Exception e) {
+            System.err.println("Error al enviar el correo HTML de reset de contraseña: " + e.getMessage());
+        }
+    }
 }

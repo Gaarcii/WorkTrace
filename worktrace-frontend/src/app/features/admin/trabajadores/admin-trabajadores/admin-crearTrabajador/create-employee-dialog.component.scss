@@ -1,20 +1,14 @@
 $primary-dark: #000026;
-$success: #4caf50;
-$info-bg: #e3f2fd;
-$info-text: #0d47a1;
-$error-bg: #ffebee;
-$error-text: #c62828;
-$grey-dark: #616161;
-$grey-light: #e0e0e0;
-$card-bg: #e8eaf6;
 
-.modal-overlay,
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 .dialog-backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -23,12 +17,10 @@ $card-bg: #e8eaf6;
   padding: 1rem;
 }
 
-.modal-card,
 .dialog-card {
-  background: white;
-  width: 100%;
-  max-width: 600px;
-  border-radius: 8px;
+  background: #fff;
+  width: min(100%, 640px);
+  border-radius: 10px;
   box-shadow:
     0 11px 15px -7px rgba(0, 0, 0, 0.2),
     0 24px 38px 3px rgba(0, 0, 0, 0.14),
@@ -40,263 +32,186 @@ $card-bg: #e8eaf6;
 
 .dialog-title {
   background-color: $primary-dark;
-  color: white;
-  padding: 16px 24px;
-  font-size: 1.25rem;
-  font-weight: 500;
+  color: #fff;
+  padding: 16px 20px;
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.2;
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+
+.title-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 50%;
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .dialog-content {
-  padding: 24px;
-  max-height: calc(100vh - 180px);
+  padding: 16px 20px 10px;
+  max-height: calc(100vh - 210px);
   overflow-y: auto;
-}
-
-.dialog-actions {
-  padding: 16px 24px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+  overflow-x: hidden;
 }
 
 .field-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px 12px;
 }
 
-.field-grid mat-form-field {
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.field-group label {
+  font-size: 0.79rem;
+  font-weight: 700;
+  color: #3b3b3b;
+}
+
+.field-group .form-control {
   width: 100%;
+  min-width: 0;
+  height: 40px;
+  border: 1px solid #b9b9b9;
+  border-radius: 4px;
+  padding: 0 11px;
+  font-size: 0.9rem;
+  color: #1f1f1f;
+  background-color: #fff;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.field-group .form-control::placeholder {
+  color: #7a7a7a;
+}
+
+.field-group .form-control:focus {
+  border-color: $primary-dark;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 0, 38, 0.12);
+}
+
+.field-group select.form-control {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #555 50%),
+    linear-gradient(135deg, #555 50%, transparent 50%);
+  background-position:
+    calc(100% - 17px) calc(50% - 3px),
+    calc(100% - 11px) calc(50% - 3px);
+  background-size:
+    6px 6px,
+    6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 32px;
+}
+
+.btn-link {
+  margin-top: 10px;
+  border: 0;
+  background: transparent;
+  color: #0b61c9;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.dialog-actions {
+  padding: 12px 20px 14px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  padding: 0 16px;
+  height: 40px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition:
+    opacity 0.2s,
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: $primary-dark;
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: lighten($primary-dark, 10%);
+}
+
+.btn-outlined {
+  background-color: transparent;
+  color: $primary-dark;
+  border: 1px solid rgba(0, 0, 38, 0.35);
+}
+
+.btn-outlined:hover:not(:disabled) {
+  background-color: rgba(0, 0, 38, 0.06);
+}
+
+.mr-2 {
+  margin-right: 8px;
 }
 
 @media (max-width: 768px) {
+  .dialog-card {
+    width: min(100%, 520px);
+  }
+
   .field-grid {
     grid-template-columns: 1fr;
   }
 }
 
-.modal-header {
-  background-color: $primary-dark;
-  color: white;
-  padding: 16px 24px;
-  font-size: 1.25rem;
-  font-weight: 500;
-}
-
-.modal-body {
-  padding: 24px;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
-}
-
-.d-flex {
-  display: flex;
-}
-.align-center {
-  align-items: center;
-}
-.justify-space-between {
-  justify-content: space-between;
-}
-.flex-grow-1 {
-  flex-grow: 1;
-}
-.text-center {
-  text-align: center;
-}
-.text-left {
-  text-align: left;
-}
-.gap-2 {
-  gap: 8px;
-}
-.mb-2 {
-  margin-bottom: 8px;
-}
-.mb-4 {
-  margin-bottom: 16px;
-}
-.mr-2 {
-  margin-right: 8px;
-}
-.ml-2 {
-  margin-left: 8px;
-}
-.mt-4 {
-  margin-top: 16px;
-}
-.pa-4 {
-  padding: 16px;
-}
-.my-3 {
-  margin: 12px 0;
-}
-.block {
-  width: 100%;
-  display: block;
-}
-
-.text-white {
-  color: white;
-}
-.text-h5 {
-  font-size: 1.5rem;
-  font-weight: 400;
-}
-.text-h6 {
-  font-size: 1.25rem;
-  font-weight: 500;
-}
-.text-caption {
-  font-size: 0.75rem;
-  color: $grey-dark;
-}
-.font-weight-bold {
-  font-weight: 700;
-}
-.primary-dark-text {
-  color: $primary-dark;
-}
-
-.icon-success {
-  color: $success;
-}
-.icon-huge {
-  font-size: 80px;
-}
-
-.alert {
-  padding: 12px 16px;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  &-info {
-    background-color: $info-bg;
-    color: $info-text;
-  }
-  &-error {
-    background-color: $error-bg;
-    color: $error-text;
-  }
-}
-
-.credentials-card {
-  background-color: $card-bg;
-  border: 1px solid darken($card-bg, 10%);
-  border-radius: 4px;
-}
-.divider {
-  border: 0;
-  border-top: 1px solid $grey-light;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  label {
-    font-size: 0.75rem;
-    color: $grey-dark;
-    margin-bottom: 4px;
-  }
-}
-
-.input-with-icon {
-  position: relative;
-  display: flex;
-  align-items: center;
-
-  .material-icons {
-    position: absolute;
-    left: 12px;
-    color: $grey-dark;
+@media (max-width: 480px) {
+  .dialog-title {
+    font-size: 1.1rem;
+    padding: 14px 16px;
   }
 
-  .form-control {
+  .dialog-content {
+    padding: 14px 16px 8px;
+  }
+
+  .dialog-actions {
+    padding: 10px 16px 14px;
+    flex-direction: column-reverse;
+  }
+
+  .dialog-actions .btn {
     width: 100%;
-    padding: 12px 12px 12px 40px;
-    border: 1px solid $grey-dark;
-    border-radius: 4px;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-
-    &:focus {
-      border-color: $primary-dark;
-      border-width: 2px;
-      padding: 11px 11px 11px 39px;
-    }
-  }
-}
-
-.error-text {
-  color: $error-text;
-  font-size: 0.75rem;
-  margin-top: 4px;
-}
-
-.btn {
-  padding: 0 16px;
-  height: 44px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  border-radius: 4px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    opacity 0.2s,
-    background-color 0.2s;
-  border: none;
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  &-primary {
-    background-color: $primary-dark;
-    color: white;
-    &:hover:not(:disabled) {
-      background-color: lighten($primary-dark, 10%);
-    }
-  }
-
-  &-outlined {
-    background-color: transparent;
-    color: $primary-dark;
-    border: 1px solid $primary-dark;
-    &:hover:not(:disabled) {
-      background-color: rgba($primary-dark, 0.05);
-    }
-  }
-}
-
-.btn-icon {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-  border-radius: 50%;
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  &:hover:not(:disabled) {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-}
-
-.btn-tonal {
-  background-color: rgba($primary-dark, 0.12);
-  color: $primary-dark;
-  &:hover:not(:disabled) {
-    background-color: rgba($primary-dark, 0.2);
   }
 }

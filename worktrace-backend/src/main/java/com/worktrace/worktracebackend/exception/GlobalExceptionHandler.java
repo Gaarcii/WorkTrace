@@ -14,6 +14,18 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleIllegalArgument(IllegalArgumentException ex) {
+        return Map.of("error", ex.getMessage() != null ? ex.getMessage() : "Solicitud inválida");
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleIllegalState(IllegalStateException ex) {
+        return Map.of("error", ex.getMessage() != null ? ex.getMessage() : "Estado inválido");
+    }
+
     @ExceptionHandler(InvalidCredentialsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleInvalidCredentials(InvalidCredentialsException ex) {

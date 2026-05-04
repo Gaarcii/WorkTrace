@@ -1,25 +1,12 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { CreateEmployeeForm } from '../../admin-trabajadores.types';
 import { JobPositionUiDto } from '../../../../../shared/models/profile.model';
 
 @Component({
   selector: 'app-create-employee-dialog',
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './create-employee-dialog.component.html',
   styleUrl: './create-employee-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

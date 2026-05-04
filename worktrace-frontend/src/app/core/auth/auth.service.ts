@@ -5,9 +5,11 @@ import { TokenStorageService } from './token-storage.service';
 import { API_CONFIG } from '../api/api.config';
 import {
   AuthResponse,
+  ForgotPasswordRequest,
   LoginRequest,
   PasswordChangeRequest,
   GenericMessageResponse,
+  ResetPasswordRequest,
 } from '../../shared/models/auth.model';
 @Injectable({
   providedIn: 'root',
@@ -37,6 +39,15 @@ export class AuthService {
   logout(): void {
     this.tokenStorage.clear();
     this.loggedIn.next(false);
+  }
+
+  solicitarRecuperacion(email: string): Observable<GenericMessageResponse> {
+    const request: ForgotPasswordRequest = { email };
+    return this.http.post<GenericMessageResponse>(`${this.BASE_URL}auth/forgot-password`, request);
+  }
+
+  ejecutarResetPassword(request: ResetPasswordRequest): Observable<GenericMessageResponse> {
+    return this.http.post<GenericMessageResponse>(`${this.BASE_URL}auth/reset-password`, request);
   }
 
   changeFirstPassword(passwordData: PasswordChangeRequest): Observable<GenericMessageResponse> {

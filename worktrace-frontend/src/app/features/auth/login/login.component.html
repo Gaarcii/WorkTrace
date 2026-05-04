@@ -14,57 +14,116 @@
         <p>Por favor, ingresa tus credenciales para acceder.</p>
       </div>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Correo electrónico</mat-label>
-          <input
-            matInput
-            formControlName="email"
-            type="email"
-            placeholder="ejemplo@empresa.com"
-            autocomplete="username"
-          />
-          <mat-icon matPrefix>email</mat-icon>
-          @if (loginForm.get('email')?.hasError('email')) {
-            <mat-error>El formato del email no es válido</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Contraseña</mat-label>
-          <input
-            matInput
-            formControlName="password"
-            [type]="hidePassword() ? 'password' : 'text'"
-            autocomplete="current-password"
-          />
-          <mat-icon matPrefix>lock</mat-icon>
-          <button mat-icon-button matSuffix type="button" (click)="togglePassword()">
-            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-        </mat-form-field>
-
-        @if (errorMessage()) {
-          <div class="error-box">
-            <mat-icon>error_outline</mat-icon>
-            <span>{{ errorMessage() }}</span>
-          </div>
-        }
-
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          [disabled]="loginForm.invalid || isSubmitting()"
-          class="submit-btn"
+      @if (forgotPasswordMode()) {
+        <form
+          [formGroup]="forgotPasswordForm"
+          (ngSubmit)="onForgotPasswordSubmit()"
+          class="login-form"
         >
-          @if (isSubmitting()) {
-            <mat-spinner diameter="24"></mat-spinner>
-          } @else {
-            Entrar a mi cuenta
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Correo electrónico</mat-label>
+            <input
+              matInput
+              formControlName="email"
+              type="email"
+              placeholder="ejemplo@empresa.com"
+              autocomplete="email"
+            />
+            <mat-icon matPrefix>email</mat-icon>
+            @if (forgotPasswordForm.get('email')?.hasError('email')) {
+              <mat-error>El formato del email no es válido</mat-error>
+            }
+          </mat-form-field>
+
+          @if (forgotPasswordError()) {
+            <div class="error-box">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ forgotPasswordError() }}</span>
+            </div>
           }
-        </button>
-      </form>
+
+          @if (forgotPasswordMessage()) {
+            <div class="success-box">
+              <mat-icon>mark_email_read</mat-icon>
+              <span>{{ forgotPasswordMessage() }}</span>
+            </div>
+          }
+
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="forgotPasswordForm.invalid || forgotPasswordLoading()"
+            class="submit-btn"
+          >
+            @if (forgotPasswordLoading()) {
+              <mat-spinner diameter="24"></mat-spinner>
+            } @else {
+              Enviar enlace
+            }
+          </button>
+
+          <button mat-button type="button" class="helper-link" (click)="returnToLoginMode()">
+            Volver al inicio de sesión
+          </button>
+        </form>
+      } @else {
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Correo electrónico</mat-label>
+            <input
+              matInput
+              formControlName="email"
+              type="email"
+              placeholder="ejemplo@empresa.com"
+              autocomplete="username"
+            />
+            <mat-icon matPrefix>email</mat-icon>
+            @if (loginForm.get('email')?.hasError('email')) {
+              <mat-error>El formato del email no es válido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Contraseña</mat-label>
+            <input
+              matInput
+              formControlName="password"
+              [type]="hidePassword() ? 'password' : 'text'"
+              autocomplete="current-password"
+            />
+            <mat-icon matPrefix>lock</mat-icon>
+            <button mat-icon-button matSuffix type="button" (click)="togglePassword()">
+              <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </mat-form-field>
+
+          @if (errorMessage()) {
+            <div class="error-box">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
+
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="loginForm.invalid || isSubmitting()"
+            class="submit-btn"
+          >
+            @if (isSubmitting()) {
+              <mat-spinner diameter="24"></mat-spinner>
+            } @else {
+              Entrar a mi cuenta
+            }
+          </button>
+
+          <button mat-button type="button" class="helper-link" (click)="enableForgotPasswordMode()">
+            ¿Has olvidado tu contraseña?
+          </button>
+        </form>
+      }
     </div>
   </div>
 </div>

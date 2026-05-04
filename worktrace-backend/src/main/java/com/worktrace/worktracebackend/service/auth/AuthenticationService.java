@@ -7,10 +7,7 @@ import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
 import com.worktrace.worktracebackend.dto.user.PasswordChangeRequestDto;
 import com.worktrace.worktracebackend.exception.InvalidCredentialsException;
 import com.worktrace.worktracebackend.model.*;
-import com.worktrace.worktracebackend.repository.CompanyRepository;
-import com.worktrace.worktracebackend.repository.JobPositionRepository;
-import com.worktrace.worktracebackend.repository.ProfileRepository;
-import com.worktrace.worktracebackend.repository.UserRepository;
+import com.worktrace.worktracebackend.repository.*;
 import com.worktrace.worktracebackend.security.JwtService;
 import com.worktrace.worktracebackend.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +35,7 @@ public class AuthenticationService {
     private final UserService userService;
     private final EmailService emailService;
     private final JobPositionRepository jobPositionRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
 
     @Transactional
@@ -111,6 +111,10 @@ public class AuthenticationService {
 
     @Transactional
     public void registerEmployee(EmployeeRequestDto requestDto) {
+        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Ya existe un usuario registrado con este email");
+        }
+
         User admin = userService.getAuthenticatedUser();
         Company company = admin.getCompany();
 
@@ -132,7 +136,7 @@ public class AuthenticationService {
                 .createdAt(OffsetDateTime.now())
                 .company(company)
                 .build();
-        userRepository.save(employee);
+        userRepository.saveAndFlush(employee);
 
         Profile profile = Profile.builder()
                 .fullName(requestDto.getProfile().getFullName())
@@ -145,7 +149,7 @@ public class AuthenticationService {
                 .updatedAt(OffsetDateTime.now())
                 .user(employee)
                 .build();
-        profileRepository.save(profile);
+        profileRepository.saveAndFlush(profile);
 
         emailService.sendNewEmployeeWelcomeEmail(
                 requestDto.getEmail(),
@@ -156,6 +160,56 @@ public class AuthenticationService {
                 admin.getProfile().getFullName(),
                 "https://app.worktrace.com/login" //CAMBIAR A URL DEL DOMINIO
         );
+    }
+
+    @Transactional
+    public void processForgotPassword(String email) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            return;
+        }
+
+        User user = userOpt.get();
+
+        passwordResetTokenRepository.deleteByUser(user);
+
+        String token = UUID.randomUUID().toString();
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setUser(user);
+        resetToken.setToken(token);
+        resetToken.setExpiryDate(OffsetDateTime.now().plusMinutes(15));
+
+        passwordResetTokenRepository.save(resetToken);
+
+        String resetLink = "http://localhost:4200/reset-password?token=" + token; // Cambiar en producción
+        Company company = user.getCompany();
+        String companyName = company != null ? company.getCompanyName() : "WorkTrace";
+        String companyLogoUrl = company != null ? company.getLogoUrl() : null;
+
+        emailService.sendPasswordResetEmail(user.getEmail(), resetLink, companyName, companyLogoUrl);
+    }
+
+    @Transactional
+    public void executePasswordReset(String token, String newPassword, String repeatPassword) {
+        if (!newPassword.equals(repeatPassword)) {
+            throw new IllegalArgumentException("Las contraseñas no coinciden.");
+        }
+
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("El enlace es inválido o ha caducado."));
+
+        if (resetToken.getExpiryDate().isBefore(OffsetDateTime.now())) {
+            passwordResetTokenRepository.delete(resetToken);
+            throw new IllegalArgumentException("El enlace ha caducado. Solicita uno nuevo.");
+        }
+
+        User user = resetToken.getUser();
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        user.getProfile().setIsFirstLogin(false);
+        userRepository.save(user);
+
+        passwordResetTokenRepository.delete(resetToken);
     }
 
     private String generarPasswordSegura() {

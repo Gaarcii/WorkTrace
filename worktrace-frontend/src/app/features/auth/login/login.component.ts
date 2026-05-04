@@ -11,7 +11,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TokenStorageService } from '../../../core/auth/token-storage.service';
-import { th } from 'date-fns/locale';
 
 @Component({
   selector: 'app-login',
@@ -37,14 +36,36 @@ export class LoginComponent {
   readonly errorMessage = signal<string | null>(null);
   readonly hidePassword = signal(true);
   readonly isSubmitting = signal(false);
+  readonly forgotPasswordMode = signal(false);
+  readonly forgotPasswordLoading = signal(false);
+  readonly forgotPasswordMessage = signal<string | null>(null);
+  readonly forgotPasswordError = signal<string | null>(null);
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
+  forgotPasswordForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+  });
+
   togglePassword() {
     this.hidePassword.update((v) => !v);
+  }
+
+  enableForgotPasswordMode() {
+    this.forgotPasswordMode.set(true);
+    this.errorMessage.set(null);
+    this.forgotPasswordMessage.set(null);
+    this.forgotPasswordError.set(null);
+  }
+
+  returnToLoginMode() {
+    this.forgotPasswordMode.set(false);
+    this.forgotPasswordForm.reset();
+    this.forgotPasswordMessage.set(null);
+    this.forgotPasswordError.set(null);
   }
 
   onSubmit() {
@@ -82,6 +103,37 @@ export class LoginComponent {
         },
         error: (err: HttpErrorResponse) => {
           this.errorMessage.set('Credenciales incorrectas. Inténtalo de nuevo.');
+        },
+      });
+  }
+
+  onForgotPasswordSubmit() {
+    if (this.forgotPasswordForm.invalid || this.forgotPasswordLoading()) {
+      this.forgotPasswordForm.markAllAsTouched();
+      return;
+    }
+
+    this.forgotPasswordError.set(null);
+    this.forgotPasswordMessage.set(null);
+    this.forgotPasswordLoading.set(true);
+
+    const email = this.forgotPasswordForm.getRawValue().email as string;
+
+    this.authService
+      .solicitarRecuperacion(email)
+      .pipe(
+        take(1),
+        finalize(() => this.forgotPasswordLoading.set(false)),
+      )
+      .subscribe({
+        next: (response) => {
+          this.forgotPasswordMessage.set(
+            response.message || 'Revisa tu correo para continuar con la recuperación.',
+          );
+        },
+        error: (err: HttpErrorResponse) => {
+          const msg = err.error?.message || err.error || 'No se pudo enviar el enlace.';
+          this.forgotPasswordError.set(typeof msg === 'string' ? msg : 'Error inesperado');
         },
       });
   }

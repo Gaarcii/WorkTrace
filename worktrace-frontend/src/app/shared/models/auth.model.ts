@@ -10,6 +10,16 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+  repeatPassword: string;
+}
+
 export interface PasswordChangeRequest {
   actual: string;
   nueva: string;

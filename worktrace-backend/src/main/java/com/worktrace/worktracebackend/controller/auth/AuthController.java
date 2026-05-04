@@ -3,6 +3,8 @@ package com.worktrace.worktracebackend.controller.auth;
 import com.worktrace.worktracebackend.dto.auth.AuthRequestDto;
 import com.worktrace.worktracebackend.dto.auth.AuthResponseDto;
 import com.worktrace.worktracebackend.dto.company.CompanyRequestDto;
+import com.worktrace.worktracebackend.dto.passewordResetToken.ForgotPasswordRequest;
+import com.worktrace.worktracebackend.dto.passewordResetToken.ResetPasswordRequest;
 import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
 import com.worktrace.worktracebackend.dto.user.PasswordChangeRequestDto;
 import com.worktrace.worktracebackend.service.auth.AuthenticationService;
@@ -14,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -48,8 +51,29 @@ public class AuthController {
 
     @PostMapping("/register-employee")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> registerEmployee(@Valid @RequestBody EmployeeRequestDto requestDto) {
+    public ResponseEntity<Map<String, String>> registerEmployee(@Valid @RequestBody EmployeeRequestDto requestDto) {
         authenticationService.registerEmployee(requestDto);
-        return new ResponseEntity<>("Empleado creado correctamente", HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "Empleado creado correctamente"));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authenticationService.processForgotPassword(request.getEmail());
+        return ResponseEntity.ok(Map.of("message", "Si el correo existe en nuestro sistema, recibirás un enlace de recuperación."));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        try {
+            authenticationService.executePasswordReset(
+                    request.getToken(),
+                    request.getNewPassword(),
+                    request.getRepeatPassword()
+            );
+            return ResponseEntity.ok(Map.of("message", "Contraseña actualizada correctamente."));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }

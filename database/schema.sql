@@ -40,6 +40,13 @@ create table if not exists profiles (
     position_id uuid null
 );
 
+CREATE TABLE password_reset_tokens (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    token VARCHAR(255) NOT NULL UNIQUE,
+    user_id UUID NOT NULL,
+    expiry_date TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
 create table if not exists job_positions (
     id uuid primary key default gen_random_uuid (),
     title text not null,
@@ -67,7 +74,17 @@ create table if not exists work_schedules (
     created_at timestamp with time zone not null default now(),
     updated_at timestamp with time zone not null default now(),
     company_id uuid not null,
-    CHECK (day_of_week IN ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'))
+    CHECK (
+        day_of_week IN (
+            'MONDAY',
+            'TUESDAY',
+            'WEDNESDAY',
+            'THURSDAY',
+            'FRIDAY',
+            'SATURDAY',
+            'SUNDAY'
+        )
+    )
 );
 
 --Sistema de fichajes
@@ -203,9 +220,11 @@ add constraint fk_inc_types_company foreign key (company_id) references companie
 alter table daily_closures
 add constraint fk_closures_company foreign key (company_id) references companies (id);
 
-
 alter table profiles
 add constraint fk_profiles_user foreign key (user_id) references users (id) on delete cascade;
+
+alter table password_reset_tokens
+add constraint fk_password_reset_user foreign key (user_id) references users (id) on delete cascade;
 
 alter table profiles
 add constraint fk_profiles_position foreign key (position_id) references job_positions (id);

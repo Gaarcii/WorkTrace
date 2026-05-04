@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { take } from 'rxjs/operators';
@@ -156,16 +157,26 @@ export class AdminTrabajadoresComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: async () => {
-          this.loading.set(false);
-          this.cerrarModalCrear();
-          this.mostrarSnackbar('Empleado creado correctamente', 'success');
-          await this.loadEmployees();
+          await this.onCrearEmpleadoExito();
         },
-        error: () => {
+        error: async (err: unknown) => {
+          // Some backends return 2xx with non-JSON bodies, which Angular can surface as HttpErrorResponse.
+          if (err instanceof HttpErrorResponse && err.status >= 200 && err.status < 300) {
+            await this.onCrearEmpleadoExito();
+            return;
+          }
+
           this.loading.set(false);
           this.mostrarSnackbar('No se pudo crear el empleado', 'error');
         },
       });
+  }
+
+  private async onCrearEmpleadoExito(): Promise<void> {
+    this.loading.set(false);
+    this.cerrarModalCrear();
+    this.mostrarSnackbar('Empleado creado correctamente', 'success');
+    await this.loadEmployees();
   }
 
   crearPuesto(nombrePuesto?: string): void {
