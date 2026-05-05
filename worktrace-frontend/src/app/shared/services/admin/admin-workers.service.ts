@@ -130,10 +130,10 @@ export class AdminWorkersService {
   }
 
   obtenerHorariosEmpleado(employeeId: string): Observable<WorkScheduleResponse[]> {
-    return this.http.get<WorkScheduleResponse[]>(`${this.BASE_URL}horario/employee/${employeeId}`);
+    return this.http.get<WorkScheduleResponse[]>(`${this.BASE_URL}/work-schedules/employee/${employeeId}`);
   }
 
   asignarHorario(dto: WorkScheduleRequest): Observable<void> {
-    return this.http.post<void>(`${this.BASE_URL}horario/asignar`, dto);
+    return this.http.post<void>(`${this.BASE_URL}horario/assign`, dto);
   }
 }

@@ -42,11 +42,11 @@ public class UserProfileService {
     @Transactional(readOnly = true)
     public UserResponseDto getProfile() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
-        return construirUserResponseDto(info.getProfile(), info.getUser());
+        return buildUserResponseDto(info.getProfile(), info.getUser());
     }
 
     @Transactional
-    public UserResponseDto putProfile(UserRequestDto requestDto) {
+    public UserResponseDto updateProfile(UserRequestDto requestDto) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Profile profile = info.getProfile();
         User user = info.getUser();
@@ -76,22 +76,22 @@ public class UserProfileService {
         }
         profile.setUpdatedAt(OffsetDateTime.now());
 
-        String nuevoToken = null;
+        String newToken = null;
 
-        String nuevoEmail = requestDto.getEmail();
+        String newEmail = requestDto.getEmail();
 
-        if (nuevoEmail != null && !nuevoEmail.trim().isEmpty() && !user.getEmail().equals(nuevoEmail)) {
+        if (newEmail != null && !newEmail.trim().isEmpty() && !user.getEmail().equals(newEmail)) {
 
             if (requestDto.getContrasenaActual() == null ||
                     !passwordEncoder.matches(requestDto.getContrasenaActual(), user.getPasswordHash())) {
                 throw new IllegalArgumentException("Contraseña incorrecta. No puedes cambiar el email.");
             }
-            user.setEmail(nuevoEmail);
-            nuevoToken = jwtService.generateToken(user);
+            user.setEmail(newEmail);
+            newToken = jwtService.generateToken(user);
         }
 
-        UserResponseDto responseDto = construirUserResponseDto(profile, user);
-        responseDto.setTokenActualizado(nuevoToken);
+        UserResponseDto responseDto = buildUserResponseDto(profile, user);
+        responseDto.setTokenActualizado(newToken);
         return responseDto;
     }
 
@@ -104,7 +104,7 @@ public class UserProfileService {
     }
 
     @Transactional(readOnly = true)
-    public List<DepartmentStatDto> getDepartmetnStatus() {
+    public List<DepartmentStatDto> getDepartmentStats() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
@@ -121,7 +121,7 @@ public class UserProfileService {
     }
 
     @Transactional(readOnly = true)
-    public Page<EmployeeResponseDto> empleadosPorEmpresa(Pageable pageable) {
+    public Page<EmployeeResponseDto> getEmployeesByCompany(Pageable pageable) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
@@ -137,14 +137,14 @@ public class UserProfileService {
                         profile.getPhone(),
                         profile.getPosition().getTitle(),
                         profile.getWeeklyHours().toString(),
-                        estadoEmpleado(profile),
+                        getEmployeeStatus(profile),
                         profile.getUser().getCreatedAt()
                 )
         );
     }
 
     @Transactional(readOnly = true)
-    public EmployeeResponseDto getEmpleadoById(UUID employeeId) {
+    public EmployeeResponseDto getEmployeeById(UUID employeeId) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
@@ -164,13 +164,13 @@ public class UserProfileService {
                 profile.getPhone(),
                 profile.getPosition().getTitle(),
                 profile.getWeeklyHours().toString(),
-                estadoEmpleado(profile),
+                getEmployeeStatus(profile),
                 profile.getUser().getCreatedAt()
         );
     }
 
     @Transactional
-    public void editarPuestoYHorasEmpleado(UUID employeeId, EditEmployeeWorkDataRequestDto dto) {
+    public void editEmployeeWorkData(UUID employeeId, EditEmployeeWorkDataRequestDto dto) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
@@ -185,19 +185,19 @@ public class UserProfileService {
             throw new IllegalStateException("Solo se puede editar un empleado");
         }
 
-        JobPosition puesto = jobPositionRepository.findById(dto.getPositionId())
+        JobPosition jobPosition = jobPositionRepository.findById(dto.getPositionId())
                 .orElseThrow(() -> new IllegalArgumentException("El puesto de trabajo no existe"));
 
-        if (!puesto.getCompany().getId().equals(company.getId())) {
+        if (!jobPosition.getCompany().getId().equals(company.getId())) {
             throw new IllegalStateException("El puesto no pertenece a tu empresa");
         }
 
-        profile.setPosition(puesto);
+        profile.setPosition(jobPosition);
         profile.setWeeklyHours(dto.getWeeklyHours());
         profile.setUpdatedAt(OffsetDateTime.now());
     }
 
-    private String estadoEmpleado(Profile profile) {
+    private String getEmployeeStatus(Profile profile) {
         if (!profile.getIsActive()) {
             return "Inactivo";
         }
@@ -207,22 +207,22 @@ public class UserProfileService {
         return "Activo";
     }
     
-    private UserResponseDto construirUserResponseDto(Profile profile, User user) {
-        List<WorkScheduleResponseDto> horario = profile.getWorkSchedules().stream()
-                .map(h -> {
-                    LocalTime start = h.getStartTime();
-                    LocalTime end = h.getEndTime();
-                    long minutos = Duration.between(start, end).toMinutes();
-                    if (minutos < 0) {
-                        minutos += 24 * 60;
+    private UserResponseDto buildUserResponseDto(Profile profile, User user) {
+        List<WorkScheduleResponseDto> schedules = profile.getWorkSchedules().stream()
+                .map(schedule -> {
+                    LocalTime start = schedule.getStartTime();
+                    LocalTime end = schedule.getEndTime();
+                    long minutes = Duration.between(start, end).toMinutes();
+                    if (minutes < 0) {
+                        minutes += 24 * 60;
                     }
                     return new WorkScheduleResponseDto(
-                            h.getSite().getName(),
-                            h.getSite().getAddress(),
-                            h.getDayOfWeek(),
+                            schedule.getSite().getName(),
+                            schedule.getSite().getAddress(),
+                            schedule.getDayOfWeek(),
                             start,
                             end,
-                            minutos / 60
+                            minutes / 60
                     );
                 })
                 .toList();
@@ -233,7 +233,7 @@ public class UserProfileService {
         responseDto.setPuestoTrabajo(profile.getPosition() != null ? profile.getPosition().getTitle() : "Sin asignar");
         responseDto.setEmail(user.getEmail());
         responseDto.setTelefono(profile.getPhone());
-        responseDto.setHorario(horario);
+        responseDto.setHorario(schedules);
 
         return responseDto;
     }

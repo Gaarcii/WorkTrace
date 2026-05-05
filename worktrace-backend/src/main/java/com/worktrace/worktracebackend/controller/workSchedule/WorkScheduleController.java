@@ -18,15 +18,15 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/horario")
+@RequestMapping("/api/work-schedules")
 @RequiredArgsConstructor
 public class WorkScheduleController {
 
     private final WorkScheduleService workScheduleService;
 
-    @PostMapping("/asignar")
+    @PostMapping("/assign")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> putWorkSchedule(
+    public ResponseEntity<Void> assignWorkSchedule(
             @Valid @RequestBody WorkScheduleRequestDto dto) {
         workScheduleService.assignWorkSchedule(dto);
         return ResponseEntity.ok().build();

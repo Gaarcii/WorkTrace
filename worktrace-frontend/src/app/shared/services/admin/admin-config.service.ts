@@ -24,7 +24,7 @@ export class AdminConfigService {
   private readonly http = inject(HttpClient);
 
   private readonly COMPANY_URL = `${API_CONFIG.baseUrl}companies`;
-  private readonly WORK_SITES_URL = `${API_CONFIG.baseUrl}WorkSites`;
+  private readonly WORK_SITES_URL = `${API_CONFIG.baseUrl}work-sites`;
   private readonly INCIDENCE_TYPES_URL = `${API_CONFIG.baseUrl}incidence-types`;
 
   readonly workSitesSignal = signal<WorkSiteResponseDto[]>([]);

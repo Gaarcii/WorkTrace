@@ -33,10 +33,10 @@ public class UserController {
 
     @PatchMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserResponseDto> actualizarPerfil(
+    public ResponseEntity<UserResponseDto> updateProfile(
             @Valid @ModelAttribute UserRequestDto requestDto) {
 
-        UserResponseDto responseDto = userProfileService.putProfile(requestDto);
+        UserResponseDto responseDto = userProfileService.updateProfile(requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -48,31 +48,31 @@ public class UserController {
 
     @GetMapping("/departments")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<DepartmentStatDto>> getDepartmenteStats() {
-        List<DepartmentStatDto> dto = userProfileService.getDepartmetnStatus();
+    public ResponseEntity<List<DepartmentStatDto>> getDepartmentStats() {
+        List<DepartmentStatDto> dto = userProfileService.getDepartmentStats();
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/employees")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<EmployeeResponseDto>> getEmpleados(Pageable pageable) {
-        Page<EmployeeResponseDto> responseDtos = userProfileService.empleadosPorEmpresa(pageable);
-        return ResponseEntity.ok(responseDtos);
+    public ResponseEntity<Page<EmployeeResponseDto>> getEmployees(Pageable pageable) {
+        Page<EmployeeResponseDto> responseDto = userProfileService.getEmployeesByCompany(pageable);
+        return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping("/employees/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<EmployeeResponseDto> getEmpleadoDetalle(@PathVariable UUID id) {
-        EmployeeResponseDto responseDto = userProfileService.getEmpleadoById(id);
+    public ResponseEntity<EmployeeResponseDto> getEmployeeDetail(@PathVariable UUID id) {
+        EmployeeResponseDto responseDto = userProfileService.getEmployeeById(id);
         return ResponseEntity.ok(responseDto);
     }
 
     @PatchMapping("/employees/{id}/work-data")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> editarPuestoYHorasEmpleado(
+    public ResponseEntity<Void> editEmployeeWorkData(
             @PathVariable UUID id,
             @Valid @RequestBody EditEmployeeWorkDataRequestDto dto) {
-        userProfileService.editarPuestoYHorasEmpleado(id, dto);
+        userProfileService.editEmployeeWorkData(id, dto);
         return ResponseEntity.ok().build();
     }
 }

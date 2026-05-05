@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/WorkSites")
+@RequestMapping("/api/work-sites")
 @RequiredArgsConstructor
 public class WorkSiteController {
 
