@@ -2,7 +2,10 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { API_CONFIG } from '../../../core/api/api.config';
-import { IncidenceRequest, IncidenceResponse } from '../../models/incidence.model';
+import {
+  WorkerIncidenceRequestDto,
+  WorkerIncidenceResponseDto,
+} from '../../models/incidence.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,16 +15,16 @@ export class WorkerIncidenciasService {
 
   private readonly BASE_URL = API_CONFIG.baseUrl + 'incidences';
 
-  readonly incidenciasSignal = signal<IncidenceResponse[]>([]);
+  readonly incidenciasSignal = signal<WorkerIncidenceResponseDto[]>([]);
 
-  obtenerMisIncidencias(): Observable<IncidenceResponse[]> {
+  obtenerMisIncidencias(): Observable<WorkerIncidenceResponseDto[]> {
     return this.http
-      .get<IncidenceResponse[]>(this.BASE_URL)
+      .get<WorkerIncidenceResponseDto[]>(this.BASE_URL)
       .pipe(tap((incidencias) => this.incidenciasSignal.set(incidencias)));
   }
 
-  crearIncidencia(request: IncidenceRequest): Observable<IncidenceResponse> {
-    return this.http.post<IncidenceResponse>(this.BASE_URL, request).pipe(
+  crearIncidencia(request: WorkerIncidenceRequestDto): Observable<WorkerIncidenceResponseDto> {
+    return this.http.post<WorkerIncidenceResponseDto>(this.BASE_URL, request).pipe(
       tap((nuevaIncidencia) => {
         this.incidenciasSignal.update((actuales) => [nuevaIncidencia, ...actuales]);
       }),

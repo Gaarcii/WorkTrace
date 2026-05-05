@@ -425,11 +425,11 @@ export class AdminHomeComponent implements OnInit {
   private mapIncidencia(incidencia: AdminIncidenceResponseDto): DashboardAlert {
     return {
       id: incidencia.id,
-      type: incidencia.tipoIncidencia || 'Incidencia',
-      comment: incidencia.comentario || '',
-      description: incidencia.comentario || '',
-      createdAt: incidencia.creacion || '',
-      workerName: incidencia.nombreTrabajador || 'Sin nombre',
+      type: incidencia.incidenceType || 'Incidencia',
+      comment: incidencia.comment || '',
+      description: incidencia.comment || '',
+      createdAt: incidencia.createdAt || '',
+      workerName: incidencia.employeeName || 'Sin nombre',
       jobTitle: null,
     };
   }

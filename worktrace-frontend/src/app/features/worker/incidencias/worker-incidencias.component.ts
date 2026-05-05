@@ -21,7 +21,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { WorkerIncidenciasService } from '../../../shared/services/worker/worker-incidencias.service';
 import { WorkerIncidenceTypesService } from '../../../shared/services/worker/worker-tipos-incidencias.service';
-import { IncidenceRequest } from '../../../shared/models/incidence.model';
+import { WorkerIncidenceRequestDto } from '../../../shared/models/incidence.model';
 import { WorkerIncidenciasHeaderComponent } from './worker-incidencias-header/worker-incidencias-header.component';
 import { WorkerIncidenciasFormModalComponent } from './worker-incidencias-form-modal/worker-incidencias-form-modal.component';
 import {
@@ -59,7 +59,7 @@ export class WorkerIncidenciasComponent implements OnInit {
 
   readonly incidenciasFormateadas = computed<IncidenciaVista[]>(() => {
     return this.incidencias().map((inc) => {
-      const stLower = (inc.estado || 'PENDING').toLowerCase();
+      const stLower = (inc.status || 'PENDING').toLowerCase();
       let estadoTraducido = 'Pendiente';
       let estadoColor = 'warning';
 
@@ -75,8 +75,8 @@ export class WorkerIncidenciasComponent implements OnInit {
         ...inc,
         estadoTraducido,
         estadoColor,
-        fecha: this.formatearFecha(inc.fecha),
-        horaFormateada: inc.hora ? inc.hora.substring(0, 5) : '',
+        fecha: this.formatearFecha(inc.date),
+        horaFormateada: inc.time ? inc.time.substring(0, 5) : '',
       };
     });
   });
@@ -139,11 +139,11 @@ export class WorkerIncidenciasComponent implements OnInit {
     }
     this.loading.set(true);
     const val = this.form.getRawValue();
-    const payload: IncidenceRequest = {
+    const payload: WorkerIncidenceRequestDto = {
       typeId: val.tipoId,
-      fechaAfectada: val.fecha,
-      hora: this.mostrarHora() ? val.hora : '',
-      comentario: val.comentario,
+      affectedDate: val.fecha,
+      time: this.mostrarHora() ? val.hora : '',
+      comment: val.comentario,
     };
 
     this.incidenciasService

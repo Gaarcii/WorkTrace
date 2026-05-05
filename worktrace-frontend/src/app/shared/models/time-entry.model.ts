@@ -1,4 +1,4 @@
-import { IncidenceResponse } from './incidence.model';
+import { WorkerIncidenceResponseDto } from './incidence.model';
 
 export interface DailySummaryResponse {
   minutosAcumulados: number;
@@ -61,7 +61,7 @@ export interface StatisticsResponse {
   jornadasIncompletas: number;
   incidencias: number;
   resumenDiario: DailyStatisticResponse[];
-  incidenciasList: IncidenceResponse[];
+  incidenciasList: WorkerIncidenceResponseDto[];
 }
 
 /**

@@ -21,10 +21,10 @@ public class WorkerIncidenceRequestDto {
 
     @NotNull(message = "La fecha de la incidencia es obligatoria")
     @PastOrPresent(message = "La fecha debe de ser del día de hoy o de días anteriores")
-    private LocalDate fechaAfectada;
+    private LocalDate affectedDate;
 
     @NotNull(message = "La hora es obligatoria")
-    private LocalTime hora;
+    private LocalTime time;
 
-    private String comentario;
+    private String comment;
 }

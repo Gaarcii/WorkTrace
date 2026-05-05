@@ -79,13 +79,13 @@ public class ExcelGeneratorService {
                 int auditRowIdx = 1;
                 for (AuditRecordDto aud : auditoria) {
                     Row row = sheetAudit.createRow(auditRowIdx++);
-                    row.createCell(0).setCellValue(aud.getFechaEdicion() != null ? aud.getFechaEdicion().format(auditDtf) : "");
-                    row.createCell(1).setCellValue(aud.getAutor() != null ? aud.getAutor() : "Admin");
-                    row.createCell(2).setCellValue(aud.getJustificacion() != null ? aud.getJustificacion() : "Sin motivo");
-                    row.createCell(3).setCellValue(aud.getCambioRealizado() != null ? aud.getCambioRealizado() : "Ajuste manual");
+                    row.createCell(0).setCellValue(aud.getEditionDate() != null ? aud.getEditionDate().format(auditDtf) : "");
+                    row.createCell(1).setCellValue(aud.getAuthor() != null ? aud.getAuthor() : "Admin");
+                    row.createCell(2).setCellValue(aud.getJustification() != null ? aud.getJustification() : "Sin motivo");
+                    row.createCell(3).setCellValue(aud.getChangePerformed() != null ? aud.getChangePerformed() : "Ajuste manual");
                     row.createCell(4).setCellValue(aud.getReferenciaRegistro() != null ? aud.getReferenciaRegistro().toString() : "");
 
-                    dataToHash.append(aud.getReferenciaRegistro()).append(aud.getCambioRealizado());
+                    dataToHash.append(aud.getReferenciaRegistro()).append(aud.getChangePerformed());
                 }
                 ajustarColumnas(sheetAudit, cabecerasAudit.length);
             }

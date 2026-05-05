@@ -12,12 +12,12 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InspectorIncidenceDto {
-    private String nombre;
-    private String correo;
-    private String imagen;
-    private String tipoIncidencia;
-    private OffsetDateTime fechaHora;
-    private String estado;
-    private String comentario;
-    private String resueltaPor;
+    private String name;
+    private String email;
+    private String image;
+    private String incidenceType;
+    private OffsetDateTime dateTime;
+    private String status;
+    private String comment;
+    private String resolvedBy;
 }

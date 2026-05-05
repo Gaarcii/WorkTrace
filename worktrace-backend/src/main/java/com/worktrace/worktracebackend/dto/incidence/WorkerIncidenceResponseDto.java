@@ -15,11 +15,11 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WorkerIncidenceResponseDto {
-    private String tipoIncidencia;
-    private LocalDate fecha;
-    private LocalTime hora;
-    private String comentario;
-    private IncidenceStatus estado;
-    private OffsetDateTime creacion;
+    private String incidenceType;
+    private LocalDate date;
+    private LocalTime time;
+    private String comment;
+    private IncidenceStatus status;
+    private OffsetDateTime creation;
 
 }

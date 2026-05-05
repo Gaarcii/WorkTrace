@@ -14,6 +14,6 @@ import lombok.Setter;
 public class AdminIncidenceRequestDto {
 
     @NotNull(message = "Es obligatorio el estado")
-    private IncidenceStatus estado;
-    private String respuestaAdmin;
+    private IncidenceStatus status;
+    private String adminResponse;
 }

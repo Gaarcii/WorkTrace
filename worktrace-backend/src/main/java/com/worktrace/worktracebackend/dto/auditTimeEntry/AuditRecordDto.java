@@ -13,9 +13,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuditRecordDto {
-    private OffsetDateTime fechaEdicion;
-    private String autor;
-    private String justificacion;
-    private String cambioRealizado;
+    private OffsetDateTime editionDate;
+    private String author;
+    private String justification;
+    private String changePerformed;
     private UUID referenciaRegistro;
 }

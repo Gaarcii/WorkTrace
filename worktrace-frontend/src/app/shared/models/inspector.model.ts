@@ -1,9 +1,9 @@
 import { WorkScheduleResponse } from './work-schedule.model';
 
 export interface InspectorHomeResponseDto {
-  totalEmpleados: number;
-  totalIncidencias: number;
-  trabajadoresActivosHoy: number;
+  totalEmployees: number;
+  totalIncidences: number;
+  activeEmployeesToday: number;
   totalAuditLogs: number;
 }
 
@@ -26,30 +26,30 @@ export interface EmployeeDetailDto {
   workSchedules: WorkScheduleResponse[];
 }
 export interface InspectorIncidenceDto {
-  nombre: string;
-  correo: string;
-  imagen: string;
-  tipoIncidencia: string;
-  fechaHora: string;
-  estado: string;
-  comentario: string;
-  resueltaPor: string;
+  name: string;
+  email: string;
+  image: string;
+  incidenceType: string;
+  dateTime: string;
+  status: string;
+  comment: string;
+  resolvedBy: string;
 }
 
 export interface InspectorDailyClosureDto {
-  fecha: string;
-  estado: string;
-  numeroFichajes: number;
-  hashDelDia: string;
-  hashDiaAnterior: string;
-  computado: string;
+  date: string;
+  status: string;
+  timeEntriesCount: number;
+  dayHash: string;
+  previousDayHash: string;
+  computedAt: string;
 }
 
 export interface InspectorAuditDto {
   id: string;
-  fechaHora: string;
-  accion: string;
-  justificacion: string;
+  dateTime: string;
+  action: string;
+  justification: string;
   actor: string;
 }
 export interface InspectorAuditDetailDto {

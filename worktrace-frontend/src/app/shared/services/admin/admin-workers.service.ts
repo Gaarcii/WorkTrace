@@ -95,7 +95,7 @@ export class AdminWorkersService {
 
   obtenerPuestosTrabajo(): Observable<JobPositionRequestDto[]> {
     return this.http.get<JobPositionResponseDto[]>(`${this.BASE_URL}job-positions`).pipe(
-      map((puestos) => puestos.map((puesto) => ({ id: puesto.id, title: puesto.nombre }))),
+      map((puestos) => puestos.map((puesto) => ({ id: puesto.id, title: puesto.name }))),
       tap((puestos) => this.jobPositionsSignal.set(puestos)),
     );
   }
@@ -107,7 +107,7 @@ export class AdminWorkersService {
       tap({
         error: (err) => console.error('[AdminWorkersService] Error crearPuestoTrabajo', err),
       }),
-      map((puesto) => ({ id: puesto.id, title: puesto.nombre })),
+      map((puesto) => ({ id: puesto.id, title: puesto.name })),
     );
   }
 
@@ -130,7 +130,9 @@ export class AdminWorkersService {
   }
 
   obtenerHorariosEmpleado(employeeId: string): Observable<WorkScheduleResponse[]> {
-    return this.http.get<WorkScheduleResponse[]>(`${this.BASE_URL}/work-schedules/employee/${employeeId}`);
+    return this.http.get<WorkScheduleResponse[]>(
+      `${this.BASE_URL}/work-schedules/employee/${employeeId}`,
+    );
   }
 
   asignarHorario(dto: WorkScheduleRequest): Observable<void> {

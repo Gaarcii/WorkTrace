@@ -2,10 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import { API_CONFIG } from '../../../core/api/api.config';
-import {
-  AdminIncidenceManageRequestDto,
-  AdminIncidenceResponseDto,
-} from '../../models/incidence.model';
+import { AdminIncidenceRequestDto, AdminIncidenceResponseDto } from '../../models/incidence.model';
 import { AdminIncidenciaView } from '../../../features/admin/incidencias/admin-incidencias.types';
 
 interface SpringPageResponse<T> {
@@ -46,27 +43,27 @@ export class AdminIncidenciasService {
       );
   }
 
-  gestionarIncidencia(id: string, request: AdminIncidenceManageRequestDto): Observable<void> {
+  gestionarIncidencia(id: string, request: AdminIncidenceRequestDto): Observable<void> {
     return this.http.patch<void>(`${this.BASE_URL}/${id}/manage`, request);
   }
 
   private mapDtoToView(dto: AdminIncidenceResponseDto): AdminIncidenciaView {
     return {
       id: dto.id,
-      status: this.mapEstado(dto.estado),
-      created_at: dto.creacion,
-      comment: dto.comentario,
-      description: dto.comentario,
+      status: this.mapEstado(dto.status),
+      created_at: dto.createdAt,
+      comment: dto.comment,
+      description: dto.comment,
       admin_response: dto.adminResponse,
       profiles: {
-        full_name: dto.nombreTrabajador,
+        full_name: dto.employeeName,
         avatar_url: dto.avatarUrl,
         job_positions: {
-          title: dto.puestoTrabajo?.trim() || 'Sin cargo',
+          title: dto.jobPosition?.trim() || 'Sin cargo',
         },
       },
       incidence_types: {
-        name: dto.tipoIncidencia,
+        name: dto.incidenceType,
       },
     };
   }

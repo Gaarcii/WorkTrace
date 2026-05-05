@@ -108,7 +108,7 @@ export class WorkerEstadisticasComponent implements OnInit {
     const incidenciasRaw = this.estadisticas()?.incidenciasList ?? [];
 
     return incidenciasRaw.map((inc) => {
-      const estadoOriginal = inc.estado || 'PENDING';
+      const estadoOriginal = inc.status || 'PENDING';
       const stLower = estadoOriginal.toLowerCase();
 
       let estadoTraducido = 'Pendiente';
@@ -130,19 +130,19 @@ export class WorkerEstadisticasComponent implements OnInit {
         estadoColor = 'warning';
       }
 
-      let fechaFormateada = inc.creacion || '';
-      if (inc.fecha) {
-        const partesFecha = inc.fecha.split('-');
+      let fechaFormateada = inc.creation || '';
+      if (inc.date) {
+        const partesFecha = inc.date.split('-');
         if (partesFecha.length === 3) {
           const [year, month, day] = partesFecha;
           const dateStr = `${day}/${month}/${year}`;
-          const timeStr = inc.hora ? inc.hora.substring(0, 5) : '';
+          const timeStr = inc.time ? inc.time.substring(0, 5) : '';
           fechaFormateada = `${dateStr} ${timeStr}`.trim();
         }
       }
 
       return {
-        tipo: inc.tipoIncidencia || 'Incidencia',
+        tipo: inc.incidenceType || 'Incidencia',
         estado: estadoTraducido,
         estadoColor: estadoColor,
         fecha: fechaFormateada,

@@ -14,8 +14,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class InspectorAuditDto {
     private UUID id;
-    private OffsetDateTime fechaHora;
-    private String accion;
-    private String justificacion;
+    private OffsetDateTime dateTime;
+    private String action;
+    private String justification;
     private String actor;
 }

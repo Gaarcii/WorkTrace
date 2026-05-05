@@ -47,12 +47,12 @@ public class IncidenceService {
 
         Incidence incidence = new Incidence();
         incidence.setProfile(info.getProfile());
-        incidence.setDate(requestDto.getFechaAfectada());
-        incidence.setComment(requestDto.getComentario());
+        incidence.setDate(requestDto.getAffectedDate());
+        incidence.setComment(requestDto.getComment());
         incidence.setStatus(IncidenceStatus.PENDING);
         incidence.setCreatedAt(OffsetDateTime.now());
         incidence.setType(tipoRef);
-        incidence.setIncidenceTime(requestDto.getHora());
+        incidence.setIncidenceTime(requestDto.getTime());
         incidence.setCompany(info.getCompany());
         incidence.setUpdatedAt(OffsetDateTime.now());
 
@@ -113,10 +113,10 @@ public class IncidenceService {
         }
 
         if (incidence.getStatus() == IncidenceStatus.PENDING) {
-            incidence.setStatus(dto.getEstado());
+            incidence.setStatus(dto.getStatus());
             incidence.setUpdatedAt(OffsetDateTime.now());
             incidence.setResolvedBy(user);
-            incidence.setAdminResponse(dto.getRespuestaAdmin());
+            incidence.setAdminResponse(dto.getAdminResponse());
 
             incidenceRepository.save(incidence);
         } else {

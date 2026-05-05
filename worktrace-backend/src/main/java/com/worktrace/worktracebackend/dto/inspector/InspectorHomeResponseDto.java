@@ -10,9 +10,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InspectorHomeResponseDto {
-    private long totalEmpleados;
-    private long totalIncidencias;
-    private long trabajadoresActivosHoy;
+    private long totalEmployees;
+    private long totalIncidences;
+    private long activeEmployeesToday;
     private long totalAuditLogs;
 }
 

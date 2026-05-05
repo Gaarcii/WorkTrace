@@ -151,8 +151,8 @@ export class AdminIncidenciasComponent implements OnInit {
 
     this.incidenciasService
       .gestionarIncidencia(incidencia.id, {
-        estado: estado === 'Resuelta' ? 'RESOLVED' : 'REJECTED',
-        respuestaAdmin: this.respuestaAdmin(),
+        status: estado === 'Resuelta' ? 'RESOLVED' : 'REJECTED',
+        adminResponse: this.respuestaAdmin(),
       })
       .pipe(take(1))
       .subscribe({

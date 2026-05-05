@@ -16,13 +16,13 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AdminIncidenceResponseDto {
     private UUID id;
-    private String nombreTrabajador;
-    private String puestoTrabajo;
-    private String tipoIncidencia;
-    private String comentario;
-    private IncidenceStatus estado;
-    private LocalDate fechaAfectada;
-    private OffsetDateTime creacion;
+    private String employeeName;
+    private String jobPosition;
+    private String incidenceType;
+    private String comment;
+    private IncidenceStatus status;
+    private LocalDate affectedDate;
+    private OffsetDateTime createdAt;
     private String avatarUrl;
     private String adminResponse;
 }

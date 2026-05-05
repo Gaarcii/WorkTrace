@@ -134,10 +134,10 @@ public class AdminPdfGeneratorService {
 
                 for (AuditRecordDto aud : auditoria) {
                     PdfPCell[] auditRow = new PdfPCell[]{
-                            new PdfPCell(new Phrase(aud.getFechaEdicion() != null ? aud.getFechaEdicion().format(auditDtf) : "-", fontAuditBody)),
-                            new PdfPCell(new Phrase(aud.getAutor(), fontAuditBody)),
-                            new PdfPCell(new Phrase(aud.getJustificacion(), fontAuditBody)),
-                            new PdfPCell(new Phrase(aud.getCambioRealizado(), fontAuditBody)),
+                            new PdfPCell(new Phrase(aud.getEditionDate() != null ? aud.getEditionDate().format(auditDtf) : "-", fontAuditBody)),
+                            new PdfPCell(new Phrase(aud.getAuthor(), fontAuditBody)),
+                            new PdfPCell(new Phrase(aud.getJustification(), fontAuditBody)),
+                            new PdfPCell(new Phrase(aud.getChangePerformed(), fontAuditBody)),
                             new PdfPCell(new Phrase(aud.getReferenciaRegistro() != null ? aud.getReferenciaRegistro().toString() : "-", fontAuditBody))
                     };
                     addRowCells(tableAudit, auditRow, null);

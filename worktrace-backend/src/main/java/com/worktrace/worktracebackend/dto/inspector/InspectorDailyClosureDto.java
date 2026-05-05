@@ -13,10 +13,10 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InspectorDailyClosureDto {
-    private LocalDate fecha;
-    private String estado;
-    private Integer numeroFichajes;
-    private String hashDelDia;
-    private String hashDiaAnterior;
-    private OffsetDateTime computado;
+    private LocalDate date;
+    private String status;
+    private Integer timeEntriesCount;
+    private String dayHash;
+    private String previousDayHash;
+    private OffsetDateTime computedAt;
 }

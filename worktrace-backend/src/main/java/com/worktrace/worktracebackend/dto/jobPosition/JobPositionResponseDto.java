@@ -13,5 +13,5 @@ import java.util.UUID;
 @AllArgsConstructor
 public class JobPositionResponseDto {
     private UUID id;
-    private String nombre;
+    private String name;
 }

@@ -41,7 +41,7 @@ export interface EmployeeResponseDto {
 
 export interface JobPositionResponseDto {
   id: string;
-  nombre: string;
+  name: string;
 }
 
 export interface JobPositionRequestDto {
