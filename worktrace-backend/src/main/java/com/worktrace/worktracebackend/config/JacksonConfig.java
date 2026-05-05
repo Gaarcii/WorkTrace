@@ -13,9 +13,7 @@ public class JacksonConfig {
         ObjectMapper mapper = new ObjectMapper();
         JavaTimeModule module = new JavaTimeModule();
         mapper.registerModule(module);
-        // Desactivar la conversión a timestamps
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        // Mantener el offset en OffsetDateTime
         return mapper;
     }
 }

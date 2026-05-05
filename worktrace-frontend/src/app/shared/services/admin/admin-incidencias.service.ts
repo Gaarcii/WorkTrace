@@ -19,7 +19,7 @@ interface SpringPageResponse<T> {
 export class AdminIncidenciasService {
   private readonly http = inject(HttpClient);
 
-  private readonly BASE_URL = API_CONFIG.baseUrl + 'incidence';
+  private readonly BASE_URL = API_CONFIG.baseUrl + 'incidences';
 
   readonly incidenciasPendientesSignal = signal<AdminIncidenciaView[]>([]);
   readonly incidenciasHistorialSignal = signal<AdminIncidenciaView[]>([]);

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, effect, input, output, signal } fro
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CreateEmployeeForm } from '../../admin-trabajadores.types';
-import { JobPositionUiDto } from '../../../../../shared/models/profile.model';
+import { JobPositionRequestDto } from '../../../../../shared/models/profile.model';
 import { DayOfWeek, WorkSiteResponseDto } from '../../../../../shared/models/work-schedule.model';
 import {
   DAY_KEYS,
@@ -33,7 +33,7 @@ export class CreateEmployeeDialogComponent {
   readonly rules = input<Record<string, unknown>>({});
   readonly credencialesRecientes = input<unknown | null>(null);
   readonly error = input<string | null>(null);
-  readonly puestosTrabajo = input.required<JobPositionUiDto[]>();
+  readonly puestosTrabajo = input.required<JobPositionRequestDto[]>();
   readonly workSites = input.required<WorkSiteResponseDto[]>();
 
   readonly close = output<void>();

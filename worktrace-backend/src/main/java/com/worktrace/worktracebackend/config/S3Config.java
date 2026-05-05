@@ -29,7 +29,6 @@ public class S3Config {
         return S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
-                // Cloudflare R2 siempre usa "auto" como región
                 .region(Region.of("auto"))
                 .build();
     }

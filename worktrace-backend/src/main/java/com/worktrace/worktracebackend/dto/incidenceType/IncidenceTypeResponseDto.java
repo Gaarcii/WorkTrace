@@ -12,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IncidenceTypeResponseDto {
-    private List<IncidenceTypeProjection> tipos;
+    private List<IncidenceTypeProjection> types;
 }

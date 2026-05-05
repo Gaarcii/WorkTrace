@@ -1,6 +1,6 @@
 package com.worktrace.worktracebackend.repository;
 
-import com.worktrace.worktracebackend.model.EstadoIncidencia;
+import com.worktrace.worktracebackend.model.IncidenceStatus;
 import com.worktrace.worktracebackend.model.Incidence;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +18,7 @@ import java.util.UUID;
 public interface IncidenceRepository extends JpaRepository<Incidence, UUID> {
     List<Incidence> findByProfile_UserId(UUID userId);
 
-    long countByCompany_IdAndStatus(UUID companyId, EstadoIncidencia status);
+    long countByCompany_IdAndStatus(UUID companyId, IncidenceStatus status);
 
     List<Incidence> getIncidencesByProfile_UserIdAndDateBetween(
             UUID profile_userId, LocalDate date, LocalDate date2
@@ -36,9 +36,9 @@ public interface IncidenceRepository extends JpaRepository<Incidence, UUID> {
             @Param("fechaFin") LocalDate fechaFin
     );
 
-    Page<Incidence> findByCompany_IdAndStatus(UUID companyId, EstadoIncidencia status, Pageable pageable);
+    Page<Incidence> findByCompany_IdAndStatus(UUID companyId, IncidenceStatus status, Pageable pageable);
 
-    Page<Incidence> findByCompany_IdAndStatusIn(UUID company_id, Collection<EstadoIncidencia> status, Pageable pageable);
+    Page<Incidence> findByCompany_IdAndStatusIn(UUID company_id, Collection<IncidenceStatus> status, Pageable pageable);
 
     boolean existsByType_IdAndCompany_Id(UUID typeId, UUID companyId);
 
@@ -50,7 +50,7 @@ public interface IncidenceRepository extends JpaRepository<Incidence, UUID> {
             "LIKE LOWER(CONCAT('%', cast(:busqueda as string), '%')))")
     Page<Incidence> findFilteredIncidences(
             @Param("companyId") UUID companyId,
-            @Param("estado") EstadoIncidencia estado,
+            @Param("estado") IncidenceStatus estado,
             @Param("tipoIncidenciaId") UUID tipoIncidenciaId,
             @Param("busqueda") String busqueda,
             Pageable pageable

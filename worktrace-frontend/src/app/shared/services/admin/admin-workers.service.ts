@@ -7,7 +7,7 @@ import {
   EditEmployeeWorkDataRequestDto,
   EmployeeResponseDto,
   JobPositionResponseDto,
-  JobPositionUiDto,
+  JobPositionRequestDto,
   SpringPageResponse,
 } from '../../models/profile.model';
 import {
@@ -30,7 +30,7 @@ export class AdminWorkersService {
 
   readonly workersSignal = signal<EmployeeResponseDto[]>([]);
   readonly totalWorkersSignal = signal<number>(0);
-  readonly jobPositionsSignal = signal<JobPositionUiDto[]>([]);
+  readonly jobPositionsSignal = signal<JobPositionRequestDto[]>([]);
 
   obtenerTrabajadores(page: number = 0, size: number = 50): Observable<EmployeeResponseDto[]> {
     const params = new HttpParams().set('page', page).set('size', size);
@@ -85,17 +85,17 @@ export class AdminWorkersService {
     return this.http.patch<void>(`${this.BASE_URL}time-entries/${id}/anular`, dto);
   }
 
-  obtenerPuestosTrabajo(): Observable<JobPositionUiDto[]> {
-    return this.http.get<JobPositionResponseDto[]>(`${this.BASE_URL}jobPosition`).pipe(
+  obtenerPuestosTrabajo(): Observable<JobPositionRequestDto[]> {
+    return this.http.get<JobPositionResponseDto[]>(`${this.BASE_URL}job-positions`).pipe(
       map((puestos) => puestos.map((puesto) => ({ id: puesto.id, title: puesto.nombre }))),
       tap((puestos) => this.jobPositionsSignal.set(puestos)),
     );
   }
 
-  crearPuestoTrabajo(nombre: string): Observable<JobPositionUiDto> {
-    const url = `${this.BASE_URL}jobPosition`;
+  crearPuestoTrabajo(name: string): Observable<JobPositionRequestDto> {
+    const url = `${this.BASE_URL}job-positions`;
 
-    return this.http.post<JobPositionResponseDto>(url, { nombre }).pipe(
+    return this.http.post<JobPositionResponseDto>(url, { name }).pipe(
       tap({
         error: (err) => console.error('[AdminWorkersService] Error crearPuestoTrabajo', err),
       }),
@@ -104,11 +104,10 @@ export class AdminWorkersService {
   }
 
   eliminarPuestoTrabajo(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.BASE_URL}jobPosition/${id}`);
+    return this.http.delete<void>(`${this.BASE_URL}job-positions/${id}`);
   }
 
   crearEmpleado(dto: CreateEmployeeRequestDto): Observable<void> {
-    // Backend may return empty/text body on success; avoid JSON parse false-negatives.
     return this.http
       .post(`${this.BASE_URL}auth/register-employee`, dto, { responseType: 'text' })
       .pipe(map(() => void 0));

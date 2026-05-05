@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
-import { EmpleadoDto, EmpleadoDetalleDto } from '../../../../shared/models/inspector.model';
+import { EmployeeDto, EmployeeDetailDto } from '../../../../shared/models/inspector.model';
 
 @Component({
   selector: 'app-employee-detail',
@@ -20,8 +20,8 @@ import { EmpleadoDto, EmpleadoDetalleDto } from '../../../../shared/models/inspe
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeDetailComponent {
-  readonly employee = input.required<EmpleadoDto>();
-  readonly detail = input<EmpleadoDetalleDto | null>(null);
+  readonly employee = input.required<EmployeeDto>();
+  readonly detail = input<EmployeeDetailDto | null>(null);
   readonly loadingSchedule = input<boolean>(false);
 
   readonly close = output<void>();

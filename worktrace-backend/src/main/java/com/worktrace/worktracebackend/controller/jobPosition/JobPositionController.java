@@ -12,30 +12,30 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/jobPosition")
+@RequestMapping("/api/job-positions")
 @RequiredArgsConstructor
 public class JobPositionController {
     private final JobPositionService jobPositionService;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<JobPositionResponseDto>> getPuestos() {
-        List<JobPositionResponseDto> responseDtos = jobPositionService.getPuestosTrabajo();
+    public ResponseEntity<List<JobPositionResponseDto>> getJobPositions() {
+        List<JobPositionResponseDto> responseDtos = jobPositionService.getJobPositions();
         return ResponseEntity.ok(responseDtos);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<JobPositionResponseDto> postPuestos(
+    public ResponseEntity<JobPositionResponseDto> createJobPosition(
             @RequestBody JobPositionRequestDto requestDto) {
-        JobPositionResponseDto responseDto = jobPositionService.crearNuevoPuesto(requestDto);
+        JobPositionResponseDto responseDto = jobPositionService.createJobPosition(requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deletePuestos(@PathVariable("id") UUID puestoID) {
-        jobPositionService.eliminarPuesto(puestoID);
+    public ResponseEntity<Void> deleteJobPosition(@PathVariable("id") UUID jobPositionId) {
+        jobPositionService.deleteJobPosition(jobPositionId);
         return ResponseEntity.ok().build();
     }
 }

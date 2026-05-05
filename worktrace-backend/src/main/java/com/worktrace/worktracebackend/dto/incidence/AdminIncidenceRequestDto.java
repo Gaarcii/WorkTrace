@@ -1,6 +1,6 @@
 package com.worktrace.worktracebackend.dto.incidence;
 
-import com.worktrace.worktracebackend.model.EstadoIncidencia;
+import com.worktrace.worktracebackend.model.IncidenceStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +14,6 @@ import lombok.Setter;
 public class AdminIncidenceRequestDto {
 
     @NotNull(message = "Es obligatorio el estado")
-    private EstadoIncidencia estado;
+    private IncidenceStatus estado;
     private String respuestaAdmin;
 }

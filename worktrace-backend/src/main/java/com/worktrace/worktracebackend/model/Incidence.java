@@ -33,7 +33,7 @@ public class Incidence {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private EstadoIncidencia status;
+    private IncidenceStatus status;
 
     @Column(name = "admin_response")
     private String adminResponse;

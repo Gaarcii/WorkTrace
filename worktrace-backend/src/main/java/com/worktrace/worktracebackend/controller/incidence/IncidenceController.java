@@ -4,7 +4,7 @@ import com.worktrace.worktracebackend.dto.incidence.AdminIncidenceRequestDto;
 import com.worktrace.worktracebackend.dto.incidence.AdminIncidenceResponseDto;
 import com.worktrace.worktracebackend.dto.incidence.WorkerIncidenceRequestDto;
 import com.worktrace.worktracebackend.dto.incidence.WorkerIncidenceResponseDto;
-import com.worktrace.worktracebackend.model.EstadoIncidencia;
+import com.worktrace.worktracebackend.model.IncidenceStatus;
 import com.worktrace.worktracebackend.service.incidence.IncidenceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/incidence")
+@RequestMapping("/api/incidences")
 @RequiredArgsConstructor
 public class IncidenceController {
 
@@ -26,51 +26,51 @@ public class IncidenceController {
 
     @GetMapping()
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<WorkerIncidenceResponseDto>> getIncidenceByUserId() {
+    public ResponseEntity<List<WorkerIncidenceResponseDto>> getIncidencesByUserId() {
         List<WorkerIncidenceResponseDto> responseDtoList =
-                incidenceService.getIncidenciasByUserID();
+                incidenceService.getIncidencesByUserId();
         return ResponseEntity.ok(responseDtoList);
     }
 
     @PostMapping()
     @PreAuthorize("hasRole('WORKER')")
-    public ResponseEntity<WorkerIncidenceResponseDto> postIncidencia(
+    public ResponseEntity<WorkerIncidenceResponseDto> createIncidence(
             @Valid @RequestBody WorkerIncidenceRequestDto requestDto) {
-        WorkerIncidenceResponseDto responseDto = incidenceService.postIncidence(requestDto);
+        WorkerIncidenceResponseDto responseDto = incidenceService.createIncidence(requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<AdminIncidenceResponseDto>> getCompanyIncidences(
-            @RequestParam(required = false) EstadoIncidencia status,
+    public ResponseEntity<Page<AdminIncidenceResponseDto>> getCompanyIncidencesByStatus(
+            @RequestParam(required = false) IncidenceStatus status,
             Pageable pageable) {
 
         if (status == null) {
-            status = EstadoIncidencia.PENDING;
+            status = IncidenceStatus.PENDING;
         }
         Page<AdminIncidenceResponseDto> responsePage = incidenceService
-                .getIncidenciasByCompanyAndStatus(status, pageable);
+                .getCompanyIncidencesByStatus(status, pageable);
 
         return ResponseEntity.ok(responsePage);
     }
 
     @GetMapping("/history")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<AdminIncidenceResponseDto>> getHistoryIncindence(Pageable pageable) {
+    public ResponseEntity<Page<AdminIncidenceResponseDto>> getCompanyIncidenceHistory(Pageable pageable) {
         Page<AdminIncidenceResponseDto> responseDtos =
-                incidenceService.getIncidenciasByCompanyStatusIn(pageable);
+                incidenceService.getCompanyIncidenceHistory(pageable);
 
         return ResponseEntity.ok(responseDtos);
     }
 
     @PatchMapping("/{id}/manage")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> gestionarIncidencia(
+    public ResponseEntity<Void> manageIncidence(
             @PathVariable("id") UUID incidenceId,
             @Valid @RequestBody AdminIncidenceRequestDto dto) {
 
-        incidenceService.gestionarIncidencia(incidenceId, dto);
+        incidenceService.manageIncidence(incidenceId, dto);
         return ResponseEntity.ok().build();
     }
 

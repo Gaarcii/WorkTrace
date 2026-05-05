@@ -282,9 +282,9 @@ export class ProfilePageComponent implements OnInit {
     const values = this.passwordForm.getRawValue();
 
     const request: PasswordChangeRequest = {
-      actual: values.actual || '',
-      nueva: values.nueva || '',
-      repetir: values.repetir || '',
+      currentPassword: values.actual || '',
+      newPassword: values.nueva || '',
+      repeatPassword: values.repetir || '',
     };
 
     this.authService

@@ -7,7 +7,7 @@ export interface InspectorHomeResponseDto {
   totalAuditLogs: number;
 }
 
-export interface EmpleadoDto {
+export interface EmployeeDto {
   id: string;
   photo: string;
   name: string;
@@ -18,7 +18,7 @@ export interface EmpleadoDto {
   role: string;
 }
 
-export interface EmpleadoDetalleDto {
+export interface EmployeeDetailDto {
   id: string;
   registrationDate: string;
   weeklyHours: number;

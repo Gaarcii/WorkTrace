@@ -3,8 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { API_CONFIG } from '../../../core/api/api.config';
 import {
-  EmpleadoDetalleDto,
-  EmpleadoDto,
+  EmployeeDetailDto,
+  EmployeeDto,
   InspectorAuditDetailDto,
   InspectorAuditDto,
   InspectorDailyClosureDto,
@@ -33,20 +33,19 @@ export class InspectorWorkerService {
     page: number = 0,
     size: number = 10,
     search?: string,
-  ): Observable<SpringPageResponse<EmpleadoDto>> {
+  ): Observable<SpringPageResponse<EmployeeDto>> {
     let params = new HttpParams().set('page', page).set('size', size);
 
     if (search && search.trim()) {
       params = params.set('search', search.trim());
     }
 
-    return this.http.get<SpringPageResponse<EmpleadoDto>>(`${this.BASE_URL}/empleados`, {
+    return this.http.get<SpringPageResponse<EmployeeDto>>(`${this.BASE_URL}/employees`, {
       params,
     });
   }
 
-  getEmpleadoDetalle(id: string): Observable<EmpleadoDetalleDto> {
-    return this.http.get<EmpleadoDetalleDto>(`${this.BASE_URL}/empleados/${id}`);
+  getEmpleadoDetalle(id: string): Observable<EmployeeDetailDto> {
+    return this.http.get<EmployeeDetailDto>(`${this.BASE_URL}/employees/${id}`);
   }
-
 }

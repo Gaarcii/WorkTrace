@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { API_CONFIG } from '../../../core/api/api.config';
 import {
-  EmpleadoDetalleDto,
+  EmployeeDetailDto,
   InspectorAuditDetailDto,
   InspectorAuditDto,
 } from '../../models/inspector.model';
@@ -46,17 +46,17 @@ export class InspectorAuditoriaService {
       params = params.set('endDate', normalizedEndDate);
     }
 
-    return this.http.get<SpringPageResponse<InspectorAuditDto>>(`${this.BASE_URL}/auditoria`, {
+    return this.http.get<SpringPageResponse<InspectorAuditDto>>(`${this.BASE_URL}/audits`, {
       params,
     });
   }
 
   getAuditoriaDetalle(id: string): Observable<InspectorAuditDetailDto> {
-    return this.http.get<InspectorAuditDetailDto>(`${this.BASE_URL}/auditoria/${id}`);
+    return this.http.get<InspectorAuditDetailDto>(`${this.BASE_URL}/audits/${id}`);
   }
 
-  getEmpleadoDetalle(id: string): Observable<EmpleadoDetalleDto> {
-    return this.http.get<EmpleadoDetalleDto>(`${this.BASE_URL}/empleados/${id}`);
+  getEmpleadoDetalle(id: string): Observable<EmployeeDetailDto> {
+    return this.http.get<EmployeeDetailDto>(`${this.BASE_URL}/employees/${id}`);
   }
 
   private normalizeDateParam(value?: string | Date): string | undefined {

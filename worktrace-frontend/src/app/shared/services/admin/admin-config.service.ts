@@ -25,7 +25,7 @@ export class AdminConfigService {
 
   private readonly COMPANY_URL = `${API_CONFIG.baseUrl}companies`;
   private readonly WORK_SITES_URL = `${API_CONFIG.baseUrl}WorkSites`;
-  private readonly INCIDENCE_TYPES_URL = `${API_CONFIG.baseUrl}incidence/types`;
+  private readonly INCIDENCE_TYPES_URL = `${API_CONFIG.baseUrl}incidence-types`;
 
   readonly workSitesSignal = signal<WorkSiteResponseDto[]>([]);
   readonly incidenceTypesSignal = signal<IncidenceTypeProjection[]>([]);
@@ -80,7 +80,7 @@ export class AdminConfigService {
   getIncidenceTypes(): Observable<IncidenceTypeResponseDto> {
     return this.http.get<IncidenceTypeResponseDto>(this.INCIDENCE_TYPES_URL).pipe(
       tap((response) => {
-        this.incidenceTypesSignal.set(response?.tipos ?? []);
+        this.incidenceTypesSignal.set(response?.types ?? []);
       }),
     );
   }

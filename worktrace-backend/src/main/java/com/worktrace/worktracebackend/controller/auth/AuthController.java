@@ -3,8 +3,8 @@ package com.worktrace.worktracebackend.controller.auth;
 import com.worktrace.worktracebackend.dto.auth.AuthRequestDto;
 import com.worktrace.worktracebackend.dto.auth.AuthResponseDto;
 import com.worktrace.worktracebackend.dto.company.CompanyRequestDto;
-import com.worktrace.worktracebackend.dto.passewordResetToken.ForgotPasswordRequest;
-import com.worktrace.worktracebackend.dto.passewordResetToken.ResetPasswordRequest;
+import com.worktrace.worktracebackend.dto.passwordResetToken.ForgotPasswordRequest;
+import com.worktrace.worktracebackend.dto.passwordResetToken.ResetPasswordRequest;
 import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
 import com.worktrace.worktracebackend.dto.user.InspectorRequestDto;
 import com.worktrace.worktracebackend.dto.user.PasswordChangeRequestDto;
@@ -38,10 +38,10 @@ public class AuthController {
 
     @PatchMapping("/password")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> actualizarContrasena(
+    public ResponseEntity<?> updatePassword(
             @Valid @RequestBody PasswordChangeRequestDto requestDto) {
         try {
-            authenticationService.cambiarContrasena(requestDto);
+            authenticationService.changePassword(requestDto);
             return ResponseEntity.ok(Collections
                     .singletonMap("message", "Contraseña actualizada correctamente"));
         } catch (IllegalArgumentException e) {

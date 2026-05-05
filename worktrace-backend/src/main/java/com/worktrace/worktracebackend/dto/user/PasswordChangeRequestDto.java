@@ -13,11 +13,11 @@ import lombok.Setter;
 public class PasswordChangeRequestDto {
 
     @NotBlank(message = "La contraseña es obligatoria")
-    private String actual;
+    private String currentPassword;
 
     @NotBlank(message = "La nueva contraseña es obligatoria")
-    private String nueva;
+    private String newPassword;
 
     @NotBlank(message = "Repetir la contraseña es obligatorio")
-    private String repetir;
+    private String repeatPassword;
 }

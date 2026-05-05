@@ -23,7 +23,7 @@ public class JobPositionService {
     private final UserService userService;
 
     @Transactional(readOnly = true)
-    public List<JobPositionResponseDto> getPuestosTrabajo() {
+    public List<JobPositionResponseDto> getJobPositions() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
 
         List<JobPosition> jobPositionList = jobPositionRepository
@@ -37,34 +37,34 @@ public class JobPositionService {
     }
 
     @Transactional
-    public JobPositionResponseDto crearNuevoPuesto(JobPositionRequestDto requestDto) {
+    public JobPositionResponseDto createJobPosition(JobPositionRequestDto requestDto) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
-        String nombre = requestDto.getNombre().trim();
-        boolean exists = jobPositionRepository.findByTitleIgnoreCaseAndCompany_Id(nombre, info.getCompany().getId()).isPresent();
+        String name = requestDto.getName().trim();
+        boolean exists = jobPositionRepository.findByTitleIgnoreCaseAndCompany_Id(name, info.getCompany().getId()).isPresent();
         if (exists) {
             throw new IllegalArgumentException("Ya existe un puesto con ese nombre en la empresa");
         }
-        JobPosition puesto = new JobPosition();
-        puesto.setTitle(nombre);
-        puesto.setCreatedAt(OffsetDateTime.now());
-        puesto.setCompany(info.getCompany());
-        jobPositionRepository.save(puesto);
+        JobPosition jobPosition = new JobPosition();
+        jobPosition.setTitle(name);
+        jobPosition.setCreatedAt(OffsetDateTime.now());
+        jobPosition.setCompany(info.getCompany());
+        jobPositionRepository.save(jobPosition);
 
         return new JobPositionResponseDto(
-                puesto.getId(),
-                puesto.getTitle());
+                jobPosition.getId(),
+                jobPosition.getTitle());
     }
 
     @Transactional
-    public void eliminarPuesto(UUID jobId) {
+    public void deleteJobPosition(UUID jobPositionId) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
-        JobPosition puesto = jobPositionRepository.findById(jobId)
+        JobPosition jobPosition = jobPositionRepository.findById(jobPositionId)
                 .orElseThrow(() -> new IllegalStateException("Puesto de trabajo no encontrado"));
 
-        if (puesto.getCompany().getId().equals(company.getId())) {
-            jobPositionRepository.delete(puesto);
+        if (jobPosition.getCompany().getId().equals(company.getId())) {
+            jobPositionRepository.delete(jobPosition);
         }
     }
 }

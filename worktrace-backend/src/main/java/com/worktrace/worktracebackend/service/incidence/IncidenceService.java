@@ -29,7 +29,7 @@ public class IncidenceService {
     private final UserService userService;
 
     @Transactional(readOnly = true)
-    public List<WorkerIncidenceResponseDto> getIncidenciasByUserID() {
+    public List<WorkerIncidenceResponseDto> getIncidencesByUserId() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
 
         List<Incidence> incidenceList = incidenceRepository
@@ -39,7 +39,7 @@ public class IncidenceService {
     }
 
     @Transactional
-    public WorkerIncidenceResponseDto postIncidence(WorkerIncidenceRequestDto requestDto) {
+    public WorkerIncidenceResponseDto createIncidence(WorkerIncidenceRequestDto requestDto) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         IncidenceType tipoRef = incidenceTypeRepository
                 .findByIdAndCompany_IdAndDeletedAtIsNull(requestDto.getTypeId(), info.getCompany().getId())
@@ -49,7 +49,7 @@ public class IncidenceService {
         incidence.setProfile(info.getProfile());
         incidence.setDate(requestDto.getFechaAfectada());
         incidence.setComment(requestDto.getComentario());
-        incidence.setStatus(EstadoIncidencia.PENDING);
+        incidence.setStatus(IncidenceStatus.PENDING);
         incidence.setCreatedAt(OffsetDateTime.now());
         incidence.setType(tipoRef);
         incidence.setIncidenceTime(requestDto.getHora());
@@ -80,7 +80,7 @@ public class IncidenceService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AdminIncidenceResponseDto> getIncidenciasByCompanyAndStatus(EstadoIncidencia status, Pageable pageable) {
+    public Page<AdminIncidenceResponseDto> getCompanyIncidencesByStatus(IncidenceStatus status, Pageable pageable) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
 
         Page<Incidence> incidencePage = incidenceRepository
@@ -90,17 +90,17 @@ public class IncidenceService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AdminIncidenceResponseDto> getIncidenciasByCompanyStatusIn(Pageable pageable) {
+    public Page<AdminIncidenceResponseDto> getCompanyIncidenceHistory(Pageable pageable) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
         Page<Incidence> incidencePage = incidenceRepository.findByCompany_IdAndStatusIn
-                (company.getId(), List.of(EstadoIncidencia.RESOLVED, EstadoIncidencia.REJECTED), pageable);
+                (company.getId(), List.of(IncidenceStatus.RESOLVED, IncidenceStatus.REJECTED), pageable);
 
         return mapearAdminResponse(incidencePage);
     }
 
     @Transactional
-    public void gestionarIncidencia(UUID incidenciaId, AdminIncidenceRequestDto dto) {
+    public void manageIncidence(UUID incidenciaId, AdminIncidenceRequestDto dto) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
         User user = info.getUser();
@@ -112,7 +112,7 @@ public class IncidenceService {
             throw new IllegalStateException("No tienes permisos sobre esta incidencia");
         }
 
-        if (incidence.getStatus() == EstadoIncidencia.PENDING) {
+        if (incidence.getStatus() == IncidenceStatus.PENDING) {
             incidence.setStatus(dto.getEstado());
             incidence.setUpdatedAt(OffsetDateTime.now());
             incidence.setResolvedBy(user);

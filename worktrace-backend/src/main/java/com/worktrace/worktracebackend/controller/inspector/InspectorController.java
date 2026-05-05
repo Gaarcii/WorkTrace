@@ -25,57 +25,57 @@ public class InspectorController {
         return ResponseEntity.ok(inspectorService.getHome());
     }
 
-    @GetMapping("/empleados")
+    @GetMapping("/employees")
     @PreAuthorize("hasRole('INSPECTOR')")
-    public ResponseEntity<Page<EmpleadoDto>> getEmpleados(
+    public ResponseEntity<Page<EmployeeDto>> getEmployees(
             Pageable pageable, 
             @RequestParam(required = false) String search) {
-        return ResponseEntity.ok(inspectorService.getEmpleados(pageable, search));
+        return ResponseEntity.ok(inspectorService.getEmployees(pageable, search));
     }
 
-    @GetMapping("/empleados/{id}")
+    @GetMapping("/employees/{id}")
     @PreAuthorize("hasRole('INSPECTOR')")
-    public ResponseEntity<EmpleadoDetalleDto> getEmpleadoDetalle(@PathVariable UUID id) {
-        return ResponseEntity.ok(inspectorService.getEmpleadoDetalle(id));
+    public ResponseEntity<EmployeeDetailDto> getEmployeeDetail(@PathVariable UUID id) {
+        return ResponseEntity.ok(inspectorService.getEmployeeDetail(id));
     }
 
-    @GetMapping("/incidencias")
+    @GetMapping("/incidences")
     @PreAuthorize("hasRole('INSPECTOR')")
-    public ResponseEntity<Page<InspectorIncidenceDto>> getIncidencias(
-            @RequestParam(required = false) String estado,
-            @RequestParam(required = false) UUID tipoIncidenciaId,
-            @RequestParam(required = false) String busqueda,
+    public ResponseEntity<Page<InspectorIncidenceDto>> getIncidences(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) UUID incidenceTypeId,
+            @RequestParam(required = false) String search,
             Pageable pageable) {
         
         return ResponseEntity.ok(
-                inspectorService.getIncidenciasFiltradas(estado, tipoIncidenciaId, busqueda, pageable)
+                inspectorService.getFilteredIncidences(status, incidenceTypeId, search, pageable)
         );
     }
 
-    @GetMapping("/registros-diarios")
+    @GetMapping("/daily-closures")
     @PreAuthorize("hasRole('INSPECTOR')")
-    public ResponseEntity<Page<InspectorDailyClosureDto>> getRegistrosDiarios(
+    public ResponseEntity<Page<InspectorDailyClosureDto>> getDailyClosures(
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             Pageable pageable) {
 
-        return ResponseEntity.ok(inspectorService.getRegistrosDiarios(startDate, endDate, pageable));
+        return ResponseEntity.ok(inspectorService.getDailyClosures(startDate, endDate, pageable));
     }
 
-    @GetMapping("/auditoria")
+    @GetMapping("/audits")
     @PreAuthorize("hasRole('INSPECTOR')")
-    public ResponseEntity<Page<InspectorAuditDto>> getAuditorias(
+    public ResponseEntity<Page<InspectorAuditDto>> getAudits(
             @RequestParam(required = false) String action,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             Pageable pageable) {
 
-        return ResponseEntity.ok(inspectorService.getAuditorias(action, startDate, endDate, pageable));
+        return ResponseEntity.ok(inspectorService.getAudits(action, startDate, endDate, pageable));
     }
 
-    @GetMapping("/auditoria/{id}")
+    @GetMapping("/audits/{id}")
     @PreAuthorize("hasRole('INSPECTOR')")
-    public ResponseEntity<InspectorAuditDetailDto> getAuditoriaDetalle(@PathVariable UUID id) {
-        return ResponseEntity.ok(inspectorService.getAuditoriaDetalle(id));
+    public ResponseEntity<InspectorAuditDetailDto> getAuditDetail(@PathVariable UUID id) {
+        return ResponseEntity.ok(inspectorService.getAuditDetail(id));
     }
 }

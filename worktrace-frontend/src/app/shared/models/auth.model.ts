@@ -21,9 +21,9 @@ export interface ResetPasswordRequest {
 }
 
 export interface PasswordChangeRequest {
-  actual: string;
-  nueva: string;
-  repetir: string;
+  currentPassword: string;
+  newPassword: string;
+  repeatPassword: string;
 }
 
 export interface GenericMessageResponse {

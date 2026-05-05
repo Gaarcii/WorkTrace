@@ -97,18 +97,18 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public void cambiarContrasena(PasswordChangeRequestDto requestDto) {
+    public void changePassword(PasswordChangeRequestDto requestDto) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         User user = info.getUser();
 
-        boolean comprobarActual = passwordEncoder.matches(requestDto.getActual(), user.getPasswordHash());
-        boolean comprobarNueva = requestDto.getNueva().equals(requestDto.getRepetir());
+        boolean isCurrentPasswordCorrect = passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPasswordHash());
+        boolean doNewPasswordsMatch = requestDto.getNewPassword().equals(requestDto.getRepeatPassword());
 
-        if (!comprobarActual || !comprobarNueva) {
+        if (!isCurrentPasswordCorrect || !doNewPasswordsMatch) {
             throw new IllegalArgumentException("La contraseña actual es incorrecta o las nuevas no coinciden.");
         }
 
-        user.setPasswordHash(passwordEncoder.encode(requestDto.getNueva()));
+        user.setPasswordHash(passwordEncoder.encode(requestDto.getNewPassword()));
 
         user.getProfile().setIsFirstLogin(false);
     }

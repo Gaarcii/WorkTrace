@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
 import {
   EmployeeResponseDto,
   EditEmployeeWorkDataRequestDto,
-  JobPositionUiDto,
+  JobPositionRequestDto,
 } from '../../../../../shared/models/profile.model';
 
 type EditEmployeeProfileFormGroup = {
@@ -23,7 +23,7 @@ export class EditEmployeeProfileDialogComponent {
 
   public readonly isOpen = input.required<boolean>();
   public readonly empleado = input<EmployeeResponseDto | null>(null);
-  public readonly jobPositions = input.required<JobPositionUiDto[]>();
+  public readonly jobPositions = input.required<JobPositionRequestDto[]>();
   public readonly loading = input.required<boolean>();
   public readonly error = input<string | null>(null);
 

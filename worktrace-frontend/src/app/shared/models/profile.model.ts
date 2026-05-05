@@ -44,7 +44,7 @@ export interface JobPositionResponseDto {
   nombre: string;
 }
 
-export interface JobPositionUiDto {
+export interface JobPositionRequestDto {
   id: string;
   title: string;
 }

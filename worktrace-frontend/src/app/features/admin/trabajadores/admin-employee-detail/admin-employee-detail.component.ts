@@ -13,7 +13,7 @@ import { AdminWorkersService } from '../../../../shared/services/admin/admin-wor
 import {
   EmployeeResponseDto,
   EditEmployeeWorkDataRequestDto,
-  JobPositionUiDto,
+  JobPositionRequestDto,
 } from '../../../../shared/models/profile.model';
 import {
   AnularTimeEntryRequestDto,
@@ -52,7 +52,7 @@ export class AdminEmployeeDetailComponent implements OnInit {
   public readonly employeeId = signal<string>('');
   public readonly empleado = signal<EmployeeResponseDto | null>(null);
   public readonly fichajes = signal<FichajeTablaResponseDto[]>([]);
-  public readonly puestosTrabajo = signal<JobPositionUiDto[]>([]);
+  public readonly puestosTrabajo = signal<JobPositionRequestDto[]>([]);
   public readonly loading = signal<boolean>(true);
   public readonly loadingEditarPerfil = signal<boolean>(false);
   public readonly loadingEditarFichaje = signal<boolean>(false);

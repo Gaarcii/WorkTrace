@@ -12,5 +12,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class JobPositionRequestDto {
     @NotBlank(message = "El nombre es obligatorio")
-    private String nombre;
+    private String name;
 }

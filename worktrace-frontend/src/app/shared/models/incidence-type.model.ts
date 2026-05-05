@@ -4,7 +4,7 @@ export interface IncidenceTypeProjection {
 }
 
 export interface IncidenceTypeResponseDto {
-  tipos: IncidenceTypeProjection[];
+  types: IncidenceTypeProjection[];
 }
 
 export interface IncidenceTypeRequestDto {

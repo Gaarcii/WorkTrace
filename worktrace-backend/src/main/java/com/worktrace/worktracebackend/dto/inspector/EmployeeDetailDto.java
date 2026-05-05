@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmpleadoDetalleDto {
+public class EmployeeDetailDto {
     private UUID id;
     private OffsetDateTime registrationDate;
     private BigDecimal weeklyHours;

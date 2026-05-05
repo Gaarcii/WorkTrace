@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/incidence/types")
+@RequestMapping("/api/incidence-types")
 @RequiredArgsConstructor
 public class IncidenceTypeController {
 
@@ -22,9 +22,9 @@ public class IncidenceTypeController {
 
     @GetMapping()
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<IncidenceTypeResponseDto> tiposIncidencias() {
+    public ResponseEntity<IncidenceTypeResponseDto> getIncidenceTypes() {
         IncidenceTypeResponseDto responseDto = incidenceTypeService
-                .getTiposIncidencias();
+                .getIncidenceTypes();
         return ResponseEntity.ok(responseDto);
     }
 

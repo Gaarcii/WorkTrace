@@ -1,17 +1,16 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
-import { JobPositionUiDto } from '../../../../../shared/models/profile.model';
-
+import { JobPositionRequestDto } from '../../../../../shared/models/profile.model';
 
 @Component({
   selector: 'app-confirm-delete-dialog',
   templateUrl: './confirm-delete-dialog.component.html',
   styleUrl: './confirm-delete-dialog.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmDeleteDialogComponent {
   public readonly isOpen = input.required<boolean>();
   public readonly loading = input.required<boolean>();
-  public readonly jobPosition = input<JobPositionUiDto | null>(null);
+  public readonly jobPosition = input<JobPositionRequestDto | null>(null);
 
   public readonly confirmAction = output<void>();
   public readonly cancelAction = output<void>();

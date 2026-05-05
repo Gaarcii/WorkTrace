@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, input, output } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { JobPositionUiDto } from '../../../../../shared/models/profile.model';
+import { JobPositionRequestDto } from '../../../../../shared/models/profile.model';
 
 @Component({
   selector: 'app-job-positions-dialog',
@@ -14,11 +14,11 @@ export class JobPositionsDialogComponent {
 
   public readonly isOpen = input.required<boolean>();
   public readonly loading = input.required<boolean>();
-  public readonly jobPositions = input.required<JobPositionUiDto[]>();
+  public readonly jobPositions = input.required<JobPositionRequestDto[]>();
 
   public readonly updateIsOpen = output<boolean>();
   public readonly create = output<string>();
-  public readonly confirmDelete = output<JobPositionUiDto>();
+  public readonly confirmDelete = output<JobPositionRequestDto>();
 
   public readonly newPositionControl: FormControl<string> = this.fb.control('', {
     nonNullable: true,

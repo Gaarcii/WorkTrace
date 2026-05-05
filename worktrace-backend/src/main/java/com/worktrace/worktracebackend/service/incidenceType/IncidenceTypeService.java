@@ -26,10 +26,10 @@ public class IncidenceTypeService {
     private final UserService userService;
 
     @Transactional(readOnly = true)
-    public IncidenceTypeResponseDto getTiposIncidencias() {
+    public IncidenceTypeResponseDto getIncidenceTypes() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         IncidenceTypeResponseDto typeResponseDto = new IncidenceTypeResponseDto();
-        typeResponseDto.setTipos(
+        typeResponseDto.setTypes(
                 incidenceTypeRepository.findByCompany_IdAndDeletedAtIsNull(
                         info.getCompany().getId()));
 

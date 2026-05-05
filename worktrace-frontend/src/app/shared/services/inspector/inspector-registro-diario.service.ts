@@ -15,7 +15,6 @@ interface SpringPageResponse<T> {
 })
 export class InspectorRegistroDiarioService {
   private readonly BASE_URL = API_CONFIG.baseUrl + 'inspector';
-  private readonly INCIDENCE_TYPES_URL = `${API_CONFIG.baseUrl}incidence/types`;
   private readonly http = inject(HttpClient);
   readonly incidenceTypesSignal = signal<IncidenceTypeProjection[]>([]);
   getRegistrosDiarios(
@@ -38,7 +37,7 @@ export class InspectorRegistroDiarioService {
     }
 
     return this.http.get<SpringPageResponse<InspectorDailyClosureDto>>(
-      `${this.BASE_URL}/registros-diarios`,
+      `${this.BASE_URL}/daily-closures`,
       { params },
     );
   }

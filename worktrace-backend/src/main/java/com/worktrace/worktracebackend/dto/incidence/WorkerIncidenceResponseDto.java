@@ -1,6 +1,6 @@
 package com.worktrace.worktracebackend.dto.incidence;
 
-import com.worktrace.worktracebackend.model.EstadoIncidencia;
+import com.worktrace.worktracebackend.model.IncidenceStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ public class WorkerIncidenceResponseDto {
     private LocalDate fecha;
     private LocalTime hora;
     private String comentario;
-    private EstadoIncidencia estado;
+    private IncidenceStatus estado;
     private OffsetDateTime creacion;
 
 }

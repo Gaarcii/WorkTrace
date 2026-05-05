@@ -13,7 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, finalize, take } from 'rxjs/operators';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { InspectorWorkerService } from '../../../shared/services/inspector/inspector-worker.service';
-import { EmpleadoDto, EmpleadoDetalleDto } from '../../../shared/models/inspector.model';
+import { EmployeeDto, EmployeeDetailDto } from '../../../shared/models/inspector.model';
 import { EmployeeSearchComponent } from './employee-search/employee-search.component';
 import { EmployeeListComponent } from './employee-list/employee-list.component';
 import { EmployeeDetailComponent } from './employee-detail/employee-detail.component';
@@ -41,9 +41,9 @@ export class InspectorEmployeesComponent implements OnInit {
 
   private readonly _loading = signal<boolean>(true);
   private readonly _loadingSchedule = signal<boolean>(false);
-  private readonly _employees = signal<EmpleadoDto[]>([]);
-  private readonly _selectedEmployeeBase = signal<EmpleadoDto | null>(null);
-  private readonly _selectedEmployeeDetail = signal<EmpleadoDetalleDto | null>(null);
+  private readonly _employees = signal<EmployeeDto[]>([]);
+  private readonly _selectedEmployeeBase = signal<EmployeeDto | null>(null);
+  private readonly _selectedEmployeeDetail = signal<EmployeeDetailDto | null>(null);
 
   readonly loading = this._loading.asReadonly();
   readonly loadingSchedule = this._loadingSchedule.asReadonly();
@@ -78,7 +78,7 @@ export class InspectorEmployeesComponent implements OnInit {
       });
   }
 
-  openEmployeeDialog(employee: EmpleadoDto): void {
+  openEmployeeDialog(employee: EmployeeDto): void {
     this._selectedEmployeeBase.set(employee);
     this.loadEmployeeSchedule(employee.id);
 
@@ -108,7 +108,7 @@ export class InspectorEmployeesComponent implements OnInit {
         finalize(() => this._loadingSchedule.set(false)),
       )
       .subscribe({
-        next: (detail: EmpleadoDetalleDto) => {
+        next: (detail: EmployeeDetailDto) => {
           this._selectedEmployeeDetail.set(detail);
         },
         error: (err: unknown) => console.error('Error al cargar detalle:', err),

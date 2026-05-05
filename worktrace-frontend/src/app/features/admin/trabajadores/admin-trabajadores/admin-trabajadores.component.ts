@@ -8,7 +8,7 @@ import { AdminWorkersService } from '../../../../shared/services/admin/admin-wor
 import {
   CreateEmployeeRequestDto,
   EmployeeResponseDto,
-  JobPositionUiDto,
+  JobPositionRequestDto,
 } from '../../../../shared/models/profile.model';
 import {
   CreateEmployeeForm,
@@ -54,9 +54,9 @@ export class AdminTrabajadoresComponent implements OnInit {
     color: 'success',
   });
 
-  readonly puestosTrabajo = signal<JobPositionUiDto[]>([]);
+  readonly puestosTrabajo = signal<JobPositionRequestDto[]>([]);
   readonly nuevoPuesto = signal<string>('');
-  readonly puestoABorrar = signal<JobPositionUiDto | null>(null);
+  readonly puestoABorrar = signal<JobPositionRequestDto | null>(null);
   readonly workSites = signal<WorkSiteResponseDto[]>([]);
 
   readonly headers: EmployeeTableHeader[] = [
@@ -218,7 +218,7 @@ export class AdminTrabajadoresComponent implements OnInit {
     this.crearPuesto(nombre);
   }
 
-  confirmarBorrarPuesto(puesto: JobPositionUiDto): void {
+  confirmarBorrarPuesto(puesto: JobPositionRequestDto): void {
     this.puestoABorrar.set(puesto);
     this.dialogConfirmarBorrar.set(true);
   }

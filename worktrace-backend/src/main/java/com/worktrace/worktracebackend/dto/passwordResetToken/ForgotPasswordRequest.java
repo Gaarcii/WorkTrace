@@ -1,5 +1,6 @@
-package com.worktrace.worktracebackend.dto.passewordResetToken;
+package com.worktrace.worktracebackend.dto.passwordResetToken;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,13 +11,8 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResetPasswordRequest {
+public class ForgotPasswordRequest {
     @NotBlank
-    private String token;
-
-    @NotBlank
-    private String newPassword;
-
-    @NotBlank
-    private String repeatPassword;
+    @Email
+    private String email;
 }

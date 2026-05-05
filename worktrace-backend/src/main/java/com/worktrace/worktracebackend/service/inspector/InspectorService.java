@@ -37,7 +37,7 @@ public class InspectorService {
         LocalDate today = LocalDate.now();
 
         long totalEmpleados = userRepository.countUsersByCompany_Id(companyId);
-        long totalIncidencias = incidenceRepository.countByCompany_IdAndStatus(companyId, EstadoIncidencia.PENDING);
+        long totalIncidencias = incidenceRepository.countByCompany_IdAndStatus(companyId, IncidenceStatus.PENDING);
         long trabajadoresActivosHoy = timeEntryRepository.countDistinctActiveWorkersByCompanyAndWorkDate(
                 companyId,
                 today,
@@ -54,7 +54,7 @@ public class InspectorService {
     }
 
     @Transactional(readOnly = true)
-    public Page<EmpleadoDto> getEmpleados(Pageable pageable, String search) {
+    public Page<EmployeeDto> getEmployees(Pageable pageable, String search) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         var companyId = info.getCompany().getId();
 
@@ -66,7 +66,7 @@ public class InspectorService {
         } else {
             users = userRepository.findByCompanyIdAndRole(companyId, Role.WORKER, pageable);
         }
-        return users.map(user -> new EmpleadoDto(
+        return users.map(user -> new EmployeeDto(
                 user.getId(),
                 user.getProfile().getAvatarUrl(),
                 user.getProfile().getFullName(),
@@ -79,18 +79,18 @@ public class InspectorService {
     }
 
     @Transactional(readOnly = true)
-    public EmpleadoDetalleDto getEmpleadoDetalle(UUID empleadoId) {
+    public EmployeeDetailDto getEmployeeDetail(UUID employeeId) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         var companyId = info.getCompany().getId();
 
-        User user = userRepository.findByIdAndCompanyId(empleadoId, companyId)
+        User user = userRepository.findByIdAndCompanyId(employeeId, companyId)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
 
-        return getEmpleadoDetalleDto(user);
+        return getEmployeeDetailDto(user);
     }
 
-    private EmpleadoDetalleDto getEmpleadoDetalleDto(User user) {
-        return new EmpleadoDetalleDto(
+    private EmployeeDetailDto getEmployeeDetailDto(User user) {
+        return new EmployeeDetailDto(
                 user.getId(),
                 user.getCreatedAt(),
                 user.getProfile().getWeeklyHours(),
@@ -112,29 +112,29 @@ public class InspectorService {
     }
 
     @Transactional(readOnly = true)
-    public Page<InspectorIncidenceDto> getIncidenciasFiltradas(
-            String estado,
-            UUID tipoIncidenciaId,
-            String busqueda,
+    public Page<InspectorIncidenceDto> getFilteredIncidences(
+            String status,
+            UUID incidenceTypeId,
+            String search,
             Pageable pageable) {
 
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         var companyId = info.getCompany().getId();
 
-        EstadoIncidencia estadoEnum = null;
-        if (estado != null && !estado.trim().isEmpty()) {
+        IncidenceStatus estadoEnum = null;
+        if (status != null && !status.trim().isEmpty()) {
             try {
-                estadoEnum = EstadoIncidencia.valueOf(estado.toUpperCase());
+                estadoEnum = IncidenceStatus.valueOf(status.toUpperCase());
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Estado no válido: " + estado);
+                throw new RuntimeException("Estado no válido: " + status);
             }
         }
 
         Page<Incidence> incidences = incidenceRepository.findFilteredIncidences(
                 companyId,
-                estadoEnum != null ? EstadoIncidencia.valueOf(estadoEnum.name()) : null,
-                tipoIncidenciaId,
-                (busqueda != null && !busqueda.trim().isEmpty()) ? busqueda.trim() : "",
+                estadoEnum != null ? IncidenceStatus.valueOf(estadoEnum.name()) : null,
+                incidenceTypeId,
+                (search != null && !search.trim().isEmpty()) ? search.trim() : "",
                 pageable
         );
 
@@ -156,7 +156,7 @@ public class InspectorService {
     }
 
     @Transactional(readOnly = true)
-    public Page<InspectorDailyClosureDto> getRegistrosDiarios(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public Page<InspectorDailyClosureDto> getDailyClosures(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         var companyId = info.getCompany().getId();
 
@@ -178,7 +178,7 @@ public class InspectorService {
     }
 
     @Transactional(readOnly = true)
-    public Page<InspectorAuditDto> getAuditorias(String action, java.time.LocalDate startDate, java.time.LocalDate endDate, Pageable pageable) {
+    public Page<InspectorAuditDto> getAudits(String action, java.time.LocalDate startDate, java.time.LocalDate endDate, Pageable pageable) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         var companyId = info.getCompany().getId();
 
@@ -206,7 +206,7 @@ public class InspectorService {
     }
 
     @Transactional(readOnly = true)
-    public InspectorAuditDetailDto getAuditoriaDetalle(UUID auditId) {
+    public InspectorAuditDetailDto getAuditDetail(UUID auditId) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         var companyId = info.getCompany().getId();
 

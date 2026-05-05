@@ -12,15 +12,15 @@ import {
 export class WorkerIncidenceTypesService {
   private readonly http = inject(HttpClient);
 
-  private readonly BASE_URL = API_CONFIG.baseUrl + 'incidence/types';
+  private readonly BASE_URL = API_CONFIG.baseUrl + 'incidence-types';
 
   readonly tiposSignal = signal<IncidenceTypeProjection[]>([]);
 
   obtenerTipos(): Observable<IncidenceTypeResponseDto> {
     return this.http.get<IncidenceTypeResponseDto>(this.BASE_URL).pipe(
       tap((response) => {
-        if (response && response.tipos) {
-          this.tiposSignal.set(response.tipos);
+        if (response && response.types) {
+          this.tiposSignal.set(response.types);
         }
       }),
     );

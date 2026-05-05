@@ -9,7 +9,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmpleadoDto {
+public class EmployeeDto {
     private UUID id;
     private String photo;
     private String name;

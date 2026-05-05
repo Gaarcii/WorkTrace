@@ -10,7 +10,7 @@ import { IncidenceRequest, IncidenceResponse } from '../../models/incidence.mode
 export class WorkerIncidenciasService {
   private readonly http = inject(HttpClient);
 
-  private readonly BASE_URL = API_CONFIG.baseUrl + 'incidence';
+  private readonly BASE_URL = API_CONFIG.baseUrl + 'incidences';
 
   readonly incidenciasSignal = signal<IncidenceResponse[]>([]);
 

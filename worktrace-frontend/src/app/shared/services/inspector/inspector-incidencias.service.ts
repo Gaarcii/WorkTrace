@@ -18,7 +18,7 @@ interface SpringPageResponse<T> {
 })
 export class InspectorIncidenciaService {
   private readonly BASE_URL = API_CONFIG.baseUrl + 'inspector';
-  private readonly INCIDENCE_TYPES_URL = `${API_CONFIG.baseUrl}incidence/types`;
+  private readonly INCIDENCE_TYPES_URL = `${API_CONFIG.baseUrl}incidence-types`;
   private readonly http = inject(HttpClient);
   readonly incidenceTypesSignal = signal<IncidenceTypeProjection[]>([]);
 
@@ -32,19 +32,19 @@ export class InspectorIncidenciaService {
     let params = new HttpParams().set('page', page).set('size', size);
 
     if (estado && estado.trim()) {
-      params = params.set('estado', estado.trim());
+      params = params.set('status', estado.trim());
     }
 
     if (tipoIncidenciaId && tipoIncidenciaId.trim()) {
-      params = params.set('tipoIncidenciaId', tipoIncidenciaId.trim());
+      params = params.set('incidenceTypeId', tipoIncidenciaId.trim());
     }
 
     if (busqueda && busqueda.trim()) {
-      params = params.set('busqueda', busqueda.trim());
+      params = params.set('search', busqueda.trim());
     }
 
     return this.http.get<SpringPageResponse<InspectorIncidenceDto>>(
-      `${this.BASE_URL}/incidencias`,
+      `${this.BASE_URL}/incidences`,
       { params },
     );
   }
@@ -52,7 +52,7 @@ export class InspectorIncidenciaService {
   getIncidenceTypes(): Observable<IncidenceTypeResponseDto> {
     return this.http.get<IncidenceTypeResponseDto>(this.INCIDENCE_TYPES_URL).pipe(
       tap((response) => {
-        this.incidenceTypesSignal.set(response?.tipos ?? []);
+        this.incidenceTypesSignal.set(response?.types ?? []);
       }),
     );
   }
