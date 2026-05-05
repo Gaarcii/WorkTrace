@@ -46,17 +46,17 @@ public class TimeEntryService {
     private final AuditTimeEntryService auditTimeEntryService;
 
     @Transactional
-    public TimeEntryResponseDto procesarFichaje(TimeEntryRequestDto requestDto, String ip, String userAgent) {
+    public TimeEntryResponseDto processTimeEntry(TimeEntryRequestDto requestDto, String realIp, String userAgent) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         User user = info.getUser();
         Company company = info.getCompany();
         Profile profile = info.getProfile();
 
-        Optional<TimeEntry> turnoAbiertoOpt = timeEntryRepository.
+        Optional<TimeEntry> openTimeEntryOpt = timeEntryRepository.
                 findByEmployee_UserIdAndEndAtIsNullAndEstadoFichaje(profile.getUserId(), EstadoFichaje.OPEN);
 
         IpDetectionService.IpAnalysisResult ipResult = ipDetectionService.
-                analyzeIpWithDetails(ip);
+                analyzeIpWithDetails(realIp);
 
         List<String> flags = new ArrayList<>();
         if (requestDto.getAccuracyMeters() != null && requestDto.getAccuracyMeters() > 200) {
@@ -66,246 +66,246 @@ public class TimeEntryService {
             flags.addAll(ipResult.flags());
         }
 
-        TimeEntry fichajeGuardado;
+        TimeEntry savedTimeEntry;
 
-        if (turnoAbiertoOpt.isPresent()) {
-            TimeEntry turnoAbierto = turnoAbiertoOpt.get();
+        if (openTimeEntryOpt.isPresent()) {
+            TimeEntry openTimeEntry = openTimeEntryOpt.get();
 
-            turnoAbierto.setEndAt(OffsetDateTime.now());
-            turnoAbierto.setEndLat(requestDto.getLat());
-            turnoAbierto.setEndLng(requestDto.getLng());
-            turnoAbierto.setEndAccuracyM(requestDto.getAccuracyMeters());
-            turnoAbierto.setEndIp(ip);
-            turnoAbierto.setEndUserAgent(userAgent);
-            turnoAbierto.setEndGeoip(ipResult.geoIpMap());
+            openTimeEntry.setEndAt(OffsetDateTime.now());
+            openTimeEntry.setEndLat(requestDto.getLat());
+            openTimeEntry.setEndLng(requestDto.getLng());
+            openTimeEntry.setEndAccuracyM(requestDto.getAccuracyMeters());
+            openTimeEntry.setEndIp(realIp);
+            openTimeEntry.setEndUserAgent(userAgent);
+            openTimeEntry.setEndGeoip(ipResult.geoIpMap());
 
-            if (turnoAbierto.getFlags() != null) {
-                turnoAbierto.getFlags().addAll(flags);
+            if (openTimeEntry.getFlags() != null) {
+                openTimeEntry.getFlags().addAll(flags);
             } else {
-                turnoAbierto.setFlags(flags);
+                openTimeEntry.setFlags(flags);
             }
 
-            turnoAbierto.setEstadoFichaje(EstadoFichaje.CLOSED);
-            fichajeGuardado = timeEntryRepository.save(turnoAbierto);
+            openTimeEntry.setEstadoFichaje(EstadoFichaje.CLOSED);
+            savedTimeEntry = timeEntryRepository.save(openTimeEntry);
 
         } else {
-            TimeEntry nuevoFichaje = new TimeEntry();
-            nuevoFichaje.setEmployee(profile);
-            nuevoFichaje.setCompany(company);
-            nuevoFichaje.setCreatedBy(user);
+            TimeEntry newTimeEntry = new TimeEntry();
+            newTimeEntry.setEmployee(profile);
+            newTimeEntry.setCompany(company);
+            newTimeEntry.setCreatedBy(user);
 
-            nuevoFichaje.setWorkDate(LocalDate.now());
-            nuevoFichaje.setStartAt(OffsetDateTime.now());
-            nuevoFichaje.setCreatedAt(OffsetDateTime.now());
+            newTimeEntry.setWorkDate(LocalDate.now());
+            newTimeEntry.setStartAt(OffsetDateTime.now());
+            newTimeEntry.setCreatedAt(OffsetDateTime.now());
 
-            nuevoFichaje.setStartLat(requestDto.getLat());
-            nuevoFichaje.setStartLng(requestDto.getLng());
-            nuevoFichaje.setStartAccuracyM(requestDto.getAccuracyMeters());
-            nuevoFichaje.setStartIp(ip);
-            nuevoFichaje.setStartUserAgent(userAgent);
-            nuevoFichaje.setStartGeoip(ipResult.geoIpMap());
+            newTimeEntry.setStartLat(requestDto.getLat());
+            newTimeEntry.setStartLng(requestDto.getLng());
+            newTimeEntry.setStartAccuracyM(requestDto.getAccuracyMeters());
+            newTimeEntry.setStartIp(realIp);
+            newTimeEntry.setStartUserAgent(userAgent);
+            newTimeEntry.setStartGeoip(ipResult.geoIpMap());
 
-            nuevoFichaje.setFlags(flags);
-            nuevoFichaje.setEstadoFichaje(EstadoFichaje.OPEN);
+            newTimeEntry.setFlags(flags);
+            newTimeEntry.setEstadoFichaje(EstadoFichaje.OPEN);
 
-            fichajeGuardado = timeEntryRepository.save(nuevoFichaje);
+            savedTimeEntry = timeEntryRepository.save(newTimeEntry);
         }
 
         TimeEntryResponseDto response = new TimeEntryResponseDto();
-        response.setId(fichajeGuardado.getId());
-        response.setStartAt(fichajeGuardado.getStartAt());
-        response.setEndAt(fichajeGuardado.getEndAt());
-        response.setStatus(fichajeGuardado.getEstadoFichaje().name());
+        response.setId(savedTimeEntry.getId());
+        response.setStartAt(savedTimeEntry.getStartAt());
+        response.setEndAt(savedTimeEntry.getEndAt());
+        response.setStatus(savedTimeEntry.getEstadoFichaje().name());
 
         return response;
     }
 
     @Transactional(readOnly = true)
-    public ResumenDiarioResponseDto getResumenDiario() {
+    public DailySummaryResponseDto getDailySummary() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
 
-        ResumenDiarioResponseDto dto = calcularDatosDelDia(info.getUser(), info.getProfile(), LocalDate.now());
+        DailySummaryResponseDto dailySummary = calculateDailyData(info.getUser(), info.getProfile(), LocalDate.now());
 
-        List<TimeEntry> ultimosTurnos = timeEntryRepository.findTop5ByEmployee_UserIdOrderByStartAtDesc(info.getUser().getId());
-        List<UltimosFichajesResponseDto> ultimos5Fichajes = mapTimeEntriesToEventos(ultimosTurnos).stream()
+        List<TimeEntry> latestTimeEntriesList = timeEntryRepository.findTop5ByEmployee_UserIdOrderByStartAtDesc(info.getUser().getId());
+        List<UltimosFichajesResponseDto> latest5TimeEntries = mapTimeEntriesToEvents(latestTimeEntriesList).stream()
                 .sorted((e1, e2) -> e2.getFecha().compareTo(e1.getFecha()))
                 .limit(5)
                 .toList();
-        dto.setUltimosFichajes(ultimos5Fichajes);
+        dailySummary.setUltimosFichajes(latest5TimeEntries);
 
-        return dto;
+        return dailySummary;
     }
 
     @Transactional(readOnly = true)
-    public HistorialResponseDto getHistorial(LocalDate fecha) {
+    public HistoryResponseDto getHistoryByDate(LocalDate date) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
-        ResumenDiarioResponseDto resumenDiario = calcularDatosDelDia(info.getUser(), info.getProfile(), fecha);
+        DailySummaryResponseDto dailySummary = calculateDailyData(info.getUser(), info.getProfile(), date);
 
-        List<TimeEntry> fichajesDia = timeEntryRepository.
-                findTimeEntriesByEmployee_UserIdAndWorkDate(info.getUser().getId(), fecha);
+        List<TimeEntry> dailyTimeEntries = timeEntryRepository.
+                findTimeEntriesByEmployee_UserIdAndWorkDate(info.getUser().getId(), date);
 
-        LocalDate fechaInicio = fecha.with(DayOfWeek.MONDAY);
-        LocalDate fechaFin = fecha.with(DayOfWeek.SUNDAY);
+        LocalDate startDate = date.with(DayOfWeek.MONDAY);
+        LocalDate endDate = date.with(DayOfWeek.SUNDAY);
 
-        Long minutosTrabajadosSemanales = timeEntryRepository.
-                getWorkedMinutesByEmployeeAndDateRange(info.getProfile().getUserId(), fechaInicio, fechaFin);
+        Long weeklyWorkedMinutes = timeEntryRepository.
+                getWorkedMinutesByEmployeeAndDateRange(info.getProfile().getUserId(), startDate, endDate);
 
-        Long minutosSemanales = info.getProfile().getWeeklyHours() != null
+        Long weeklyTargetMinutes = info.getProfile().getWeeklyHours() != null
                 ? info.getProfile().getWeeklyHours().multiply(BigDecimal.valueOf(60)).longValue()
                 : 0L;
 
-        List<UltimosFichajesResponseDto> registrosDia = mapTimeEntriesToEventos(fichajesDia).stream()
+        List<UltimosFichajesResponseDto> dailyRecords = mapTimeEntriesToEvents(dailyTimeEntries).stream()
                 .sorted((e1, e2) -> e2.getFecha().compareTo(e1.getFecha()))
                 .toList();
-        HistorialResponseDto historialResponseDto = new HistorialResponseDto();
-        historialResponseDto.setMinutosObjetivoDia(resumenDiario.getMinutosObjetivo());
-        historialResponseDto.setMinutosTrabajadosDia(resumenDiario.getMinutosAcumulados());
-        historialResponseDto.setRegistrosDia(registrosDia);
-        historialResponseDto.setMinutosObjetivoSemana(minutosSemanales);
-        historialResponseDto.setMinutosTrabajadosSemana(minutosTrabajadosSemanales);
-        return historialResponseDto;
+        HistoryResponseDto historyResponseDto = new HistoryResponseDto();
+        historyResponseDto.setMinutosObjetivoDia(dailySummary.getMinutosObjetivo());
+        historyResponseDto.setMinutosTrabajadosDia(dailySummary.getMinutosAcumulados());
+        historyResponseDto.setRegistrosDia(dailyRecords);
+        historyResponseDto.setMinutosObjetivoSemana(weeklyTargetMinutes);
+        historyResponseDto.setMinutosTrabajadosSemana(weeklyWorkedMinutes);
+        return historyResponseDto;
     }
 
 
-    private List<UltimosFichajesResponseDto> mapTimeEntriesToEventos(List<TimeEntry> turnos) {
-        List<UltimosFichajesResponseDto> eventos = new ArrayList<>();
-        for (TimeEntry turno : turnos) {
-            eventos.add(new UltimosFichajesResponseDto(
-                    turno.getId(), "Entrada", turno.getStartAt()));
-            if (turno.getEndAt() != null) {
-                eventos.add(new UltimosFichajesResponseDto(
-                        turno.getId(), "Salida", turno.getEndAt()));
+    private List<UltimosFichajesResponseDto> mapTimeEntriesToEvents(List<TimeEntry> timeEntries) {
+        List<UltimosFichajesResponseDto> events = new ArrayList<>();
+        for (TimeEntry timeEntry : timeEntries) {
+            events.add(new UltimosFichajesResponseDto(
+                    timeEntry.getId(), "Entrada", timeEntry.getStartAt()));
+            if (timeEntry.getEndAt() != null) {
+                events.add(new UltimosFichajesResponseDto(
+                        timeEntry.getId(), "Salida", timeEntry.getEndAt()));
             }
         }
-        return eventos;
+        return events;
     }
 
-    private ResumenDiarioResponseDto calcularDatosDelDia(User user, Profile profile, LocalDate fecha) {
-        DayOfWeek diaSemana = fecha.getDayOfWeek();
+    private DailySummaryResponseDto calculateDailyData(User user, Profile profile, LocalDate date) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
 
-        Optional<TimeEntry> fichajeActual = timeEntryRepository.
+        Optional<TimeEntry> currentTimeEntryOpt = timeEntryRepository.
                 findByEmployee_UserIdAndEndAtIsNullAndEstadoFichaje(user.getId(), EstadoFichaje.OPEN);
 
-        Long minutosAcumulados = timeEntryRepository.
-                getWorkedMinutesByEmployeeAndDate(user.getId(), fecha);
+        Long accumulatedMinutes = timeEntryRepository.
+                getWorkedMinutesByEmployeeAndDate(user.getId(), date);
 
-        Optional<WorkSchedule> horario = workScheduleRepository
-                .findByEmployee_UserIdAndDayOfWeek(profile.getUserId(), diaSemana);
+        Optional<WorkSchedule> scheduleOpt = workScheduleRepository
+                .findByEmployee_UserIdAndDayOfWeek(profile.getUserId(), dayOfWeek);
 
-        Duration objetivoMin;
-        if (horario.isPresent()) {
-            LocalTime start = horario.get().getStartTime();
-            LocalTime end = horario.get().getEndTime();
+        Duration targetDuration;
+        if (scheduleOpt.isPresent()) {
+            LocalTime start = scheduleOpt.get().getStartTime();
+            LocalTime end = scheduleOpt.get().getEndTime();
 
-            objetivoMin = Duration.between(start, end);
+            targetDuration = Duration.between(start, end);
 
-            if (objetivoMin.isNegative()) {
-                objetivoMin = objetivoMin.plusDays(1);
+            if (targetDuration.isNegative()) {
+                targetDuration = targetDuration.plusDays(1);
             }
         } else {
-            objetivoMin = Duration.ofMinutes(0);
+            targetDuration = Duration.ofMinutes(0);
         }
 
-        ResumenDiarioResponseDto dtoInfoDia = new ResumenDiarioResponseDto();
-        dtoInfoDia.setHoraEntrada(fichajeActual.map(TimeEntry::getStartAt).orElse(null));
-        dtoInfoDia.setMinutosAcumulados(minutosAcumulados);
-        dtoInfoDia.setMinutosObjetivo(objetivoMin.toMinutes());
+        DailySummaryResponseDto dailySummary = new DailySummaryResponseDto();
+        dailySummary.setHoraEntrada(currentTimeEntryOpt.map(TimeEntry::getStartAt).orElse(null));
+        dailySummary.setMinutosAcumulados(accumulatedMinutes);
+        dailySummary.setMinutosObjetivo(targetDuration.toMinutes());
 
-        return dtoInfoDia;
+        return dailySummary;
     }
 
-    public EstadisticasResponseDto getEstadisticas(LocalDate fechaInicio, LocalDate fechaFin) {
+    public StatisticsResponseDto getStatistics(LocalDate startDate, LocalDate endDate) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
-        EstadisticasResponseDto responseDto = new EstadisticasResponseDto();
+        StatisticsResponseDto responseDto = new StatisticsResponseDto();
 
-        List<WorkSchedule> horariosList = workScheduleRepository
+        List<WorkSchedule> schedulesList = workScheduleRepository
                 .findByEmployee_UserId(info.getProfile().getUserId());
 
-        Map<DayOfWeek, Long> objetivoPorDia = new EnumMap<>(DayOfWeek.class);
-        for (WorkSchedule h : horariosList) {
-            Duration duracion = Duration.between(h.getStartTime(), h.getEndTime());
-            if (duracion.isNegative()) {
-                duracion = duracion.plusDays(1);
+        Map<DayOfWeek, Long> dailyTargetMinutesMap = new EnumMap<>(DayOfWeek.class);
+        for (WorkSchedule schedule : schedulesList) {
+            Duration duration = Duration.between(schedule.getStartTime(), schedule.getEndTime());
+            if (duration.isNegative()) {
+                duration = duration.plusDays(1);
             }
-            objetivoPorDia.put(DayOfWeek.valueOf(
-                    h.getDayOfWeek().toString()), duracion.toMinutes());
+            dailyTargetMinutesMap.put(DayOfWeek.valueOf(
+                    schedule.getDayOfWeek().toString()), duration.toMinutes());
         }
 
-        List<EstadisticaDiariaProjection> registrosAgrupados = timeEntryRepository
-                .getEstadisticasDiariasAgrupadas(info.getProfile().getUserId(), fechaInicio, fechaFin);
+        List<EstadisticaDiariaProjection> groupedRecords = timeEntryRepository
+                .getEstadisticasDiariasAgrupadas(info.getProfile().getUserId(), startDate, endDate);
 
-        Map<LocalDate, Long> mapaTrabajadoPorDia = registrosAgrupados.stream()
+        Map<LocalDate, Long> workedMinutesByDateMap = groupedRecords.stream()
                 .collect(Collectors.toMap(
                         EstadisticaDiariaProjection::getFecha,
                         EstadisticaDiariaProjection::getMinutosTrabajados
                 ));
 
-        List<WorkerIncidenceResponseDto> incidencias = incidenceService
-                .getIncidenciaPorFechas(fechaInicio, fechaFin);
+        List<WorkerIncidenceResponseDto> incidences = incidenceService
+                .getIncidenciaPorFechas(startDate, endDate);
 
-        long totalTrabajados = 0L;
-        long balanceTotal = 0L;
-        int jornadasIncompletas = 0;
+        long totalWorkedMinutes = 0L;
+        long totalBalanceMinutes = 0L;
+        int incompleteDays = 0;
 
-        LocalDate diaActual = fechaInicio;
-        List<EstadisticaDiariaDto> resumenesDiarios = new ArrayList<>();
+        LocalDate currentDate = startDate;
+        List<EstadisticaDiariaDto> dailySummaries = new ArrayList<>();
 
-        while (!diaActual.isAfter(fechaFin)) {
-            long minutosPrevistos = objetivoPorDia.getOrDefault(
-                    diaActual.getDayOfWeek(), 0L);
-            long minutosTrabajados = mapaTrabajadoPorDia.getOrDefault(
-                    diaActual, 0L);
+        while (!currentDate.isAfter(endDate)) {
+            long plannedMinutes = dailyTargetMinutesMap.getOrDefault(
+                    currentDate.getDayOfWeek(), 0L);
+            long workedMinutes = workedMinutesByDateMap.getOrDefault(
+                    currentDate, 0L);
 
-            EstadisticaDiariaDto diariaDto = new EstadisticaDiariaDto();
-            diariaDto.setFecha(diaActual);
-            diariaDto.setMinutosPrevistos(minutosPrevistos);
-            diariaDto.setMinutosTrabajados(minutosTrabajados);
+            EstadisticaDiariaDto dailyStatisticDto = new EstadisticaDiariaDto();
+            dailyStatisticDto.setFecha(currentDate);
+            dailyStatisticDto.setMinutosPrevistos(plannedMinutes);
+            dailyStatisticDto.setMinutosTrabajados(workedMinutes);
 
-            totalTrabajados += minutosTrabajados;
-            balanceTotal += (minutosTrabajados - minutosPrevistos);
+            totalWorkedMinutes += workedMinutes;
+            totalBalanceMinutes += (workedMinutes - plannedMinutes);
 
-            if (minutosPrevistos > 0 && minutosTrabajados < minutosPrevistos) {
-                jornadasIncompletas++;
+            if (plannedMinutes > 0 && workedMinutes < plannedMinutes) {
+                incompleteDays++;
             }
 
-            resumenesDiarios.add(diariaDto);
+            dailySummaries.add(dailyStatisticDto);
 
-            diaActual = diaActual.plusDays(1);
+            currentDate = currentDate.plusDays(1);
         }
 
-        int totalIncidencias = incidentRepository.countIncidentsByUsuarioYFechas(
+        int totalIncidences = incidentRepository.countIncidentsByUsuarioYFechas(
                 info.getUser().getId(),
-                fechaInicio,
-                fechaFin
+                startDate,
+                endDate
         );
 
-        responseDto.setMinutosTrabajadosTotal(totalTrabajados);
-        responseDto.setBalanceMinutos(balanceTotal);
-        responseDto.setJornadasIncompletas(jornadasIncompletas);
-        responseDto.setIncidencias(totalIncidencias);
-        responseDto.setResumenDiario(resumenesDiarios);
-        responseDto.setIncidenciasList(incidencias);
+        responseDto.setMinutosTrabajadosTotal(totalWorkedMinutes);
+        responseDto.setBalanceMinutos(totalBalanceMinutes);
+        responseDto.setJornadasIncompletas(incompleteDays);
+        responseDto.setIncidencias(totalIncidences);
+        responseDto.setResumenDiario(dailySummaries);
+        responseDto.setIncidenciasList(incidences);
 
         return responseDto;
     }
 
     @Transactional(readOnly = true)
-    public byte[] exportarHistorialPdf(LocalDate fechaInicio, LocalDate fechaFin) {
+    public byte[] exportHistoryPdf(LocalDate startDate, LocalDate endDate) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
 
-        List<TimeEntry> fichajes = timeEntryRepository
+        List<TimeEntry> timeEntries = timeEntryRepository
                 .findTimeEntriesByEmployee_UserIdAndWorkDateBetweenOrderByWorkDateDesc(
                         info.getProfile().getUserId(),
-                        fechaInicio,
-                        fechaFin
+                        startDate,
+                        endDate
                 );
 
         return employeePdfGeneratorService.generarPDFFichajes(
                 info.getProfile(),
                 info.getUser(),
-                fichajes,
-                fechaInicio,
-                fechaFin
+                timeEntries,
+                startDate,
+                endDate
         );
     }
 
@@ -323,43 +323,43 @@ public class TimeEntryService {
                 .map(timeEntry -> {
                     Profile employee = timeEntry.getEmployee();
 
-                    String puesto = null;
+                    String jobPosition = null;
                     if (employee.getPosition() != null) {
-                        puesto = employee.getPosition().getTitle();
+                        jobPosition = employee.getPosition().getTitle();
                     }
 
-                    Long puntualidad = null;
+                    Long punctuality = null;
                     OffsetDateTime startAt = timeEntry.getStartAt();
 
                     if (startAt != null) {
-                        ZonedDateTime entradaLocal = startAt.atZoneSameInstant(zone);
-                        DayOfWeek dayLocal = entradaLocal.getDayOfWeek();
+                        ZonedDateTime localEntryTime = startAt.atZoneSameInstant(zone);
+                        DayOfWeek localDay = localEntryTime.getDayOfWeek();
 
-                        Optional<WorkSchedule> horarioOpt = workScheduleRepository
-                                .findByEmployee_UserIdAndDayOfWeek(employee.getUserId(), dayLocal);
+                        Optional<WorkSchedule> scheduleOpt = workScheduleRepository
+                                .findByEmployee_UserIdAndDayOfWeek(employee.getUserId(), localDay);
 
-                        if (horarioOpt.isPresent()) {
-                            LocalTime horaHorario = horarioOpt.get().getStartTime();
-                            LocalTime horaEntradaLocal = entradaLocal.toLocalTime();
+                        if (scheduleOpt.isPresent()) {
+                            LocalTime scheduleTime = scheduleOpt.get().getStartTime();
+                            LocalTime localEntryTimeOnly = localEntryTime.toLocalTime();
 
-                            puntualidad = Duration.between(horaHorario, horaEntradaLocal).toMinutes();
+                            punctuality = Duration.between(scheduleTime, localEntryTimeOnly).toMinutes();
                         }
                     }
 
                     return new ActiveWorkerDto(
                             employee.getUserId(),
                             employee.getFullName(),
-                            puesto,
+                            jobPosition,
                             employee.getAvatarUrl(),
                             timeEntry.getStartAt(),
-                            puntualidad
+                            punctuality
                     );
                 })
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public Long getFichajesCountToday() {
+    public Long getTimeEntriesCountToday() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
@@ -368,82 +368,82 @@ public class TimeEntryService {
     }
 
     @Transactional(readOnly = true)
-    public HorasTrabajadasHoyResponseDto getHorasTotalesHoy() {
+    public TotalHoursTodayResponseDto getTotalHoursToday() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
-        Long minutosTotales = timeEntryRepository
+        Long totalMinutes = timeEntryRepository
                 .getWorkedMinutesByCompanyAndDate(company.getId(), LocalDate.now());
 
-        if (minutosTotales == null) {
-            minutosTotales = 0L;
+        if (totalMinutes == null) {
+            totalMinutes = 0L;
         }
 
-        return new HorasTrabajadasHoyResponseDto(minutosTotales);
+        return new TotalHoursTodayResponseDto(totalMinutes);
     }
 
     @Transactional(readOnly = true)
-    public List<DailyFichajeCountDto> getWeeklyChartData(LocalDate startDate, LocalDate endDate) {
+    public List<DailyTimeEntryCountDto> getWeeklyChartData(LocalDate startDate, LocalDate endDate) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
-        List<DailyFichajeCountProjection> fichajesAgrupados = timeEntryRepository
+        List<DailyFichajeCountProjection> groupedTimeEntries = timeEntryRepository
                 .getFichajesCountByCompanyAndDateRange(
                         company.getId(), startDate, endDate);
 
-        Map<LocalDate, Long> conteoPorFecha = new HashMap<>();
-        for (DailyFichajeCountProjection proy : fichajesAgrupados) {
-            conteoPorFecha.put(proy.getFecha(), proy.getNumFichajes());
+        Map<LocalDate, Long> countByDate = new HashMap<>();
+        for (DailyFichajeCountProjection projection : groupedTimeEntries) {
+            countByDate.put(projection.getFecha(), projection.getNumFichajes());
         }
 
-        List<DailyFichajeCountDto> resultado = new ArrayList<>();
-        LocalDate fecha = startDate;
-        while (!fecha.isAfter(endDate)) {
-            Long numFichajes = conteoPorFecha.getOrDefault(fecha, 0L);
-            resultado.add(new DailyFichajeCountDto(fecha.toString(), numFichajes));
-            fecha = fecha.plusDays(1);
+        List<DailyTimeEntryCountDto> result = new ArrayList<>();
+        LocalDate date = startDate;
+        while (!date.isAfter(endDate)) {
+            Long numTimeEntries = countByDate.getOrDefault(date, 0L);
+            result.add(new DailyTimeEntryCountDto(date.toString(), numTimeEntries));
+            date = date.plusDays(1);
         }
-        return resultado;
+        return result;
     }
 
     @Transactional(readOnly = true)
-    public LocalDate primerFichaje() {
+    public LocalDate getFirstTimeEntryDate() {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
-        LocalDate primeraFecha = timeEntryRepository.findFirstWorkDateByEmployee
+        LocalDate firstDate = timeEntryRepository.findFirstWorkDateByEmployee
                 (info.getProfile().getUserId());
-        return primeraFecha != null ? primeraFecha : LocalDate.now();
+        return firstDate != null ? firstDate : LocalDate.now();
     }
 
     @Transactional
-    public void editarFichaje(UUID id, EditTimeEntryRequestDto dto) {
+    public void updateTimeEntry(UUID id, EditTimeEntryRequestDto dto) {
         if (dto.getJustificacion() == null || dto.getJustificacion().trim().length() < 10) {
             throw new IllegalArgumentException("La justificación es obligatoria y debe tener al menos 10 caracteres.");
         }
 
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
-        TimeEntry fichaje = comprobarFichaje(id, company);
+        TimeEntry timeEntry = checkTimeEntry(id, company);
 
         try {
-            String oldDataJson = objectMapper.writeValueAsString(fichaje);
+            String oldDataJson = objectMapper.writeValueAsString(timeEntry);
 
-            fichaje.setStartAt(dto.getEntrada());
-            fichaje.setWorkDate(dto.getEntrada().toLocalDate());
+            timeEntry.setStartAt(dto.getEntrada());
+            timeEntry.setWorkDate(dto.getEntrada().toLocalDate());
 
             if (dto.getSalida() != null) {
-                fichaje.setEndAt(dto.getSalida());
-                fichaje.setEstadoFichaje(EstadoFichaje.CLOSED);
+                timeEntry.setEndAt(dto.getSalida());
+                timeEntry.setEstadoFichaje(EstadoFichaje.CLOSED);
             } else {
-                fichaje.setEndAt(null);
-                fichaje.setEstadoFichaje(EstadoFichaje.OPEN);
+                timeEntry.setEndAt(null);
+                timeEntry.setEstadoFichaje(EstadoFichaje.OPEN);
             }
 
-            fichaje.setModificationReason(dto.getJustificacion());
-            fichaje.setUpdatedAt(OffsetDateTime.now());
+            timeEntry.setModificationReason(dto.getJustificacion());
+            timeEntry.setUpdatedAt(OffsetDateTime.now());
 
-            String newDataJson = objectMapper.writeValueAsString(fichaje);
+            String newDataJson = objectMapper.writeValueAsString(timeEntry);
 
-            auditTimeEntryService.logTimeEntryChange("ADMIN_ADJUST", dto.getJustificacion(), oldDataJson, newDataJson, fichaje.getId());
+            auditTimeEntryService.logTimeEntryChange("ADMIN_ADJUST", dto.getJustificacion(), oldDataJson, newDataJson, timeEntry.getId());
 
         } catch (JacksonException e) {
             throw new RuntimeException("Error al generar los datos de auditoría", e);
@@ -451,38 +451,38 @@ public class TimeEntryService {
     }
 
     @Transactional
-    public void anularFichaje(UUID id, AnularTimeEntryRequestDto dto) {
+    public void voidTimeEntry(UUID id, VoidTimeEntryRequestDto dto) {
         if (dto.getJustificacion() == null || dto.getJustificacion().trim().length() < 10) {
             throw new IllegalArgumentException("El motivo de anulación es obligatorio y debe tener al menos 10 caracteres.");
         }
 
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
-        TimeEntry fichaje = comprobarFichaje(id, company);
+        TimeEntry timeEntry = checkTimeEntry(id, company);
 
         try {
-            String oldDataJson = objectMapper.writeValueAsString(fichaje);
+            String oldDataJson = objectMapper.writeValueAsString(timeEntry);
 
-            fichaje.setDeletedAt(OffsetDateTime.now());
-            fichaje.setDeletedBy(info.getUser());
-            fichaje.setDeleteReason(dto.getJustificacion());
-            fichaje.setUpdatedAt(OffsetDateTime.now());
+            timeEntry.setDeletedAt(OffsetDateTime.now());
+            timeEntry.setDeletedBy(info.getUser());
+            timeEntry.setDeleteReason(dto.getJustificacion());
+            timeEntry.setUpdatedAt(OffsetDateTime.now());
 
-            String newDataJson = objectMapper.writeValueAsString(fichaje);
+            String newDataJson = objectMapper.writeValueAsString(timeEntry);
 
-            auditTimeEntryService.logTimeEntryChange("SOFT_DELETE", dto.getJustificacion(), oldDataJson, newDataJson, fichaje.getId());
+            auditTimeEntryService.logTimeEntryChange("SOFT_DELETE", dto.getJustificacion(), oldDataJson, newDataJson, timeEntry.getId());
         } catch (JacksonException e) {
             throw new RuntimeException("Error al generar los datos de auditoría", e);
         }
     }
 
     @Transactional(readOnly = true)
-    public Page<FichajeTablaResponseDto> getFichajesPaginadosPorEmpleado
+    public Page<TimeEntryTableResponseDto> getTimeEntriesByEmployeePaginated
             (UUID employeeId, Pageable pageable) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
 
-        User trabajador = userService.getUserById(employeeId);
-        if (!trabajador.getCompany().getId().equals(info.getCompany().getId())) {
+        User employee = userService.getUserById(employeeId);
+        if (!employee.getCompany().getId().equals(info.getCompany().getId())) {
             throw new IllegalStateException("El trabajador no pertenece a tu empresa");
         }
 
@@ -490,14 +490,14 @@ public class TimeEntryService {
                 .findByEmployee_UserIdAndDeletedAtIsNullOrderByWorkDateDesc(employeeId, pageable);
 
         return page.map(f -> {
-            Long horasTrabajadas = null;
+            Long workedHours = null;
 
             if (f.getStartAt() != null && f.getEndAt() != null) {
-                Duration duracion = Duration.between(f.getStartAt(), f.getEndAt());
-                horasTrabajadas = duracion.toMinutes();
+                Duration duration = Duration.between(f.getStartAt(), f.getEndAt());
+                workedHours = duration.toMinutes();
             }
 
-            return new FichajeTablaResponseDto(
+            return new TimeEntryTableResponseDto(
                     f.getId(),
                     f.getWorkDate(),
                     f.getStartAt(),
@@ -506,77 +506,77 @@ public class TimeEntryService {
                     f.getStartLng(),
                     f.getEndLat(),
                     f.getEndLng(),
-                    horasTrabajadas
+                    workedHours
             );
         });
     }
 
     @Transactional(readOnly = true)
-    public List<AdminFichajeDiaResponseDto> getFichajesPorDiaEmpresa(LocalDate fecha) {
+    public List<AdminTimeEntryByDateResponseDto> getTimeEntriesByDateForCompany(LocalDate date) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
-        List<TimeEntry> fichajes = timeEntryRepository
-                .findByCompany_IdAndWorkDateOrderByStartAtDesc(company.getId(), fecha);
+        List<TimeEntry> timeEntries = timeEntryRepository
+                .findByCompany_IdAndWorkDateOrderByStartAtDesc(company.getId(), date);
 
-        return fichajes.stream().map(f -> {
-            Long minutosTrabajados = null;
-            if (f.getStartAt() != null && f.getEndAt() != null) {
-                minutosTrabajados = Duration.between(f.getStartAt(), f.getEndAt()).toMinutes();
+        return timeEntries.stream().map(timeEntry -> {
+            Long workedMinutes = null;
+            if (timeEntry.getStartAt() != null && timeEntry.getEndAt() != null) {
+                workedMinutes = Duration.between(timeEntry.getStartAt(), timeEntry.getEndAt()).toMinutes();
             }
 
-            Profile employee = f.getEmployee();
-            String puesto = employee.getPosition() != null ? employee.getPosition().getTitle() : null;
+            Profile employeeProfile = timeEntry.getEmployee();
+            String jobPosition = employeeProfile.getPosition() != null ? employeeProfile.getPosition().getTitle() : null;
 
-            return new AdminFichajeDiaResponseDto(
-                    f.getId(),
-                    employee.getUserId(),
-                    employee.getFullName(),
-                    puesto,
-                    employee.getAvatarUrl(),
-                    f.getWorkDate(),
-                    f.getStartAt(),
-                    f.getEndAt(),
-                    minutosTrabajados
+            return new AdminTimeEntryByDateResponseDto(
+                    timeEntry.getId(),
+                    employeeProfile.getUserId(),
+                    employeeProfile.getFullName(),
+                    jobPosition,
+                    employeeProfile.getAvatarUrl(),
+                    timeEntry.getWorkDate(),
+                    timeEntry.getStartAt(),
+                    timeEntry.getEndAt(),
+                    workedMinutes
             );
         }).toList();
     }
 
     @Transactional(readOnly = true)
-    public byte[] exportarInformeEmpresaPdf(LocalDate fechaInicio, LocalDate fechaFin) {
+    public byte[] exportCompanyReportPdf(LocalDate startDate, LocalDate endDate) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
-        List<TimeEntry> fichajes = timeEntryRepository
-                .findByCompany_IdAndWorkDateBetweenOrderByWorkDateDesc(company.getId(), fechaInicio, fechaFin);
+        List<TimeEntry> timeEntries = timeEntryRepository
+                .findByCompany_IdAndWorkDateBetweenOrderByWorkDateDesc(company.getId(), startDate, endDate);
 
-        List<AuditRecordDto> auditoria = List.of();
+        List<AuditRecordDto> auditRecords = List.of();
 
-        return adminPdfGeneratorService.generarPDFFichajesEmpresa(company, fichajes, fechaInicio, fechaFin, auditoria);
+        return adminPdfGeneratorService.generarPDFFichajesEmpresa(company, timeEntries, startDate, endDate, auditRecords);
     }
 
     @Transactional(readOnly = true)
-    public byte[] exportarInformeEmpresaExcel(LocalDate fechaInicio, LocalDate fechaFin) {
+    public byte[] exportCompanyReportExcel(LocalDate startDate, LocalDate endDate) {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
-        List<TimeEntry> fichajes = timeEntryRepository
-                .findByCompany_IdAndWorkDateBetweenOrderByWorkDateDesc(company.getId(), fechaInicio, fechaFin);
+        List<TimeEntry> timeEntries = timeEntryRepository
+                .findByCompany_IdAndWorkDateBetweenOrderByWorkDateDesc(company.getId(), startDate, endDate);
 
-        List<AuditRecordDto> auditoria = List.of();
+        List<AuditRecordDto> auditRecords = List.of();
 
-        return excelGeneratorService.generarExcelFichajesEmpresa(fichajes, auditoria, fechaInicio, fechaFin);
+        return excelGeneratorService.generarExcelFichajesEmpresa(timeEntries, auditRecords, startDate, endDate);
     }
 
-    private TimeEntry comprobarFichaje(UUID id, Company company) {
-        Optional<TimeEntry> fichaje = timeEntryRepository.findById(id);
-        if (fichaje.isEmpty()) {
+    private TimeEntry checkTimeEntry(UUID id, Company company) {
+        Optional<TimeEntry> timeEntryOpt = timeEntryRepository.findById(id);
+        if (timeEntryOpt.isEmpty()) {
             throw new NotFoundException("No se encontró el fichajeOp");
         }
-        if (!fichaje.get().getCompany().getId().equals(company.getId())) {
+        if (!timeEntryOpt.get().getCompany().getId().equals(company.getId())) {
             throw new IllegalStateException("El fichajeOp no pertenece a tu empresa");
         }
-        return fichaje.get();
+        return timeEntryOpt.get();
     }
 
 }

@@ -16,10 +16,10 @@ export class InspectorHomeService {
     return this.http.get<InspectorHomeResponseDto>(`${this.BASE_URL}/home`);
   }
 
-  exportarInformeEmpresaPdf(fechaInicio: Date | string, fechaFin: Date | string): Observable<Blob> {
+  exportReportPdf(startDate: Date | string, endDate: Date | string): Observable<Blob> {
     const params = new HttpParams()
-      .set('fechaInicio', this.toIsoDate(fechaInicio))
-      .set('fechaFin', this.toIsoDate(fechaFin));
+      .set('startDate', this.toIsoDate(startDate))
+      .set('endDate', this.toIsoDate(endDate));
 
     return this.http.get(`${this.BASE_URL_EXPORTAR}time-entries/admin/export/pdf`, {
       params,
@@ -31,9 +31,13 @@ export class InspectorHomeService {
     fechaInicio: Date | string,
     fechaFin: Date | string,
   ): Observable<Blob> {
+    return this.exportReportExcel(fechaInicio, fechaFin);
+  }
+
+  exportReportExcel(startDate: Date | string, endDate: Date | string): Observable<Blob> {
     const params = new HttpParams()
-      .set('fechaInicio', this.toIsoDate(fechaInicio))
-      .set('fechaFin', this.toIsoDate(fechaFin));
+      .set('startDate', this.toIsoDate(startDate))
+      .set('endDate', this.toIsoDate(endDate));
 
     return this.http.get(`${this.BASE_URL_EXPORTAR}time-entries/admin/export/excel`, {
       params,

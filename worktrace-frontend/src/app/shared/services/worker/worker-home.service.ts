@@ -4,7 +4,7 @@ import { tap, Observable } from 'rxjs';
 import { API_CONFIG } from '../../../core/api/api.config';
 
 import {
-  ResumenResponse,
+  DailySummaryResponse,
   TimeEntryRequest,
   TimeEntryResponse,
 } from '../../models/time-entry.model';
@@ -14,20 +14,20 @@ import {
 export class WorkerHomeService {
   private readonly BASE_URL = API_CONFIG.baseUrl;
   private readonly http = inject(HttpClient);
-  readonly resumenSignal = signal<ResumenResponse | null>(null);
+  readonly resumenSignal = signal<DailySummaryResponse | null>(null);
 
-  obtenerResumenDiario(): Observable<ResumenResponse> {
-    return this.http.get<ResumenResponse>(`${this.BASE_URL}time-entries/resumenDiario`).pipe(
+  getDailySummary(): Observable<DailySummaryResponse> {
+    return this.http.get<DailySummaryResponse>(`${this.BASE_URL}time-entries/daily-summary`).pipe(
       tap((resumen) => {
         this.resumenSignal.set(resumen);
       }),
     );
   }
 
-  fichar(request: TimeEntryRequest): Observable<TimeEntryResponse> {
-    return this.http.post<TimeEntryResponse>(`${this.BASE_URL}time-entries/fichar`, request).pipe(
+  clockIn(request: TimeEntryRequest): Observable<TimeEntryResponse> {
+    return this.http.post<TimeEntryResponse>(`${this.BASE_URL}time-entries/clock-in`, request).pipe(
       tap(() => {
-        this.obtenerResumenDiario().subscribe();
+        this.getDailySummary().subscribe();
       }),
     );
   }

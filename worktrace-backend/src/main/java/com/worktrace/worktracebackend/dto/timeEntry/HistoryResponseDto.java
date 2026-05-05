@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class HistorialResponseDto {
+public class HistoryResponseDto {
     private Long minutosTrabajadosSemana;
     private Long minutosObjetivoSemana;
     private List<UltimosFichajesResponseDto> registrosDia;

@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class HorasTrabajadasHoyResponseDto {
-    private Long minutosTotales;
+public class DailyTimeEntryCountDto {
+    private String fecha;
+    private Long numFichajes;
 }
-
-

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class EstadisticasResponseDto {
+public class StatisticsResponseDto {
     private long minutosTrabajadosTotal;
     private long balanceMinutos;
     private int jornadasIncompletas;

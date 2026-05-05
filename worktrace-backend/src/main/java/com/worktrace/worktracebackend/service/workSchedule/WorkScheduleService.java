@@ -119,8 +119,12 @@ public class WorkScheduleService {
             workScheduleRepository.saveAllAndFlush(schedulesToCreate);
         }
 
-        if (!existingSchedules.isEmpty()) {
-            workScheduleRepository.saveAllAndFlush(existingSchedules);
+        List<WorkSchedule> schedulesToUpdate = existingSchedules.stream()
+                .filter(es -> requestedByDay.containsKey(es.getDayOfWeek()))
+                .toList();
+
+        if (!schedulesToUpdate.isEmpty()) {
+            workScheduleRepository.saveAllAndFlush(schedulesToUpdate);
         }
     }
 

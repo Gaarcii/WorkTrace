@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnularTimeEntryRequestDto {
+public class VoidTimeEntryRequestDto {
     @NotBlank(message = "La justificación es obligatoria")
     @Size(min = 10, message = "La justificación debe tener al menos 1o caracteres")
     private String justificacion;

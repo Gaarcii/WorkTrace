@@ -14,8 +14,8 @@ import { AdminExportLegalDialogComponent } from './export-legal-dialog/admin-exp
 import { AdminHomeService } from '../../../shared/services/admin/admin-home.service';
 import {
   ActiveWorkerDto,
-  AdminFichajeDiaDto,
-  DailyFichajeCountDto,
+  AdminTimeEntryByDateResponseDto,
+  DailyTimeEntryCountDto,
 } from '../../../shared/models/time-entry.model';
 import { AdminIncidenceResponseDto } from '../../../shared/models/incidence.model';
 import { DepartmentStatDto } from '../../../shared/models/profile.model';
@@ -43,7 +43,7 @@ import { AdminCreateInspectorDialogComponent } from './create-inspector-modal/ad
     AdminActiveWorkersComponent,
     AdminQuickActionsComponent,
     AdminExportLegalDialogComponent,
-    AdminCreateInspectorDialogComponent
+    AdminCreateInspectorDialogComponent,
   ],
   templateUrl: './admin-home.component.html',
   styleUrl: './admin-home.component.scss',
@@ -278,7 +278,7 @@ export class AdminHomeComponent implements OnInit {
 
       const blob = await firstValueFrom(
         formato === 'pdf'
-          ? this.adminHomeService.exportarInformeEmpresaPdf(inicio, fin)
+          ? this.adminHomeService.exportReportPdf(inicio, fin)
           : this.adminHomeService.exportarInformeEmpresaExcel(inicio, fin),
       );
 
@@ -298,21 +298,22 @@ export class AdminHomeComponent implements OnInit {
     if (this.cargandoInspector()) return;
 
     this.cargandoInspector.set(true);
-    
-    this.adminHomeService.registerInspector(data)
+
+    this.adminHomeService
+      .registerInspector(data)
       .pipe(
         take(1),
-        finalize(() => this.cargandoInspector.set(false))
+        finalize(() => this.cargandoInspector.set(false)),
       )
       .subscribe({
         next: (response) => {
-          alert(response.message); 
+          alert(response.message);
           this.dialogoInspector.set(false);
         },
         error: (err) => {
           console.error('Error al procesar el inspector:', err);
           alert('Hubo un error al crear o notificar al inspector.');
-        }
+        },
       });
   }
 
@@ -351,13 +352,13 @@ export class AdminHomeComponent implements OnInit {
     const fichajesHoy = await firstValueFrom(this.adminHomeService.obtenerNumFichajesHoy());
     this.fichajesHoy.set(fichajesHoy ?? 0);
 
-    const horasHoy = await firstValueFrom(this.adminHomeService.obtenerHorasHoy());
+    const horasHoy = await firstValueFrom(this.adminHomeService.getTotalHoursToday());
     const minutosTotales = horasHoy?.minutosTotales ?? 0;
     this.horasTotales.set(Math.round(minutosTotales / 60));
   }
 
   private async cargarTrabajadoresActivos(): Promise<void> {
-    const trabajadores = await firstValueFrom(this.adminHomeService.obtenerTrabajadoresActivos());
+    const trabajadores = await firstValueFrom(this.adminHomeService.getActiveWorkers());
     const mapped = trabajadores.map((worker) => this.mapActiveWorker(worker));
     this.trabajadoresList.set(mapped);
     this.trabajadoresActivos.set(mapped.length);
@@ -391,7 +392,7 @@ export class AdminHomeComponent implements OnInit {
     }
 
     const workDate = this.toIsoDate(fecha);
-    const fichajesDia = await firstValueFrom(this.adminHomeService.obtenerFichajesPorDia(workDate));
+    const fichajesDia = await firstValueFrom(this.adminHomeService.getTimeEntriesByDate(workDate));
     this.fichajesDiaSeleccionado.set(fichajesDia.map((item) => this.mapFichajeDia(item)));
   }
 
@@ -399,7 +400,7 @@ export class AdminHomeComponent implements OnInit {
     const hoy = new Date();
     const workDate = this.toIsoDate(hoy);
 
-    const fichajesHoy = await firstValueFrom(this.adminHomeService.obtenerFichajesPorDia(workDate));
+    const fichajesHoy = await firstValueFrom(this.adminHomeService.getTimeEntriesByDate(workDate));
     if (!fichajesHoy.length) {
       this.fichajesDiaSeleccionado.set([]);
       return;
@@ -470,7 +471,7 @@ export class AdminHomeComponent implements OnInit {
     };
   }
 
-  private mapFichajeDia(item: AdminFichajeDiaDto): SelectedDayEntry {
+  private mapFichajeDia(item: AdminTimeEntryByDateResponseDto): SelectedDayEntry {
     const nombre = item.nombreTrabajador || 'Sin nombre';
     const entradaDate = this.parseFecha(item.entrada);
     const salidaDate = this.parseFecha(item.salida);
@@ -506,7 +507,7 @@ export class AdminHomeComponent implements OnInit {
     return `${horas}h ${mins}m`;
   }
 
-  private mapSemana(weeklyData: DailyFichajeCountDto[], inicioSemana: Date): WeekChartDay[] {
+  private mapSemana(weeklyData: DailyTimeEntryCountDto[], inicioSemana: Date): WeekChartDay[] {
     const conteo = new Map<string, number>();
     for (const item of weeklyData) {
       conteo.set(item.fecha, Number(item.numFichajes ?? 0));

@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { DatePipe, NgClass } from '@angular/common';
-import { FichajeTablaResponseDto } from '../../../../../shared/models/time-entry.model';
+import { TimeEntryTableResponseDto } from '../../../../../shared/models/time-entry.model';
 import { TableHeader } from '../../admin-trabajadores.types';
 
 @Component({
@@ -12,7 +12,7 @@ import { TableHeader } from '../../admin-trabajadores.types';
 })
 export class EmployeeFichajesHistoryCardComponent {
   public readonly fichajeHeaders = input.required<TableHeader[]>();
-  public readonly fichajes = input.required<FichajeTablaResponseDto[]>();
+  public readonly fichajes = input.required<TimeEntryTableResponseDto[]>();
   public readonly loading = input.required<boolean>();
 
   public readonly getDireccionFichaje =
@@ -22,38 +22,38 @@ export class EmployeeFichajesHistoryCardComponent {
       (start: string | undefined, end: string | null | undefined) => string | number
     >();
 
-  public readonly editFichaje = output<FichajeTablaResponseDto>();
-  public readonly deleteFichaje = output<FichajeTablaResponseDto>();
+  public readonly editFichaje = output<TimeEntryTableResponseDto>();
+  public readonly deleteFichaje = output<TimeEntryTableResponseDto>();
 
-  public onEdit(item: FichajeTablaResponseDto): void {
+  public onEdit(item: TimeEntryTableResponseDto): void {
     this.editFichaje.emit(item);
   }
 
-  public onDelete(item: FichajeTablaResponseDto): void {
+  public onDelete(item: TimeEntryTableResponseDto): void {
     if (!item.deleted_at) {
       this.deleteFichaje.emit(item);
     }
   }
 
-  public getFecha(item: FichajeTablaResponseDto): string | undefined {
+  public getFecha(item: TimeEntryTableResponseDto): string | undefined {
     return item.fecha || item.work_date;
   }
 
-  public getEntrada(item: FichajeTablaResponseDto): string | undefined {
+  public getEntrada(item: TimeEntryTableResponseDto): string | undefined {
     return item.entrada || item.start_at;
   }
 
-  public getSalida(item: FichajeTablaResponseDto): string | null | undefined {
+  public getSalida(item: TimeEntryTableResponseDto): string | null | undefined {
     return item.salida || item.end_at;
   }
 
-  public getLatitud(item: FichajeTablaResponseDto, type: 'start' | 'end'): number | null {
+  public getLatitud(item: TimeEntryTableResponseDto, type: 'start' | 'end'): number | null {
     return type === 'start'
       ? (item.latEntrada ?? item.start_lat ?? null)
       : (item.latSalida ?? item.end_lat ?? null);
   }
 
-  public getLongitud(item: FichajeTablaResponseDto, type: 'start' | 'end'): number | null {
+  public getLongitud(item: TimeEntryTableResponseDto, type: 'start' | 'end'): number | null {
     return type === 'start'
       ? (item.lngEntrada ?? item.start_lng ?? null)
       : (item.lngSalida ?? item.end_lng ?? null);

@@ -3,10 +3,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import { API_CONFIG } from '../../../core/api/api.config';
 import {
-  AdminFichajeDiaDto,
+  AdminTimeEntryByDateResponseDto,
   ActiveWorkerDto,
-  DailyFichajeCountDto,
-  HorasTrabajadasHoyResponseDto,
+  DailyTimeEntryCountDto,
+  TotalHoursTodayResponseDto,
 } from '../../models/time-entry.model';
 import { AdminIncidenceResponseDto } from '../../models/incidence.model';
 import { DepartmentStatDto } from '../../models/profile.model';
@@ -29,13 +29,13 @@ export class AdminHomeService {
   readonly adminIncidenciasSignal = signal<AdminIncidenceResponseDto[]>([]);
   readonly adminIncidenciasTotalSignal = signal<number>(0);
   readonly numFichajesHoySignal = signal<number | null>(null);
-  readonly horasHoySignal = signal<HorasTrabajadasHoyResponseDto | null>(null);
-  readonly weeklyChartSignal = signal<DailyFichajeCountDto[]>([]);
+  readonly horasHoySignal = signal<TotalHoursTodayResponseDto | null>(null);
+  readonly weeklyChartSignal = signal<DailyTimeEntryCountDto[]>([]);
   readonly departmentStatsSignal = signal<DepartmentStatDto[]>([]);
 
-  obtenerTrabajadoresActivos(): Observable<ActiveWorkerDto[]> {
+  getActiveWorkers(): Observable<ActiveWorkerDto[]> {
     return this.http
-      .get<ActiveWorkerDto[]>(`${this.BASE_URL}time-entries/activeWorkers`)
+      .get<ActiveWorkerDto[]>(`${this.BASE_URL}time-entries/active-workers`)
       .pipe(tap((workers) => this.activeWorkersSignal.set(workers)));
   }
 
@@ -59,7 +59,7 @@ export class AdminHomeService {
     const params = new HttpParams().set('status', status).set('page', page).set('size', size);
 
     return this.http
-      .get<SpringPageResponse<AdminIncidenceResponseDto>>(`${this.BASE_URL}incidence/admin`, {
+      .get<SpringPageResponse<AdminIncidenceResponseDto>>(`${this.BASE_URL}incidences/admin`, {
         params,
       })
       .pipe(
@@ -74,40 +74,50 @@ export class AdminHomeService {
 
   obtenerNumFichajesHoy(): Observable<number> {
     return this.http
-      .get<number>(`${this.BASE_URL}time-entries/numFichajes`)
+      .get<number>(`${this.BASE_URL}time-entries/count-today`)
       .pipe(tap((totalFichajes) => this.numFichajesHoySignal.set(totalFichajes)));
   }
 
-  obtenerHorasHoy(): Observable<HorasTrabajadasHoyResponseDto> {
+  getTotalHoursToday(): Observable<TotalHoursTodayResponseDto> {
     return this.http
-      .get<HorasTrabajadasHoyResponseDto>(`${this.BASE_URL}time-entries/horasHoy`)
+      .get<TotalHoursTodayResponseDto>(`${this.BASE_URL}time-entries/hours-today`)
       .pipe(tap((horas) => this.horasHoySignal.set(horas)));
+  }
+
+  getWeeklyChart(
+    startDate: Date | string,
+    endDate: Date | string,
+  ): Observable<DailyTimeEntryCountDto[]> {
+    const params = new HttpParams()
+      .set('startDate', this.toIsoDate(startDate))
+      .set('endDate', this.toIsoDate(endDate));
+
+    return this.http
+      .get<DailyTimeEntryCountDto[]>(`${this.BASE_URL}time-entries/weekly-chart`, { params })
+      .pipe(tap((weeklyChart) => this.weeklyChartSignal.set(weeklyChart)));
   }
 
   obtenerWeeklyChart(
     fechaInicio: Date | string,
     fechaFin: Date | string,
-  ): Observable<DailyFichajeCountDto[]> {
-    const params = new HttpParams()
-      .set('fechaInicio', this.toIsoDate(fechaInicio))
-      .set('fechaFin', this.toIsoDate(fechaFin));
-
-    return this.http
-      .get<DailyFichajeCountDto[]>(`${this.BASE_URL}time-entries/weeklyChart`, { params })
-      .pipe(tap((weeklyChart) => this.weeklyChartSignal.set(weeklyChart)));
+  ): Observable<DailyTimeEntryCountDto[]> {
+    return this.getWeeklyChart(fechaInicio, fechaFin);
   }
 
-  obtenerFichajesPorDia(fecha: Date | string): Observable<AdminFichajeDiaDto[]> {
-    const params = new HttpParams().set('fecha', this.toIsoDate(fecha));
-    return this.http.get<AdminFichajeDiaDto[]>(`${this.BASE_URL}time-entries/admin/by-day`, {
-      params,
-    });
+  getTimeEntriesByDate(date: Date | string): Observable<AdminTimeEntryByDateResponseDto[]> {
+    const params = new HttpParams().set('date', this.toIsoDate(date));
+    return this.http.get<AdminTimeEntryByDateResponseDto[]>(
+      `${this.BASE_URL}time-entries/admin/by-date`,
+      {
+        params,
+      },
+    );
   }
 
-  exportarInformeEmpresaPdf(fechaInicio: Date | string, fechaFin: Date | string): Observable<Blob> {
+  exportReportPdf(startDate: Date | string, endDate: Date | string): Observable<Blob> {
     const params = new HttpParams()
-      .set('fechaInicio', this.toIsoDate(fechaInicio))
-      .set('fechaFin', this.toIsoDate(fechaFin));
+      .set('startDate', this.toIsoDate(startDate))
+      .set('endDate', this.toIsoDate(endDate));
 
     return this.http.get(`${this.BASE_URL}time-entries/admin/export/pdf`, {
       params,
@@ -119,9 +129,13 @@ export class AdminHomeService {
     fechaInicio: Date | string,
     fechaFin: Date | string,
   ): Observable<Blob> {
+    return this.exportReportExcel(fechaInicio, fechaFin);
+  }
+
+  exportReportExcel(startDate: Date | string, endDate: Date | string): Observable<Blob> {
     const params = new HttpParams()
-      .set('fechaInicio', this.toIsoDate(fechaInicio))
-      .set('fechaFin', this.toIsoDate(fechaFin));
+      .set('startDate', this.toIsoDate(startDate))
+      .set('endDate', this.toIsoDate(endDate));
 
     return this.http.get(`${this.BASE_URL}time-entries/admin/export/excel`, {
       params,

@@ -168,7 +168,7 @@ export class WorkerHistoryComponent implements OnInit {
   }
 
   private cargarHistorial(fecha: Date): void {
-    this.historyService.obtenerHistorial(fecha).pipe(take(1)).subscribe();
+    this.historyService.getHistoryByDate(fecha).pipe(take(1)).subscribe();
   }
 
   private ajustarFechaSeleccionada(inicioSemana: Date): void {

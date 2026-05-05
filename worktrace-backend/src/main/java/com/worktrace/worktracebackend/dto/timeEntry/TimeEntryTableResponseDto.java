@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -13,14 +14,14 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdminFichajeDiaResponseDto {
+public class TimeEntryTableResponseDto {
     private UUID id;
-    private UUID trabajadorId;
-    private String nombreTrabajador;
-    private String puestoTrabajo;
-    private String avatarUrl;
     private LocalDate fecha;
     private OffsetDateTime entrada;
     private OffsetDateTime salida;
-    private Long minutosTrabajados;
+    private BigDecimal latEntrada;
+    private BigDecimal lngEntrada;
+    private BigDecimal latSalida;
+    private BigDecimal lngSalida;
+    private Long horasTrabajadas;
 }

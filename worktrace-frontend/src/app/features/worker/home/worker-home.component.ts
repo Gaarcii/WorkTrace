@@ -126,7 +126,7 @@ export class WorkerHomeComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.workerService.obtenerResumenDiario().pipe(take(1)).subscribe();
+    this.workerService.clockIn().pipe(take(1)).subscribe();
 
     const intervalId = setInterval(() => {
       this.currentDate.set(new Date());
@@ -156,7 +156,7 @@ export class WorkerHomeComponent implements OnInit {
       };
 
       this.workerService
-        .fichar(request)
+        .clockIn(request)
         .pipe(
           take(1),
           finalize(() => this.isLoading.set(false)),

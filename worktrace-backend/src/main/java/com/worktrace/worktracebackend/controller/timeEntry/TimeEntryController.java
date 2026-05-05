@@ -25,72 +25,72 @@ public class TimeEntryController {
 
     private final TimeEntryService timeEntryService;
 
-    @PostMapping("/fichar")
+    @PostMapping("/clock-in")
     @PreAuthorize("hasRole('WORKER')")
-    public ResponseEntity<TimeEntryResponseDto> fichar(
+    public ResponseEntity<TimeEntryResponseDto> createTimeEntry(
             @Valid @RequestBody TimeEntryRequestDto requestDto,
             HttpServletRequest httpRequest) {
 
-        String ipReal = httpRequest.getRemoteAddr();
-        ipReal = ipReal.replace("/", "");
+        String realIp = httpRequest.getRemoteAddr();
+        realIp = realIp.replace("/", "");
 
         String userAgent = httpRequest.getHeader("User-Agent");
-        TimeEntryResponseDto response = timeEntryService.procesarFichaje(requestDto, ipReal, userAgent);
+        TimeEntryResponseDto response = timeEntryService.processTimeEntry(requestDto, realIp, userAgent);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/resumenDiario")
+    @GetMapping("/daily-summary")
     @PreAuthorize("hasRole('WORKER')")
-    public ResponseEntity<ResumenDiarioResponseDto> resumenDiario() {
-        ResumenDiarioResponseDto responseDto = timeEntryService.getResumenDiario();
+    public ResponseEntity<DailySummaryResponseDto> getDailySummary() {
+        DailySummaryResponseDto responseDto = timeEntryService.getDailySummary();
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/historial")
+    @GetMapping("/history")
     @PreAuthorize("hasRole('WORKER')")
-    public ResponseEntity<HistorialResponseDto> getHistorial(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
-        HistorialResponseDto historial = timeEntryService.getHistorial(fecha);
-        return ResponseEntity.ok(historial);
+    public ResponseEntity<HistoryResponseDto> getHistoryByDate(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        HistoryResponseDto history = timeEntryService.getHistoryByDate(date);
+        return ResponseEntity.ok(history);
     }
 
-    @GetMapping("/estadisticas")
+    @GetMapping("/statistics")
     @PreAuthorize("hasRole('WORKER')")
-    public ResponseEntity<EstadisticasResponseDto> getEstadisticas(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+    public ResponseEntity<StatisticsResponseDto> getStatistics(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        if (fechaFin == null) {
-            fechaFin = LocalDate.now();
+        if (endDate == null) {
+            endDate = LocalDate.now();
         }
-        if (fechaInicio == null) {
-            fechaInicio = timeEntryService.primerFichaje();
+        if (startDate == null) {
+            startDate = timeEntryService.getFirstTimeEntryDate();
         }
-        EstadisticasResponseDto estadisticas = timeEntryService.getEstadisticas(fechaInicio, fechaFin);
-        return ResponseEntity.ok(estadisticas);
+        StatisticsResponseDto statistics = timeEntryService.getStatistics(startDate, endDate);
+        return ResponseEntity.ok(statistics);
     }
 
-    @GetMapping("/estadisticas/exportar")
+    @GetMapping("/statistics/export")
     @PreAuthorize("hasRole('WORKER')")
-    public ResponseEntity<byte[]> descargarInformePdf(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+    public ResponseEntity<byte[]> exportStatisticsPdf(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        if (fechaFin == null) {
-            fechaFin = LocalDate.now();
+        if (endDate == null) {
+            endDate = LocalDate.now();
         }
 
-        if (fechaInicio == null) {
-            fechaInicio = timeEntryService.primerFichaje();
+        if (startDate == null) {
+            startDate = timeEntryService.getFirstTimeEntryDate();
         }
 
-        byte[] pdfBytes = timeEntryService.exportarHistorialPdf(fechaInicio, fechaFin);
+        byte[] pdfBytes = timeEntryService.exportHistoryPdf(startDate, endDate);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
 
-        String nombreArchivo = "fichajes_" + fechaInicio + "_al_" + fechaFin + ".pdf";
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"");
+        String fileName = "fichajes_" + startDate + "_al_" + endDate + ".pdf";
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
         headers.setContentLength(pdfBytes.length);
 
         return ResponseEntity.ok()
@@ -98,87 +98,89 @@ public class TimeEntryController {
                 .body(pdfBytes);
     }
 
-    @GetMapping("/activeWorkers")
+    @GetMapping("/active-workers")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ActiveWorkerDto>> getActiveWorkers() {
         List<ActiveWorkerDto> activeWorkerDto = timeEntryService.getActiveWorkers();
         return ResponseEntity.ok(activeWorkerDto);
     }
 
-    @GetMapping("/numFichajes")
+    @GetMapping("/count-today")
     @PreAuthorize("hasRole('ADMIN')")
-    public Long getFichajesCountToday() {
-        return timeEntryService.getFichajesCountToday();
+    public Long getTimeEntriesCountToday() {
+        return timeEntryService.getTimeEntriesCountToday();
     }
 
-    @GetMapping("/horasHoy")
+    @GetMapping("/hours-today")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<HorasTrabajadasHoyResponseDto> getHorasTotalesHoy() {
-        HorasTrabajadasHoyResponseDto response = timeEntryService.getHorasTotalesHoy();
+    public ResponseEntity<TotalHoursTodayResponseDto> getTotalHoursToday() {
+        TotalHoursTodayResponseDto response = timeEntryService.getTotalHoursToday();
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/weeklyChart")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<DailyFichajeCountDto>> getWeeklyData(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
 
-        List<DailyFichajeCountDto> dailyFichajeCountDtos =
-                timeEntryService.getWeeklyChartData(fechaInicio, fechaFin);
-        return ResponseEntity.ok(dailyFichajeCountDtos);
+
+    @GetMapping("/weekly-chart")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<DailyTimeEntryCountDto>> getWeeklyChartData(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        List<DailyTimeEntryCountDto> dailyTimeEntryCounts =
+                timeEntryService.getWeeklyChartData(startDate, endDate);
+        return ResponseEntity.ok(dailyTimeEntryCounts);
 
     }
 
-    @GetMapping("/admin/by-day")
+    @GetMapping("/admin/by-date")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<AdminFichajeDiaResponseDto>> getFichajesPorDiaEmpresa(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
-        List<AdminFichajeDiaResponseDto> response = timeEntryService.getFichajesPorDiaEmpresa(fecha);
+    public ResponseEntity<List<AdminTimeEntryByDateResponseDto>> getTimeEntriesByDateForCompany(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<AdminTimeEntryByDateResponseDto> response = timeEntryService.getTimeEntriesByDateForCompany(date);
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{id}/edit")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> editarFichaje(
+    public ResponseEntity<Void> updateTimeEntry(
             @PathVariable UUID id,
             @Valid @RequestBody EditTimeEntryRequestDto dto) {
-        timeEntryService.editarFichaje(id, dto);
+        timeEntryService.updateTimeEntry(id, dto);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{id}/anular")
+    @PatchMapping("/{id}/void")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> anularFichaje(
+    public ResponseEntity<Void> voidTimeEntry(
             @PathVariable UUID id,
-            @Valid @RequestBody AnularTimeEntryRequestDto dto) {
-        timeEntryService.anularFichaje(id, dto);
+            @Valid @RequestBody VoidTimeEntryRequestDto dto) {
+        timeEntryService.voidTimeEntry(id, dto);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/employee/{employeeId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<FichajeTablaResponseDto>> getFichajesPorEmpleado(
+    public ResponseEntity<Page<TimeEntryTableResponseDto>> getTimeEntriesByEmployee(
             @PathVariable UUID employeeId,
             Pageable pageable) {
-        Page<FichajeTablaResponseDto> response = timeEntryService
-                .getFichajesPaginadosPorEmpleado(employeeId, pageable);
+        Page<TimeEntryTableResponseDto> response = timeEntryService
+                .getTimeEntriesByEmployeePaginated(employeeId, pageable);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/admin/export/pdf")
     @PreAuthorize("hasAnyRole('ADMIN','INSPECTOR')")
-    public ResponseEntity<byte[]> exportarInformeEmpresaPdf(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+    public ResponseEntity<byte[]> exportCompanyReportPdf(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        byte[] pdfBytes = timeEntryService.exportarInformeEmpresaPdf(fechaInicio, fechaFin);
+        byte[] pdfBytes = timeEntryService.exportCompanyReportPdf(startDate, endDate);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
 
-        String nombreArchivo = "informe_forense_" + fechaInicio + "_al_" + fechaFin + ".pdf";
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"");
+        String fileName = "informe_forense_" + startDate + "_al_" + endDate + ".pdf";
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
 
         return ResponseEntity.ok()
                 .headers(headers)
@@ -187,17 +189,17 @@ public class TimeEntryController {
 
     @GetMapping("/admin/export/excel")
     @PreAuthorize("hasAnyRole('ADMIN','INSPECTOR')")
-    public ResponseEntity<byte[]> exportarInformeEmpresaExcel(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+    public ResponseEntity<byte[]> exportCompanyReportExcel(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        byte[] excelBytes = timeEntryService.exportarInformeEmpresaExcel(fechaInicio, fechaFin);
+        byte[] excelBytes = timeEntryService.exportCompanyReportExcel(startDate, endDate);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
 
-        String nombreArchivo = "AUDITORIA_DATOS_" + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd")) + ".xlsx";
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"");
+        String fileName = "AUDITORIA_DATOS_" + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd")) + ".xlsx";
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
 
         return ResponseEntity.ok()
                 .headers(headers)

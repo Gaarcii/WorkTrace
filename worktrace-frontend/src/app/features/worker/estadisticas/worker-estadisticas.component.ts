@@ -245,7 +245,7 @@ export class WorkerEstadisticasComponent implements OnInit {
     this.periodoSeleccionado.set('custom');
     this.currentWeekIndex.set(0);
     this.mostrarFiltroFechas.set(false);
-    this.estadisticasService.obtenerEstadisticas(fechaInicio, fechaFin).pipe(take(1)).subscribe();
+    this.estadisticasService.getStatistics(fechaInicio, fechaFin).pipe(take(1)).subscribe();
   }
 
   mostrarTooltip(dia: DiaGrafico): void {
@@ -291,9 +291,9 @@ export class WorkerEstadisticasComponent implements OnInit {
 
     let request$;
     if (periodo === 'todo') {
-      request$ = this.estadisticasService.descargarInformePdf();
+      request$ = this.estadisticasService.downloadStatisticsPdf();
     } else {
-      request$ = this.estadisticasService.descargarInformePdf(inicio, fin);
+      request$ = this.estadisticasService.downloadStatisticsPdf(inicio, fin);
     }
 
     request$
@@ -315,10 +315,10 @@ export class WorkerEstadisticasComponent implements OnInit {
 
   private cargarDatosPorPeriodo(periodo: 'semana' | 'mes' | 'todo'): void {
     if (periodo === 'todo') {
-      this.estadisticasService.obtenerEstadisticas().pipe(take(1)).subscribe();
+      this.estadisticasService.getStatistics().pipe(take(1)).subscribe();
     } else {
       const { start, end } = this.calcularRangoFechas(periodo);
-      this.estadisticasService.obtenerEstadisticas(start, end).pipe(take(1)).subscribe();
+      this.estadisticasService.getStatistics(start, end).pipe(take(1)).subscribe();
     }
   }
 

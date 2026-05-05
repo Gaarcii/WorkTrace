@@ -11,9 +11,9 @@ import {
   SpringPageResponse,
 } from '../../models/profile.model';
 import {
-  AnularTimeEntryRequestDto,
+  VoidTimeEntryRequestDto,
   EditTimeEntryRequestDto,
-  FichajeTablaResponseDto,
+  TimeEntryTableResponseDto,
 } from '../../models/time-entry.model';
 import {
   WorkScheduleRequest,
@@ -68,21 +68,29 @@ export class AdminWorkersService {
     employeeId: string,
     page: number = 0,
     size: number = 10,
-  ): Observable<SpringPageResponse<FichajeTablaResponseDto>> {
+  ): Observable<SpringPageResponse<TimeEntryTableResponseDto>> {
     const params = new HttpParams().set('page', page).set('size', size);
 
-    return this.http.get<SpringPageResponse<FichajeTablaResponseDto>>(
+    return this.http.get<SpringPageResponse<TimeEntryTableResponseDto>>(
       `${this.BASE_URL}time-entries/employee/${employeeId}`,
       { params },
     );
   }
 
-  editarFichaje(id: string, dto: EditTimeEntryRequestDto): Observable<void> {
-    return this.http.patch<void>(`${this.BASE_URL}time-entries/${id}/edit`, dto);
+  getTimeEntriesByEmployee(
+    employeeId: string,
+    page: number = 0,
+    size: number = 10,
+  ): Observable<SpringPageResponse<TimeEntryTableResponseDto>> {
+    return this.obtenerFichajesPorEmpleado(employeeId, page, size);
   }
 
-  anularFichaje(id: string, dto: AnularTimeEntryRequestDto): Observable<void> {
-    return this.http.patch<void>(`${this.BASE_URL}time-entries/${id}/anular`, dto);
+  updateTimeEntry(id: string, dto: EditTimeEntryRequestDto): Observable<void> {
+    return this.http.patch<void>(`${this.BASE_URL}time-entries/${id}`, dto);
+  }
+
+  voidTimeEntry(id: string, dto: VoidTimeEntryRequestDto): Observable<void> {
+    return this.http.patch<void>(`${this.BASE_URL}time-entries/${id}/void`, dto);
   }
 
   obtenerPuestosTrabajo(): Observable<JobPositionRequestDto[]> {

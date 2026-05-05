@@ -87,7 +87,7 @@ export class InspectorHomeComponent implements OnInit {
 
     const exportObs$ =
       event.format === 'PDF'
-        ? this.inspectorHomeService.exportarInformeEmpresaPdf(startDate, endDate)
+        ? this.inspectorHomeService.exportReportPdf(startDate, endDate)
         : this.inspectorHomeService.exportarInformeEmpresaExcel(startDate, endDate);
 
     exportObs$

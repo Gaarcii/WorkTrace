@@ -16,9 +16,9 @@ import {
   JobPositionRequestDto,
 } from '../../../../shared/models/profile.model';
 import {
-  AnularTimeEntryRequestDto,
+  VoidTimeEntryRequestDto,
   EditTimeEntryRequestDto,
-  FichajeTablaResponseDto,
+  TimeEntryTableResponseDto,
 } from '../../../../shared/models/time-entry.model';
 import { SnackbarState, TableHeader } from '../admin-trabajadores.types';
 import { EmployeeProfileCardComponent } from './employee-profile-card/employee-profile-card.component';
@@ -51,7 +51,7 @@ export class AdminEmployeeDetailComponent implements OnInit {
 
   public readonly employeeId = signal<string>('');
   public readonly empleado = signal<EmployeeResponseDto | null>(null);
-  public readonly fichajes = signal<FichajeTablaResponseDto[]>([]);
+  public readonly fichajes = signal<TimeEntryTableResponseDto[]>([]);
   public readonly puestosTrabajo = signal<JobPositionRequestDto[]>([]);
   public readonly loading = signal<boolean>(true);
   public readonly loadingEditarPerfil = signal<boolean>(false);
@@ -60,11 +60,11 @@ export class AdminEmployeeDetailComponent implements OnInit {
   public readonly dialogEditarPerfil = signal<boolean>(false);
   public readonly dialogEditarFichaje = signal<boolean>(false);
   public readonly dialogAnular = signal<boolean>(false);
-  public readonly fichajeAAnular = signal<FichajeTablaResponseDto | null>(null);
+  public readonly fichajeAAnular = signal<TimeEntryTableResponseDto | null>(null);
   public readonly loadingAnular = signal<boolean>(false);
   public readonly snackbar = signal<SnackbarState>({ show: false, message: '', color: 'info' });
 
-  public readonly editFichajePayload = signal<FichajeTablaResponseDto | null>(null);
+  public readonly editFichajePayload = signal<TimeEntryTableResponseDto | null>(null);
 
   public readonly fichajeHeaders: TableHeader[] = [
     { key: 'fecha', title: 'Fecha' },
@@ -127,7 +127,7 @@ export class AdminEmployeeDetailComponent implements OnInit {
     }
   }
 
-  public abrirModalAnular(fichaje: FichajeTablaResponseDto): void {
+  public abrirModalAnular(fichaje: TimeEntryTableResponseDto): void {
     this.fichajeAAnular.set(fichaje);
     this.anularForm.reset();
     this.dialogAnular.set(true);
@@ -149,12 +149,12 @@ export class AdminEmployeeDetailComponent implements OnInit {
     if (!fichaje) return;
 
     this.loadingAnular.set(true);
-    const dto: AnularTimeEntryRequestDto = {
+    const dto: VoidTimeEntryRequestDto = {
       justificacion: this.anularForm.getRawValue().justificacion.trim(),
     };
 
     this.adminWorkersService
-      .anularFichaje(fichaje.id, dto)
+      .voidTimeEntry(fichaje.id, dto)
       .pipe(
         take(1),
         finalize(() => this.loadingAnular.set(false)),
@@ -172,7 +172,7 @@ export class AdminEmployeeDetailComponent implements OnInit {
       });
   }
 
-  public abrirModalEditar(fichaje: FichajeTablaResponseDto): void {
+  public abrirModalEditar(fichaje: TimeEntryTableResponseDto): void {
     this.editFichajePayload.set(fichaje);
     this.dialogEditarFichaje.set(true);
   }
@@ -184,7 +184,7 @@ export class AdminEmployeeDetailComponent implements OnInit {
     this.loadingEditarFichaje.set(true);
 
     this.adminWorkersService
-      .editarFichaje(fichaje.id, dto)
+      .updateTimeEntry(fichaje.id, dto)
       .pipe(
         take(1),
         finalize(() => this.loadingEditarFichaje.set(false)),

@@ -11,7 +11,7 @@ import {
   runInInjectionContext,
 } from '@angular/core';
 import * as L from 'leaflet';
-import { FichajeTablaResponseDto } from '../../../../../shared/models/time-entry.model';
+import { TimeEntryTableResponseDto } from '../../../../../shared/models/time-entry.model';
 interface MapPointInfo {
   lat: number;
   lng: number;
@@ -29,7 +29,7 @@ interface MapPointInfo {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeLocationsMapCardComponent {
-  public readonly fichajes = input<FichajeTablaResponseDto[]>([]);
+  public readonly fichajes = input<TimeEntryTableResponseDto[]>([]);
   public readonly mapContainer = viewChild.required<ElementRef<HTMLDivElement>>('mapContainer');
 
   private map?: L.Map;
@@ -73,7 +73,7 @@ export class EmployeeLocationsMapCardComponent {
     this.routesLayer.addTo(this.map);
   }
 
-  private renderLocations(data: FichajeTablaResponseDto[]): void {
+  private renderLocations(data: TimeEntryTableResponseDto[]): void {
     if (!this.map) {
       return;
     }
@@ -192,7 +192,7 @@ export class EmployeeLocationsMapCardComponent {
   }
 
   private extractPointInfo(
-    fichaje: FichajeTablaResponseDto,
+    fichaje: TimeEntryTableResponseDto,
     type: 'start' | 'end',
   ): MapPointInfo | null {
     const latitude =
@@ -239,7 +239,7 @@ export class EmployeeLocationsMapCardComponent {
     return `${date.getDate()}-${date.getMonth() + 1}`;
   }
 
-  private getDayKey(fichaje: FichajeTablaResponseDto): string {
+  private getDayKey(fichaje: TimeEntryTableResponseDto): string {
     const rawDay =
       fichaje.work_date ??
       fichaje.fecha ??

@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, input, output, effect } fro
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   EditTimeEntryRequestDto,
-  FichajeTablaResponseDto,
+  TimeEntryTableResponseDto,
 } from '../../../../../shared/models/time-entry.model';
 
 type EditFichajeFormGroup = {
@@ -32,7 +32,7 @@ export class EditFichajeDialogComponent {
   private readonly fb = inject(FormBuilder);
 
   public readonly isOpen = input.required<boolean>();
-  public readonly fichaje = input<FichajeTablaResponseDto | null>(null);
+  public readonly fichaje = input<TimeEntryTableResponseDto | null>(null);
   public readonly loading = input.required<boolean>();
   public readonly error = input<string | null>(null);
 
@@ -84,7 +84,7 @@ export class EditFichajeDialogComponent {
     }
   }
 
-  private toFormValue(fichaje: FichajeTablaResponseDto): EditFichajeFormValue {
+  private toFormValue(fichaje: TimeEntryTableResponseDto): EditFichajeFormValue {
     const startValue = fichaje.start_at ?? fichaje.entrada ?? '';
     const endValue = fichaje.end_at ?? fichaje.salida ?? null;
     const dateValue = fichaje.work_date ?? fichaje.fecha ?? startValue;
