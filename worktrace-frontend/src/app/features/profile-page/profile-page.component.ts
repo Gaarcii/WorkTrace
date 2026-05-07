@@ -103,15 +103,18 @@ export class ProfilePageComponent implements OnInit {
     const horarioBackend = this.profile()?.schedule || [];
 
     return diasSemana.map((diaEnum) => {
-      const turno = horarioBackend.find((h: any) => h.diaSemana.toUpperCase() === diaEnum);
+      const turno = horarioBackend.find((h: any) => {
+        const rawDay = h?.dayOfWeek ?? h?.diaSemana;
+        return typeof rawDay === 'string' && rawDay.toUpperCase() === diaEnum;
+      });
       return {
         id: diaEnum,
-        inicial: iniciales[diaEnum],
-        trabaja: !!turno,
+        initial: iniciales[diaEnum],
+        work: !!turno,
         start: turno?.start ? turno.start.substring(0, 5) : null,
         end: turno?.end ? turno.end.substring(0, 5) : null,
-        lugar: turno?.place || '',
-        ubicacion: turno?.location || '',
+        place: turno?.place || '',
+        location: turno?.location || '',
       };
     });
   });

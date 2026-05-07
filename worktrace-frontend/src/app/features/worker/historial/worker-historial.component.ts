@@ -78,7 +78,7 @@ export class WorkerHistoryComponent implements OnInit {
   readonly estadisticasDia = computed(() => {
     const data = this.historial();
     const trabajados = data?.dailyWorkedMinutes ?? 0;
-    const objetivo = data?.minutosObjetivoDia ?? 0;
+    const objetivo = data?.dailyTargetMinutes ?? 0;
     const balance = trabajados - objetivo;
 
     return {
@@ -110,6 +110,7 @@ export class WorkerHistoryComponent implements OnInit {
 
       return {
         ...registro,
+        tipoEvento: registro.eventType,
         icono: isEntrada ? 'login' : 'logout',
         tipoStr: isEntrada ? 'Entrada' : 'Salida',
         fechaStr: fechaObj.toLocaleDateString('es-ES', {

@@ -126,16 +126,16 @@ export class AdminWorkersService {
   }
 
   obtenerCentrosTrabajo(): Observable<WorkSiteResponseDto[]> {
-    return this.http.get<WorkSiteResponseDto[]>(`${this.BASE_URL}WorkSites`);
+    return this.http.get<WorkSiteResponseDto[]>(`${this.BASE_URL}work-sites`);
   }
 
   obtenerHorariosEmpleado(employeeId: string): Observable<WorkScheduleResponse[]> {
     return this.http.get<WorkScheduleResponse[]>(
-      `${this.BASE_URL}/work-schedules/employee/${employeeId}`,
+      `${this.BASE_URL}work-schedules/employee/${employeeId}`,
     );
   }
 
   asignarHorario(dto: WorkScheduleRequest): Observable<void> {
-    return this.http.post<void>(`${this.BASE_URL}horario/assign`, dto);
+    return this.http.post<void>(`${this.BASE_URL}work-schedules/assign`, dto);
   }
 }

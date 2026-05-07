@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.Map;
 
 @RestController
@@ -40,14 +39,8 @@ public class AuthController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updatePassword(
             @Valid @RequestBody PasswordChangeRequestDto requestDto) {
-        try {
-            authenticationService.changePassword(requestDto);
-            return ResponseEntity.ok(Collections
-                    .singletonMap("message", "Contraseña actualizada correctamente"));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Collections.singletonMap("message", e.getMessage()));
-        }
+        authenticationService.changePassword(requestDto);
+        return ResponseEntity.ok(Map.of("message", "Contraseña actualizada correctamente"));
     }
 
     @PostMapping("/register-employee")
@@ -74,15 +67,11 @@ public class AuthController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-        try {
-            authenticationService.executePasswordReset(
-                    request.getToken(),
-                    request.getNewPassword(),
-                    request.getRepeatPassword()
-            );
-            return ResponseEntity.ok(Map.of("message", "Contraseña actualizada correctamente."));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+        authenticationService.executePasswordReset(
+                request.getToken(),
+                request.getNewPassword(),
+                request.getRepeatPassword()
+        );
+        return ResponseEntity.ok(Map.of("message", "Contraseña actualizada correctamente."));
     }
 }

@@ -2,12 +2,11 @@ import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@ang
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   FormBuilder,
-  FormControl,
   FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { forkJoin, finalize, take } from 'rxjs';
 import { AdminWorkersService } from '../../../../shared/services/admin/admin-workers.service';
 import {
@@ -150,7 +149,7 @@ export class AdminEmployeeDetailComponent implements OnInit {
 
     this.loadingAnular.set(true);
     const dto: VoidTimeEntryRequestDto = {
-      justificacion: this.anularForm.getRawValue().justificacion.trim(),
+      justification: this.anularForm.getRawValue().justificacion.trim(),
     };
 
     this.adminWorkersService

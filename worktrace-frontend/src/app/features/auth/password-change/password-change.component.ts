@@ -13,6 +13,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { take, finalize } from 'rxjs/operators';
 import { AuthService } from '../../../core/auth/auth.service';
 import { TokenStorageService } from '../../../core/auth/token-storage.service';
+import { PasswordChangeRequest } from '../../../shared/models/auth.model';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -85,8 +86,15 @@ export class PasswordChangeComponent {
     this.errorMessage.set(null);
     this.isSubmitting.set(true);
 
+    const values = this.passwordForm.getRawValue();
+    const request: PasswordChangeRequest = {
+      currentPassword: values.actual,
+      newPassword: values.nueva,
+      repeatPassword: values.repetir,
+    };
+
     this.authService
-      .changeFirstPassword(this.passwordForm.getRawValue())
+      .changeFirstPassword(request)
       .pipe(
         take(1),
         finalize(() => this.isSubmitting.set(false)),
