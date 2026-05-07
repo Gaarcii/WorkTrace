@@ -25,8 +25,8 @@ public class KnownIp {
     private String ip;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "geoip_data", nullable = false, columnDefinition = "jsonb")
-    private Map<String, Object> geoipData;
+    @Column(name = "geo_ip_data", nullable = false, columnDefinition = "jsonb")
+    private Map<String, Object> geoIpData;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;

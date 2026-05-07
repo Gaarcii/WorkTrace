@@ -189,7 +189,7 @@ create table if not exists incidence_types (
 
 create table if not exists known_ips (
     ip inet primary key,
-    geoip_data jsonb not null,
+    geo_ip_data jsonb not null,
     created_at timestamp with time zone not null default now()
 );
 

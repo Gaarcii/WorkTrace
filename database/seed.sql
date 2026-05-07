@@ -542,7 +542,7 @@ VALUES (
 -- sistema de antifraude la tenga catalogada con risk=medium.
 -- -----------------------------------------------------------------------------
 INSERT INTO
-    known_ips (ip, geoip_data, created_at)
+    known_ips (ip, geo_ip_data, created_at)
 VALUES (
         '192.168.1.10',
         '{"city":"Madrid", "region":"MD","country":"ES","isp":"Movistar","org":"Fibra Optica Casa","type":"residential"}'::jsonb,

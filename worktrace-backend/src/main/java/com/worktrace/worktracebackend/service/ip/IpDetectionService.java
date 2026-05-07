@@ -39,7 +39,7 @@ public class IpDetectionService {
         Optional<KnownIp> cachedIp = knownIpRepository.buscarPorIp(ipAddress);
 
         if (cachedIp.isPresent()) {
-            Map<String, Object> cachedData = cachedIp.get().getGeoipData();
+            Map<String, Object> cachedData = cachedIp.get().getGeoIpData();
             List<String> flags = extractFlagsFromMap(cachedData);
 
             System.out.println("IP " + ipAddress + " rescatada de la caché local.");
@@ -68,7 +68,7 @@ public class IpDetectionService {
 
             KnownIp nuevaIp = new KnownIp();
             nuevaIp.setIp(ipAddress);
-            nuevaIp.setGeoipData(geoIpMap);
+            nuevaIp.setGeoIpData(geoIpMap);
             try {
                 String jsonString = mapper.writeValueAsString(geoIpMap);
 
