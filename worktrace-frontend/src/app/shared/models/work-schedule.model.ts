@@ -8,12 +8,12 @@ export type DayOfWeek =
   | 'SUNDAY';
 
 export interface WorkScheduleResponse {
-  lugar: string;
-  ubicacion: string;
-  diaSemana: DayOfWeek;
+  place: string;
+  location: string;
+  dayOfWeek: DayOfWeek;
   start: string;
   end: string;
-  horas: number;
+  hours: number;
 }
 
 export interface WorkScheduleRequest {
@@ -34,12 +34,12 @@ export interface WorkSiteResponseDto {
   address: string;
 }
 
-export interface DiaHorario {
+export interface ScheduleDay {
   id: string;
-  inicial: string;
-  trabaja: boolean;
+  initial: string;
+  work: boolean;
   start: string | null;
   end: string | null;
-  lugar: string;
-  ubicacion: string;
+  place: string;
+  location: string;
 }

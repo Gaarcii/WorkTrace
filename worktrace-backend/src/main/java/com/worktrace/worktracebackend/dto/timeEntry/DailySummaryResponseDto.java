@@ -9,9 +9,8 @@ import java.util.List;
 @Getter
 @Setter
 public class DailySummaryResponseDto {
-
-    private long minutosAcumulados;
-    private long minutosObjetivo;
-    private OffsetDateTime horaEntrada;
-    private List<UltimosFichajesResponseDto> ultimosFichajes;
+    private long accumulatedMinutes;
+    private long targetMinutes;
+    private OffsetDateTime entryTime;
+    private List<LastTimeEntriesResponseDto> lastTimeEntries;
 }

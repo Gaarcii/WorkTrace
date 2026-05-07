@@ -2,47 +2,47 @@
   <div class="incident-grid">
     <div class="incident-col user-col">
       <div class="avatar-circle">
-        @if (incident().imagen) {
-          <img [src]="incident().imagen" alt="Avatar" />
+        @if (incident().image) {
+          <img [src]="incident().image" alt="Avatar" />
         } @else {
-          <span class="initials">{{ getInitials(incident().nombre) }}</span>
+          <span class="initials">{{ getInitials(incident().name) }}</span>
         }
       </div>
       <div class="user-info">
-        <div class="name" [title]="incident().nombre">
-          {{ incident().nombre || 'Desconocido' }}
+        <div class="name" [title]="incident().name">
+          {{ incident().name || 'Desconocido' }}
         </div>
-        <div class="email" [title]="incident().correo">{{ incident().correo }}</div>
+        <div class="email" [title]="incident().email">{{ incident().email }}</div>
       </div>
     </div>
 
     <div class="incident-col type-col">
-      <span class="custom-chip type-chip text-truncate" [title]="incident().tipoIncidencia">
-        {{ incident().tipoIncidencia || 'Sin tipo' }}
+      <span class="custom-chip type-chip text-truncate" [title]="incident().incidenceType">
+        {{ incident().incidenceType || 'Sin tipo' }}
       </span>
     </div>
 
     <div class="incident-col date-col">
       <div class="date-label">Fecha</div>
-      <div class="date-value">{{ formatDate(incident().fechaHora) }}</div>
-      <div class="time-value">{{ formatTime(incident().fechaHora) }}</div>
+      <div class="date-value">{{ formatDate(incident().dateTime) }}</div>
+      <div class="time-value">{{ formatTime(incident().dateTime) }}</div>
       <div class="mt-2">
-        <span class="custom-chip" [ngClass]="getStatusClass(incident().estado)">
-          {{ getStatusLabel(incident().estado) }}
+        <span class="custom-chip" [ngClass]="getStatusClass(incident().status)">
+          {{ getStatusLabel(incident().status) }}
         </span>
       </div>
     </div>
 
     <div class="incident-col comment-col">
       <div class="comment-label">Comentario</div>
-      <div class="comment-text">{{ incident().comentario || 'Sin comentario' }}</div>
+      <div class="comment-text">{{ incident().comment || 'Sin comment' }}</div>
 
-      @if (incident().resueltaPor) {
+      @if (incident().resolvedBy) {
         <mat-divider class="my-2"></mat-divider>
         <div class="comment-label">
-          {{ incident().estado === 'RECHAZADA' ? 'Rechazada por' : 'Resuelta por' }}
+          {{ incident().status === 'RECHAZADA' ? 'Rechazada por' : 'Resuelta por' }}
         </div>
-        <div class="resolver-text">{{ incident().resueltaPor }}</div>
+        <div class="resolver-text">{{ incident().resolvedBy }}</div>
       }
     </div>
   </div>

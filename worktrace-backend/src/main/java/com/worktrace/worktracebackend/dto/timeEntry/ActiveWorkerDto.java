@@ -13,10 +13,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActiveWorkerDto {
-    private UUID trabajadorId;
-    private String nombreCompleto;
-    private String puestoTrabajo;
-    private String urlAvatar;
-    private OffsetDateTime horaFichaje;
-    private Long puntualidad;
+    private UUID employeeId;
+    private String fullName;
+    private String jobPosition;
+    private String avatarUrl;
+    private OffsetDateTime timeEntryTime;
+    private Long punctuality;
 }

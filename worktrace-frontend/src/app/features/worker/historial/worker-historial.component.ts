@@ -77,7 +77,7 @@ export class WorkerHistoryComponent implements OnInit {
 
   readonly estadisticasDia = computed(() => {
     const data = this.historial();
-    const trabajados = data?.minutosTrabajadosDia ?? 0;
+    const trabajados = data?.dailyWorkedMinutes ?? 0;
     const objetivo = data?.minutosObjetivoDia ?? 0;
     const balance = trabajados - objetivo;
 
@@ -90,8 +90,8 @@ export class WorkerHistoryComponent implements OnInit {
 
   readonly estadisticasSemana = computed(() => {
     const data = this.historial();
-    const trabajados = parseInt(data?.minutosTrabajadosSemana || '0', 10);
-    const objetivo = parseInt(data?.minutosObjetivoSemana || '0', 10);
+    const trabajados = parseInt(data?.weeklyWorkedMinutes || '0', 10);
+    const objetivo = parseInt(data?.weeklyTargetMinutes || '0', 10);
     const balance = trabajados - objetivo;
 
     return {
@@ -102,11 +102,11 @@ export class WorkerHistoryComponent implements OnInit {
   });
 
   readonly fichajesDelDia = computed<FormattedRegistro[]>(() => {
-    const registros = this.historial()?.registrosDia ?? [];
+    const registros = this.historial()?.dailyRecords ?? [];
 
     return registros.map((registro) => {
-      const fechaObj = new Date(registro.fecha);
-      const isEntrada = registro.tipoEvento.toUpperCase() === 'ENTRADA';
+      const fechaObj = new Date(registro.date);
+      const isEntrada = registro.eventType.toUpperCase() === 'ENTRADA';
 
       return {
         ...registro,

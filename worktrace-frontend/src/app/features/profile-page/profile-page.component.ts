@@ -14,7 +14,7 @@ import { ProfileService } from '../../shared/services/profile.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { ProfileRequest, ProfileResponse } from '../../shared/models/profile.model';
 import { PasswordChangeRequest } from '../../shared/models/auth.model';
-import { DiaHorario } from '../../shared/models/work-schedule.model';
+import { ScheduleDay } from '../../shared/models/work-schedule.model';
 import { PerfilIdentityComponent } from './components/perfil-identity/perfil-identity.component';
 import { PerfilContactComponent } from './components/perfil-contact/perfil-contact.component';
 import { PerfilSecurityComponent } from './components/perfil-security/perfil-security.component';
@@ -80,7 +80,7 @@ export class ProfilePageComponent implements OnInit {
 
   readonly passwordConfirmacion = this.fb.control('', Validators.required);
 
-  readonly horarioSemanal = computed<DiaHorario[]>(() => {
+  readonly horarioSemanal = computed<ScheduleDay[]>(() => {
     const diasSemana = [
       'MONDAY',
       'TUESDAY',
@@ -100,7 +100,7 @@ export class ProfilePageComponent implements OnInit {
       SUNDAY: 'D',
     };
 
-    const horarioBackend = this.profile()?.horario || [];
+    const horarioBackend = this.profile()?.schedule || [];
 
     return diasSemana.map((diaEnum) => {
       const turno = horarioBackend.find((h: any) => h.diaSemana.toUpperCase() === diaEnum);
@@ -110,8 +110,8 @@ export class ProfilePageComponent implements OnInit {
         trabaja: !!turno,
         start: turno?.start ? turno.start.substring(0, 5) : null,
         end: turno?.end ? turno.end.substring(0, 5) : null,
-        lugar: turno?.lugar || '',
-        ubicacion: turno?.ubicacion || '',
+        lugar: turno?.place || '',
+        ubicacion: turno?.location || '',
       };
     });
   });
@@ -130,7 +130,7 @@ export class ProfilePageComponent implements OnInit {
       )
       .subscribe({
         next: (res: ProfileResponse) => {
-          this.form.patchValue({ email: res.email, telefono: res.telefono });
+          this.form.patchValue({ email: res.email, telefono: res.phone });
         },
         error: () => this.mostrarMensajeError('Error al cargar el perfil'),
       });
@@ -170,9 +170,9 @@ export class ProfilePageComponent implements OnInit {
 
     const request: ProfileRequest = {
       email: formValues.email,
-      telefono: formValues.telefono,
-      contrasenaActual: contrasenaActual,
-      eliminarAvatar: 'false',
+      phone: formValues.telefono,
+      actualPassword: contrasenaActual,
+      deleteAvatar: 'false',
       avatar: this.archivoSeleccionado() ? this.archivoSeleccionado() : null,
     };
 
@@ -230,9 +230,9 @@ export class ProfilePageComponent implements OnInit {
     const formValues = this.form.getRawValue();
     const request: ProfileRequest = {
       email: formValues.email,
-      telefono: formValues.telefono,
-      contrasenaActual: '',
-      eliminarAvatar: 'true',
+      phone: formValues.telefono,
+      actualPassword: '',
+      deleteAvatar: 'true',
     };
 
     this.profileService

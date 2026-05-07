@@ -58,7 +58,7 @@ export class WorkerHomeComponent implements OnInit {
     });
   });
 
-  readonly isWorking = computed(() => !!this.resumen()?.horaEntrada);
+  readonly isWorking = computed(() => !!this.resumen()?.entryTime);
 
   readonly estadoTexto = computed(() => {
     if (this.isLoading()) return 'Procesando...';
@@ -84,15 +84,15 @@ export class WorkerHomeComponent implements OnInit {
   });
 
   readonly horasTrabajadas = computed(() => {
-    const mins = this.resumen()?.minutosAcumulados ?? 0;
+    const mins = this.resumen()?.accumulatedMinutes ?? 0;
     const h = Math.floor(mins / 60);
     const m = mins % 60;
     return `${h}h ${m}m`;
   });
 
   private readonly balanceMinutos = computed(() => {
-    const acumulados = this.resumen()?.minutosAcumulados ?? 0;
-    const objetivo = this.resumen()?.minutosObjetivo ?? 0;
+    const acumulados = this.resumen()?.accumulatedMinutes ?? 0;
+    const objetivo = this.resumen()?.targetMinutes ?? 0;
     return acumulados - objetivo;
   });
 
@@ -107,10 +107,10 @@ export class WorkerHomeComponent implements OnInit {
   });
 
   readonly registrosFormateados = computed<FormattedRecord[]>(() => {
-    const registros = this.resumen()?.ultimosFichajes ?? [];
+    const registros = this.resumen()?.lastTimeEntries ?? [];
     return registros.map((fichaje) => {
-      const fechaObj = new Date(fichaje.fecha);
-      const isEntrada = fichaje.tipoEvento.toUpperCase() === 'ENTRADA';
+      const fechaObj = new Date(fichaje.date);
+      const isEntrada = fichaje.eventType.toUpperCase() === 'ENTRADA';
       return {
         ...fichaje,
         horaStr: fechaObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
@@ -126,7 +126,12 @@ export class WorkerHomeComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.workerService.clockIn().pipe(take(1)).subscribe();
+    const request: TimeEntryRequest = {
+      lat: 0,
+      lng: 0,
+      accuracyMeters: 0,
+    };
+    this.workerService.clockIn(request).pipe(take(1)).subscribe();
 
     const intervalId = setInterval(() => {
       this.currentDate.set(new Date());

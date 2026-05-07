@@ -9,10 +9,10 @@ import java.util.List;
 @Getter
 @Setter
 public class StatisticsResponseDto {
-    private long minutosTrabajadosTotal;
-    private long balanceMinutos;
-    private int jornadasIncompletas;
-    private int incidencias;
-    private List<EstadisticaDiariaDto> resumenDiario;
-    private List<WorkerIncidenceResponseDto> incidenciasList;
+    private long totalWorkedMinutes;
+    private long minutesBalance;
+    private int incompleteWorkdays;
+    private int incidencesCount;
+    private List<DailyStatisticDto> dailySummary;
+    private List<WorkerIncidenceResponseDto> incidenceList;
 }

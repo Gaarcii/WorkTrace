@@ -36,26 +36,26 @@ export class EmployeeFichajesHistoryCardComponent {
   }
 
   public getFecha(item: TimeEntryTableResponseDto): string | undefined {
-    return item.fecha || item.work_date;
+    return item.date || item.work_date;
   }
 
   public getEntrada(item: TimeEntryTableResponseDto): string | undefined {
-    return item.entrada || item.start_at;
+    return item.startAt || item.start_at;
   }
 
   public getSalida(item: TimeEntryTableResponseDto): string | null | undefined {
-    return item.salida || item.end_at;
+    return item.endAt || item.end_at;
   }
 
   public getLatitud(item: TimeEntryTableResponseDto, type: 'start' | 'end'): number | null {
     return type === 'start'
-      ? (item.latEntrada ?? item.start_lat ?? null)
-      : (item.latSalida ?? item.end_lat ?? null);
+      ? (item.latStartAt ?? item.start_lat ?? null)
+      : (item.latEndAt ?? item.end_lat ?? null);
   }
 
   public getLongitud(item: TimeEntryTableResponseDto, type: 'start' | 'end'): number | null {
     return type === 'start'
-      ? (item.lngEntrada ?? item.start_lng ?? null)
-      : (item.lngSalida ?? item.end_lng ?? null);
+      ? (item.lngStartAt ?? item.start_lng ?? null)
+      : (item.lngEndAt ?? item.end_lng ?? null);
   }
 }

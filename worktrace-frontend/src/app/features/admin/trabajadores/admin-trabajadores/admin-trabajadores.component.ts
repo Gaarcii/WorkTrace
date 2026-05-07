@@ -259,20 +259,20 @@ export class AdminTrabajadoresComponent implements OnInit {
           next: (response) => {
             this.empleados.set(
               (response.content ?? []).map((emp) => {
-                const parsedHours = Number(emp.horasSemanales);
+                const parsedHours = Number(emp.weeklyHours);
                 const positionId =
                   (emp as EmployeeResponseDto & { positionId?: string | null }).positionId ?? null;
 
                 return {
                   id: emp.id,
-                  fullName: emp.nombre,
-                  jobTitle: emp.puesto,
+                  fullName: emp.name,
+                  jobTitle: emp.jobPosition,
                   weeklyHours: Number.isNaN(parsedHours) ? null : parsedHours,
-                  isFirstLogin: emp.estado?.toLowerCase() === 'pendiente',
-                  isActive: emp.estado?.toLowerCase() !== 'inactivo',
-                  createdAt: emp.fechaAlta,
+                  isFirstLogin: emp.status?.toLowerCase() === 'pendiente',
+                  isActive: emp.status?.toLowerCase() !== 'inactivo',
+                  createdAt: emp.registrationDate,
                   email: emp.email,
-                  phone: emp.telefono,
+                  phone: emp.phone,
                   avatarUrl: emp.avatarUrl,
                   dni: emp.dni,
                   positionId,

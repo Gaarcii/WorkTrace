@@ -275,7 +275,7 @@ export class AdminEmployeeScheduleManagerComponent implements OnInit {
     );
 
     for (const backendSchedule of backendSchedules) {
-      const dayKey = String(backendSchedule.diaSemana).toUpperCase() as DayOfWeek;
+      const dayKey = String(backendSchedule.dayOfWeek).toUpperCase() as DayOfWeek;
       const dayIndex = DAY_KEYS.indexOf(dayKey);
 
       if (dayIndex < 0) {
@@ -283,7 +283,7 @@ export class AdminEmployeeScheduleManagerComponent implements OnInit {
       }
 
       const siteId = siteLookup.get(
-        this.getSiteLookupKey(backendSchedule.lugar, backendSchedule.ubicacion),
+        this.getSiteLookupKey(backendSchedule.place, backendSchedule.location),
       );
 
       initial[dayIndex] = {

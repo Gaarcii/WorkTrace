@@ -81,14 +81,14 @@
         <p class="text-body-2 mb-4 delete-summary">
           Fecha:
           {{
-            fichajeAAnular()?.fecha || fichajeAAnular()?.work_date
-              ? (fichajeAAnular()?.fecha || fichajeAAnular()?.work_date | date: 'dd/MM/yyyy')
+            fichajeAAnular()?.date || fichajeAAnular()?.work_date
+              ? (fichajeAAnular()?.date || fichajeAAnular()?.work_date | date: 'dd/MM/yyyy')
               : '-'
           }}<br />
           Entrada:
-          {{ formatTime24h(fichajeAAnular()?.entrada || fichajeAAnular()?.start_at) }}<br />
+          {{ formatTime24h(fichajeAAnular()?.startAt || fichajeAAnular()?.start_at) }}<br />
           Salida:
-          {{ formatTime24h(fichajeAAnular()?.salida || fichajeAAnular()?.end_at) }}
+          {{ formatTime24h(fichajeAAnular()?.endAt || fichajeAAnular()?.end_at) }}
         </p>
 
         <form [formGroup]="anularForm" (ngSubmit)="confirmarAnulacion()">

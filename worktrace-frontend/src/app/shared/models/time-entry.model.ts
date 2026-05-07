@@ -1,16 +1,11 @@
 import { WorkerIncidenceResponseDto } from './incidence.model';
 
 export interface DailySummaryResponse {
-  minutosAcumulados: number;
-  minutosObjetivo: number;
-  horaEntrada: string;
-  ultimosFichajes: UltimosFichajes[];
+  accumulatedMinutes: number;
+  targetMinutes: number;
+  entryTime: string;
+  lastTimeEntries: LastTimeEntriesResponseDto[];
 }
-
-/**
- * @deprecated Use DailySummaryResponse instead
- */
-export type ResumenResponse = DailySummaryResponse;
 
 export interface TimeEntryResponse {
   id: string;
@@ -25,105 +20,75 @@ export interface TimeEntryRequest {
   accuracyMeters: number;
 }
 
-export interface UltimosFichajes {
+export interface LastTimeEntriesResponseDto {
   timeEntryId: string;
-  tipoEvento: string;
-  fecha: string;
+  eventType: string;
+  date: string;
 }
 
 export interface HistoryResponse {
-  minutosTrabajadosSemana: string;
-  minutosObjetivoSemana: string;
-  registrosDia: UltimosFichajes[];
-  minutosTrabajadosDia: number;
-  minutosObjetivoDia: number;
+  weeklyWorkedMinutes: string;
+  weeklyTargetMinutes: string;
+  dailyRecords: LastTimeEntriesResponseDto[];
+  dailyWorkedMinutes: number;
+  dailyTargetMinutes: number;
 }
-
-/**
- * @deprecated Use HistoryResponse instead
- */
-export type HistorialResponse = HistoryResponse;
 
 export interface DailyStatisticResponse {
-  fecha: string;
-  minutosTrabajados: number;
-  minutosPrevistos: number;
+  date: string;
+  workedMinutes: number;
+  plannedMinutes: number;
 }
-
-/**
- * @deprecated Use DailyStatisticResponse instead
- */
-export type EstadisticaDiariaResponse = DailyStatisticResponse;
 
 export interface StatisticsResponse {
-  minutosTrabajadosTotal: number;
-  balanceMinutos: number;
-  jornadasIncompletas: number;
-  incidencias: number;
-  resumenDiario: DailyStatisticResponse[];
-  incidenciasList: WorkerIncidenceResponseDto[];
+  totalWorkedMinutes: number;
+  minutesBalance: number;
+  incompleteWorkdays: number;
+  incidencesCount: number;
+  dailySummary: DailyStatisticResponse[];
+  incidenceList: WorkerIncidenceResponseDto[];
 }
 
-/**
- * @deprecated Use StatisticsResponse instead
- */
-export type EstadisticasResponse = StatisticsResponse;
-
 export interface ActiveWorkerDto {
-  trabajadorId: string;
-  nombreCompleto: string;
-  puestoTrabajo: string;
-  urlAvatar: string;
-  horaFichaje: string;
-  puntualidad: number;
+  employeeId: string;
+  fullName: string;
+  jobPosition: string;
+  avatarUrl: string;
+  timeEntryTime: string;
+  punctuality: number;
 }
 
 export interface TotalHoursTodayResponseDto {
-  minutosTotales: number;
+  totalMinutes: number;
 }
-
-/**
- * @deprecated Use TotalHoursTodayResponseDto instead
- */
-export type HorasTrabajadasHoyResponseDto = TotalHoursTodayResponseDto;
 
 export interface DailyTimeEntryCountDto {
-  fecha: string;
-  numFichajes: number;
+  date: string;
+  timeEntryNumber: number;
 }
-
-/**
- * @deprecated Use DailyTimeEntryCountDto instead
- */
-export type DailyFichajeCountDto = DailyTimeEntryCountDto;
 
 export interface AdminTimeEntryByDateResponseDto {
   id: string;
-  trabajadorId: string;
-  nombreTrabajador: string;
-  puestoTrabajo: string | null;
+  employeeId: string;
+  workerName: string;
+  jobPosition: string | null;
   avatarUrl: string | null;
-  fecha: string;
-  entrada: string;
-  salida: string | null;
-  minutosTrabajados: number | null;
+  date: string;
+  startAt: string;
+  endAt: string | null;
+  workedMinutes: number | null;
 }
-
-/**
- * @deprecated Use AdminTimeEntryByDateResponseDto instead
- */
-export type AdminFichajeDiaDto = AdminTimeEntryByDateResponseDto;
 
 export interface TimeEntryTableResponseDto {
   id: string;
-  fecha: string;
-  entrada: string;
-  salida: string | null;
-  latEntrada: number | null;
-  lngEntrada: number | null;
-  latSalida: number | null;
-  lngSalida: number | null;
-  horasTrabajadas: number | null;
+  date: string;
+  startAt: string;
+  endAt: string | null;
+  latStartAt: number | null;
+  lngStartAt: number | null;
+  latEndAt: number | null;
+  lngEndAt: number | null;
+  workedHours: number | null;
   deletedAt?: string | null;
   work_date?: string;
   start_at?: string;
@@ -135,22 +100,12 @@ export interface TimeEntryTableResponseDto {
   deleted_at?: string | null;
 }
 
-/**
- * @deprecated Use TimeEntryTableResponseDto instead
- */
-export type FichajeTablaResponseDto = TimeEntryTableResponseDto;
-
 export interface EditTimeEntryRequestDto {
-  entrada: string;
-  salida: string | null;
-  justificacion: string;
+  startAt: string;
+  endAt: string | null;
+  justification: string;
 }
 
 export interface VoidTimeEntryRequestDto {
-  justificacion: string;
+  justification: string;
 }
-
-/**
- * @deprecated Use VoidTimeEntryRequestDto instead
- */
-export type AnularTimeEntryRequestDto = VoidTimeEntryRequestDto;

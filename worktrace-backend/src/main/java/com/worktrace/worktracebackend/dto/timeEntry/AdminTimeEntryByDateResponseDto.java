@@ -15,12 +15,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AdminTimeEntryByDateResponseDto {
     private UUID id;
-    private UUID trabajadorId;
-    private String nombreTrabajador;
-    private String puestoTrabajo;
+    private UUID employeeId;
+    private String workerName;
+    private String jobPosition;
     private String avatarUrl;
-    private LocalDate fecha;
-    private OffsetDateTime entrada;
-    private OffsetDateTime salida;
-    private Long minutosTrabajados;
+    private LocalDate date;
+    private OffsetDateTime startAt;
+    private OffsetDateTime endAt;
+    private Long workedMinutes;
 }

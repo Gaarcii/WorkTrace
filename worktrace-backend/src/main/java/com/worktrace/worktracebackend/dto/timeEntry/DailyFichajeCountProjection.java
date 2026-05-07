@@ -4,6 +4,5 @@ import java.time.LocalDate;
 
 public interface DailyFichajeCountProjection {
     LocalDate getFecha();
-
     Long getNumFichajes();
 }

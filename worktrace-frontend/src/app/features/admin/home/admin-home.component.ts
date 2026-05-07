@@ -353,7 +353,7 @@ export class AdminHomeComponent implements OnInit {
     this.fichajesHoy.set(fichajesHoy ?? 0);
 
     const horasHoy = await firstValueFrom(this.adminHomeService.getTotalHoursToday());
-    const minutosTotales = horasHoy?.minutosTotales ?? 0;
+    const minutosTotales = horasHoy?.totalMinutes ?? 0;
     this.horasTotales.set(Math.round(minutosTotales / 60));
   }
 
@@ -437,31 +437,31 @@ export class AdminHomeComponent implements OnInit {
   private mapDepartamentos(departamentos: DepartmentStatDto[]): DepartmentSummary[] {
     return [...departamentos]
       .map((departamento) => ({
-        nombre: departamento.departamento,
-        activos: departamento.trabajadoresActivos,
-        total: departamento.totalTrabajadores,
+        nombre: departamento.department,
+        activos: departamento.activeWorkers,
+        total: departamento.totalWorkers,
         porcentaje:
-          departamento.totalTrabajadores > 0
-            ? Math.round((departamento.trabajadoresActivos / departamento.totalTrabajadores) * 100)
+          departamento.totalWorkers > 0
+            ? Math.round((departamento.activeWorkers / departamento.totalWorkers) * 100)
             : 0,
         horas: null,
-        activo: departamento.trabajadoresActivos > 0,
+        activo: departamento.activeWorkers > 0,
       }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 5);
   }
 
   private mapActiveWorker(worker: ActiveWorkerDto): ActiveWorkerCard {
-    const nombre = worker.nombreCompleto || 'Sin nombre';
-    const puntualidad = Number(worker.puntualidad ?? 0);
+    const nombre = worker.fullName || 'Sin nombre';
+    const puntualidad = Number(worker.punctuality ?? 0);
     const retraso = puntualidad > 10;
-    const fechaEntrada = this.parseFecha(worker.horaFichaje);
+    const fechaEntrada = this.parseFecha(worker.timeEntryTime);
 
     return {
-      id: worker.trabajadorId,
+      id: worker.employeeId,
       nombre,
-      departamento: worker.puestoTrabajo || 'Empleado',
-      avatar: worker.urlAvatar || null,
+      departamento: worker.jobPosition || 'Empleado',
+      avatar: worker.avatarUrl || null,
       iniciales: this.generarIniciales(nombre),
       estado: 'Activo',
       entrada: fechaEntrada ? format(fechaEntrada, 'HH:mm') : '--:--',
@@ -472,19 +472,19 @@ export class AdminHomeComponent implements OnInit {
   }
 
   private mapFichajeDia(item: AdminTimeEntryByDateResponseDto): SelectedDayEntry {
-    const nombre = item.nombreTrabajador || 'Sin nombre';
-    const entradaDate = this.parseFecha(item.entrada);
-    const salidaDate = this.parseFecha(item.salida);
+    const nombre = item.workerName || 'Sin nombre';
+    const entradaDate = this.parseFecha(item.startAt);
+    const salidaDate = this.parseFecha(item.endAt);
 
     return {
       id: item.id,
       nombre,
-      departamento: item.puestoTrabajo || 'Empleado',
+      departamento: item.jobPosition || 'Empleado',
       avatar: item.avatarUrl,
       iniciales: this.generarIniciales(nombre),
       entrada: entradaDate ? format(entradaDate, 'HH:mm') : '--:--',
       salida: salidaDate ? format(salidaDate, 'HH:mm') : null,
-      duracion: this.formatearDuracion(item.minutosTrabajados),
+      duracion: this.formatearDuracion(item.workedMinutes),
     };
   }
 
@@ -510,7 +510,7 @@ export class AdminHomeComponent implements OnInit {
   private mapSemana(weeklyData: DailyTimeEntryCountDto[], inicioSemana: Date): WeekChartDay[] {
     const conteo = new Map<string, number>();
     for (const item of weeklyData) {
-      conteo.set(item.fecha, Number(item.numFichajes ?? 0));
+      conteo.set(item.date, Number(item.timeEntryNumber ?? 0));
     }
 
     const diasSemana = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];

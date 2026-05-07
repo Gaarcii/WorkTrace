@@ -14,13 +14,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EmployeeResponseDto {
     private UUID id;
-    private String nombre;
+    private String name;
     private String dni;
     private String email;
     private String avatarUrl;
-    private String telefono;
-    private String puesto;
-    private String horasSemanales;
-    private String estado;
-    private OffsetDateTime fechaAlta;
+    private String phone;
+    private String jobPosition;
+    private String weeklyHours;
+    private String status;
+    private OffsetDateTime registrationDate;
 }

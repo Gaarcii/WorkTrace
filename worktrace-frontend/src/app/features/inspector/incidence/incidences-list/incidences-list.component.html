@@ -10,7 +10,7 @@
   </div>
 } @else {
   <div class="incidents-list">
-    @for (incident of incidents(); track incident.fechaHora) {
+    @for (incident of incidents(); track incident.dateTime) {
       <app-incidence-card [incident]="incident"></app-incidence-card>
     }
   </div>

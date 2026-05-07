@@ -16,12 +16,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TimeEntryTableResponseDto {
     private UUID id;
-    private LocalDate fecha;
-    private OffsetDateTime entrada;
-    private OffsetDateTime salida;
-    private BigDecimal latEntrada;
-    private BigDecimal lngEntrada;
-    private BigDecimal latSalida;
-    private BigDecimal lngSalida;
-    private Long horasTrabajadas;
+    private LocalDate date;
+    private OffsetDateTime startAt;
+    private OffsetDateTime endAt;
+    private BigDecimal latStartAt;
+    private BigDecimal lngStartAt;
+    private BigDecimal latEndAt;
+    private BigDecimal lngEndAt;
+    private Long workedHours;
 }

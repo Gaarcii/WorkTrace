@@ -9,8 +9,8 @@
       <div class="left-panel">
         <app-perfil-identity
           [avatarUrl]="profile()?.avatarUrl"
-          [nombreCompleto]="profile()?.nombreCompleto"
-          [puestoTrabajo]="profile()?.puestoTrabajo"
+          [nombreCompleto]="profile()?.fullName"
+          [puestoTrabajo]="profile()?.jobPosition"
           (editAvatar)="abrirSelectorAvatar()"
         />
       </div>

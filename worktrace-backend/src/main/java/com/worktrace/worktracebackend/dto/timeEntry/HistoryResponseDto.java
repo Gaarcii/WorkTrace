@@ -8,10 +8,10 @@ import java.util.List;
 @Getter
 @Setter
 public class HistoryResponseDto {
-    private Long minutosTrabajadosSemana;
-    private Long minutosObjetivoSemana;
-    private List<UltimosFichajesResponseDto> registrosDia;
-    private Long minutosTrabajadosDia;
-    private Long minutosObjetivoDia;
+    private Long weeklyWorkedMinutes;
+    private Long weeklyTargetMinutes;
+    private List<LastTimeEntriesResponseDto> dailyRecords;
+    private Long dailyWorkedMinutes;
+    private Long dailyTargetMinutes;
 
 }

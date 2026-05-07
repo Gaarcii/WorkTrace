@@ -36,9 +36,9 @@ export class ProfileService {
     const formData = new FormData();
 
     formData.append('email', request.email);
-    formData.append('telefono', request.telefono);
-    formData.append('contrasenaActual', request.contrasenaActual);
-    formData.append('eliminarAvatar', request.eliminarAvatar);
+    formData.append('telefono', request.phone);
+    formData.append('contrasenaActual', request.actualPassword);
+    formData.append('eliminarAvatar', request.deleteAvatar);
 
     // Adjuntamos el archivo binario solo si el usuario seleccionó uno
     if (request.avatar) {
@@ -49,8 +49,8 @@ export class ProfileService {
     // por lo que apunta a la raíz del @RequestMapping del controlador ("user")
     return this.http.patch<ProfileResponse>(`${this.BASE_URL}user`, formData).pipe(
       tap((profile: ProfileResponse) => {
-        if (profile.tokenActualizado != null) {
-          this.tokenStorageService.saveToken(profile.tokenActualizado);
+        if (profile.updatedToken != null) {
+          this.tokenStorageService.saveToken(profile.updatedToken);
         }
         this.currentUser.set(profile);
       }),

@@ -24,15 +24,15 @@
         <tbody>
           @for (record of records(); track record.id) {
             <tr>
-              <td class="text-body-2">{{ formatDateTime(record.fechaHora) }}</td>
+              <td class="text-body-2">{{ formatDateTime(record.dateTime) }}</td>
               <td>
-                <span class="status-chip" [ngClass]="getActionColor(record.accion)">
-                  {{ getActionLabel(record.accion) }}
+                <span class="status-chip" [ngClass]="getActionColor(record.action)">
+                  {{ getActionLabel(record.action) }}
                 </span>
               </td>
               <td>
                 <div class="reason-text">
-                  {{ record.justificacion || 'Sin justificación' }}
+                  {{ record.justification || 'Sin justificación' }}
                 </div>
               </td>
               <td>
@@ -46,7 +46,7 @@
                 </div>
               </td>
               <td class="text-center">
-                @if (record.accion !== 'LOGIN' && record.accion !== 'EXPORT') {
+                @if (record.action !== 'LOGIN' && record.action !== 'EXPORT') {
                   <button
                     mat-button
                     color="primary"

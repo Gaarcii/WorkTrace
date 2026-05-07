@@ -1,13 +1,13 @@
 <div class="dialog-header bg-grey-lighten-4">
   <div class="d-flex align-center w-100">
-    <mat-icon class="header-icon mr-3" [ngClass]="getActionColor(recordBase()?.accion || '')">
-      {{ recordBase()?.accion === 'SOFT_DELETE' ? 'delete' : 'edit' }}
+    <mat-icon class="header-icon mr-3" [ngClass]="getActionColor(recordBase()?.action || '')">
+      {{ recordBase()?.action === 'SOFT_DELETE' ? 'delete' : 'edit' }}
     </mat-icon>
     <div class="flex-grow-1">
       <h2 class="dialog-title">
-        {{ recordBase()?.accion === 'SOFT_DELETE' ? 'Registro Eliminado' : 'Modificación' }}
+        {{ recordBase()?.action === 'SOFT_DELETE' ? 'Registro Eliminado' : 'Modificación' }}
       </h2>
-      <p class="dialog-subtitle">{{ formatFullDateTime(recordBase()?.fechaHora) }}</p>
+      <p class="dialog-subtitle">{{ formatFullDateTime(recordBase()?.dateTime) }}</p>
     </div>
     <button mat-icon-button (click)="close.emit()"><mat-icon>close</mat-icon></button>
   </div>
@@ -17,7 +17,7 @@
   <div class="pa-4 bg-amber-lighten-5">
     <div class="text-overline mb-1">Justificación</div>
     <p class="text-body-1 m-0">
-      {{ recordBase()?.justificacion || 'Sin justificación proporcionada' }}
+      {{ recordBase()?.justification || 'Sin justificación proporcionada' }}
     </p>
   </div>
 

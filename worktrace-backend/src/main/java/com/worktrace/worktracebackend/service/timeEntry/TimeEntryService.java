@@ -127,11 +127,11 @@ public class TimeEntryService {
         DailySummaryResponseDto dailySummary = calculateDailyData(info.getUser(), info.getProfile(), LocalDate.now());
 
         List<TimeEntry> latestTimeEntriesList = timeEntryRepository.findTop5ByEmployee_UserIdOrderByStartAtDesc(info.getUser().getId());
-        List<UltimosFichajesResponseDto> latest5TimeEntries = mapTimeEntriesToEvents(latestTimeEntriesList).stream()
-                .sorted((e1, e2) -> e2.getFecha().compareTo(e1.getFecha()))
+        List<LastTimeEntriesResponseDto> latest5TimeEntries = mapTimeEntriesToEvents(latestTimeEntriesList).stream()
+                .sorted((e1, e2) -> e2.getDate().compareTo(e1.getDate()))
                 .limit(5)
                 .toList();
-        dailySummary.setUltimosFichajes(latest5TimeEntries);
+        dailySummary.setLastTimeEntries(latest5TimeEntries);
 
         return dailySummary;
     }
@@ -154,26 +154,26 @@ public class TimeEntryService {
                 ? info.getProfile().getWeeklyHours().multiply(BigDecimal.valueOf(60)).longValue()
                 : 0L;
 
-        List<UltimosFichajesResponseDto> dailyRecords = mapTimeEntriesToEvents(dailyTimeEntries).stream()
-                .sorted((e1, e2) -> e2.getFecha().compareTo(e1.getFecha()))
+        List<LastTimeEntriesResponseDto> dailyRecords = mapTimeEntriesToEvents(dailyTimeEntries).stream()
+                .sorted((e1, e2) -> e2.getDate().compareTo(e1.getDate()))
                 .toList();
         HistoryResponseDto historyResponseDto = new HistoryResponseDto();
-        historyResponseDto.setMinutosObjetivoDia(dailySummary.getMinutosObjetivo());
-        historyResponseDto.setMinutosTrabajadosDia(dailySummary.getMinutosAcumulados());
-        historyResponseDto.setRegistrosDia(dailyRecords);
-        historyResponseDto.setMinutosObjetivoSemana(weeklyTargetMinutes);
-        historyResponseDto.setMinutosTrabajadosSemana(weeklyWorkedMinutes);
+        historyResponseDto.setDailyTargetMinutes(dailySummary.getTargetMinutes());
+        historyResponseDto.setDailyWorkedMinutes(dailySummary.getAccumulatedMinutes());
+        historyResponseDto.setDailyRecords(dailyRecords);
+        historyResponseDto.setWeeklyTargetMinutes(weeklyTargetMinutes);
+        historyResponseDto.setWeeklyWorkedMinutes(weeklyWorkedMinutes);
         return historyResponseDto;
     }
 
 
-    private List<UltimosFichajesResponseDto> mapTimeEntriesToEvents(List<TimeEntry> timeEntries) {
-        List<UltimosFichajesResponseDto> events = new ArrayList<>();
+    private List<LastTimeEntriesResponseDto> mapTimeEntriesToEvents(List<TimeEntry> timeEntries) {
+        List<LastTimeEntriesResponseDto> events = new ArrayList<>();
         for (TimeEntry timeEntry : timeEntries) {
-            events.add(new UltimosFichajesResponseDto(
+            events.add(new LastTimeEntriesResponseDto(
                     timeEntry.getId(), "Entrada", timeEntry.getStartAt()));
             if (timeEntry.getEndAt() != null) {
-                events.add(new UltimosFichajesResponseDto(
+                events.add(new LastTimeEntriesResponseDto(
                         timeEntry.getId(), "Salida", timeEntry.getEndAt()));
             }
         }
@@ -207,9 +207,9 @@ public class TimeEntryService {
         }
 
         DailySummaryResponseDto dailySummary = new DailySummaryResponseDto();
-        dailySummary.setHoraEntrada(currentTimeEntryOpt.map(TimeEntry::getStartAt).orElse(null));
-        dailySummary.setMinutosAcumulados(accumulatedMinutes);
-        dailySummary.setMinutosObjetivo(targetDuration.toMinutes());
+        dailySummary.setEntryTime(currentTimeEntryOpt.map(TimeEntry::getStartAt).orElse(null));
+        dailySummary.setAccumulatedMinutes(accumulatedMinutes);
+        dailySummary.setTargetMinutes(targetDuration.toMinutes());
 
         return dailySummary;
     }
@@ -231,13 +231,13 @@ public class TimeEntryService {
                     schedule.getDayOfWeek().toString()), duration.toMinutes());
         }
 
-        List<EstadisticaDiariaProjection> groupedRecords = timeEntryRepository
+        List<DailyStatisticsProjection> groupedRecords = timeEntryRepository
                 .getEstadisticasDiariasAgrupadas(info.getProfile().getUserId(), startDate, endDate);
 
         Map<LocalDate, Long> workedMinutesByDateMap = groupedRecords.stream()
                 .collect(Collectors.toMap(
-                        EstadisticaDiariaProjection::getFecha,
-                        EstadisticaDiariaProjection::getMinutosTrabajados
+                        DailyStatisticsProjection::getFecha,
+                        DailyStatisticsProjection::getMinutosTrabajados
                 ));
 
         List<WorkerIncidenceResponseDto> incidences = incidenceService
@@ -248,7 +248,7 @@ public class TimeEntryService {
         int incompleteDays = 0;
 
         LocalDate currentDate = startDate;
-        List<EstadisticaDiariaDto> dailySummaries = new ArrayList<>();
+        List<DailyStatisticDto> dailySummaries = new ArrayList<>();
 
         while (!currentDate.isAfter(endDate)) {
             long plannedMinutes = dailyTargetMinutesMap.getOrDefault(
@@ -256,10 +256,10 @@ public class TimeEntryService {
             long workedMinutes = workedMinutesByDateMap.getOrDefault(
                     currentDate, 0L);
 
-            EstadisticaDiariaDto dailyStatisticDto = new EstadisticaDiariaDto();
-            dailyStatisticDto.setFecha(currentDate);
-            dailyStatisticDto.setMinutosPrevistos(plannedMinutes);
-            dailyStatisticDto.setMinutosTrabajados(workedMinutes);
+            DailyStatisticDto dailyStatisticDto = new DailyStatisticDto();
+            dailyStatisticDto.setDate(currentDate);
+            dailyStatisticDto.setPlannedMinutes(plannedMinutes);
+            dailyStatisticDto.setWorkedMinutes(workedMinutes);
 
             totalWorkedMinutes += workedMinutes;
             totalBalanceMinutes += (workedMinutes - plannedMinutes);
@@ -279,12 +279,12 @@ public class TimeEntryService {
                 endDate
         );
 
-        responseDto.setMinutosTrabajadosTotal(totalWorkedMinutes);
-        responseDto.setBalanceMinutos(totalBalanceMinutes);
-        responseDto.setJornadasIncompletas(incompleteDays);
-        responseDto.setIncidencias(totalIncidences);
-        responseDto.setResumenDiario(dailySummaries);
-        responseDto.setIncidenciasList(incidences);
+        responseDto.setTotalWorkedMinutes(totalWorkedMinutes);
+        responseDto.setMinutesBalance(totalBalanceMinutes);
+        responseDto.setIncompleteWorkdays(incompleteDays);
+        responseDto.setIncidencesCount(totalIncidences);
+        responseDto.setDailySummary(dailySummaries);
+        responseDto.setIncidenceList(incidences);
 
         return responseDto;
     }
@@ -416,7 +416,7 @@ public class TimeEntryService {
 
     @Transactional
     public void updateTimeEntry(UUID id, EditTimeEntryRequestDto dto) {
-        if (dto.getJustificacion() == null || dto.getJustificacion().trim().length() < 10) {
+        if (dto.getJustification() == null || dto.getJustification().trim().length() < 10) {
             throw new IllegalArgumentException("La justificación es obligatoria y debe tener al menos 10 caracteres.");
         }
 
@@ -427,23 +427,23 @@ public class TimeEntryService {
         try {
             String oldDataJson = objectMapper.writeValueAsString(timeEntry);
 
-            timeEntry.setStartAt(dto.getEntrada());
-            timeEntry.setWorkDate(dto.getEntrada().toLocalDate());
+            timeEntry.setStartAt(dto.getStartAt());
+            timeEntry.setWorkDate(dto.getStartAt().toLocalDate());
 
-            if (dto.getSalida() != null) {
-                timeEntry.setEndAt(dto.getSalida());
+            if (dto.getEndAt() != null) {
+                timeEntry.setEndAt(dto.getEndAt());
                 timeEntry.setEstadoFichaje(EstadoFichaje.CLOSED);
             } else {
                 timeEntry.setEndAt(null);
                 timeEntry.setEstadoFichaje(EstadoFichaje.OPEN);
             }
 
-            timeEntry.setModificationReason(dto.getJustificacion());
+            timeEntry.setModificationReason(dto.getJustification());
             timeEntry.setUpdatedAt(OffsetDateTime.now());
 
             String newDataJson = objectMapper.writeValueAsString(timeEntry);
 
-            auditTimeEntryService.logTimeEntryChange("ADMIN_ADJUST", dto.getJustificacion(), oldDataJson, newDataJson, timeEntry.getId());
+            auditTimeEntryService.logTimeEntryChange("ADMIN_ADJUST", dto.getJustification(), oldDataJson, newDataJson, timeEntry.getId());
 
         } catch (JacksonException e) {
             throw new RuntimeException("Error al generar los datos de auditoría", e);
@@ -452,7 +452,7 @@ public class TimeEntryService {
 
     @Transactional
     public void voidTimeEntry(UUID id, VoidTimeEntryRequestDto dto) {
-        if (dto.getJustificacion() == null || dto.getJustificacion().trim().length() < 10) {
+        if (dto.getJustification() == null || dto.getJustification().trim().length() < 10) {
             throw new IllegalArgumentException("El motivo de anulación es obligatorio y debe tener al menos 10 caracteres.");
         }
 
@@ -465,12 +465,12 @@ public class TimeEntryService {
 
             timeEntry.setDeletedAt(OffsetDateTime.now());
             timeEntry.setDeletedBy(info.getUser());
-            timeEntry.setDeleteReason(dto.getJustificacion());
+            timeEntry.setDeleteReason(dto.getJustification());
             timeEntry.setUpdatedAt(OffsetDateTime.now());
 
             String newDataJson = objectMapper.writeValueAsString(timeEntry);
 
-            auditTimeEntryService.logTimeEntryChange("SOFT_DELETE", dto.getJustificacion(), oldDataJson, newDataJson, timeEntry.getId());
+            auditTimeEntryService.logTimeEntryChange("SOFT_DELETE", dto.getJustification(), oldDataJson, newDataJson, timeEntry.getId());
         } catch (JacksonException e) {
             throw new RuntimeException("Error al generar los datos de auditoría", e);
         }

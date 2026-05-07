@@ -13,12 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponseDto {
-    private String nombreCompleto;
+    private String fullName;
     private String avatarUrl;
-    private String puestoTrabajo;
+    private String jobPosition;
     private String email;
-    private String telefono;
-    private List<WorkScheduleResponseDto> horario;
-    private String tokenActualizado;
+    private String phone;
+    private List<WorkScheduleResponseDto> schedule;
+    private String updatedToken;
 }
 

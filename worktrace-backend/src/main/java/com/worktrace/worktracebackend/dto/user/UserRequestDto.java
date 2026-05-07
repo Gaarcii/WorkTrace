@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserRequestDto {
     private MultipartFile avatar;
     private String email;
-    private String telefono;
-    private String contrasenaActual;
-    private Boolean eliminarAvatar;
+    private String phone;
+    private String actualPassword;
+    private Boolean deleteAvatar;
 }

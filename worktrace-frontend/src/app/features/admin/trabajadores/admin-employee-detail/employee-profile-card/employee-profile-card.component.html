@@ -24,28 +24,28 @@
             }
             <span
               class="status-dot"
-              [class.bg-success]="empleado()?.estado?.toLowerCase() !== 'inactivo'"
-              [class.bg-error]="empleado()?.estado?.toLowerCase() === 'inactivo'"
+              [class.bg-success]="empleado()?.status?.toLowerCase() !== 'inactivo'"
+              [class.bg-error]="empleado()?.status?.toLowerCase() === 'inactivo'"
             ></span>
           </div>
         </div>
 
         <div class="hero-info">
           <h1 class="hero-title">
-            {{ empleado()?.nombre || 'Cargando...' }}
+            {{ empleado()?.name || 'Cargando...' }}
           </h1>
           <h2 class="hero-subtitle">
             <span class="material-icons icon-small mr-1">work</span>
-            {{ empleado()?.puesto || 'Sin puesto asignado' }}
+            {{ empleado()?.jobPosition || 'Sin puesto asignado' }}
           </h2>
           <div class="status-chip-container">
             <span
               class="chip"
-              [class.chip-success]="empleado()?.estado?.toLowerCase() !== 'inactivo'"
-              [class.chip-error]="empleado()?.estado?.toLowerCase() === 'inactivo'"
+              [class.chip-success]="empleado()?.status?.toLowerCase() !== 'inactivo'"
+              [class.chip-error]="empleado()?.status?.toLowerCase() === 'inactivo'"
             >
               <span class="material-icons icon-x-small mr-1">circle</span>
-              {{ empleado()?.estado?.toLowerCase() === 'inactivo' ? 'Inactivo' : 'Activo' }}
+              {{ empleado()?.status?.toLowerCase() === 'inactivo' ? 'Inactivo' : 'Activo' }}
             </span>
           </div>
         </div>
@@ -64,8 +64,8 @@
           </a>
         }
 
-        @if (empleado()?.telefono) {
-          <a [href]="'tel:' + empleado()?.telefono" class="btn btn-tonal action-btn">
+        @if (empleado()?.phone) {
+          <a [href]="'tel:' + empleado()?.phone" class="btn btn-tonal action-btn">
             <span class="material-icons mr-1">phone</span>
             <span class="d-none d-sm-inline">Llamar</span>
           </a>
@@ -95,9 +95,9 @@
             <span class="material-icons text-grey icon-medium">phone</span>
             <div class="info-details">
               <span class="info-label">Teléfono</span>
-              @if (empleado()?.telefono) {
-                <a [href]="'tel:' + empleado()?.telefono" class="info-value">
-                  {{ empleado()?.telefono }}
+              @if (empleado()?.phone) {
+                <a [href]="'tel:' + empleado()?.phone" class="info-value">
+                  {{ empleado()?.phone }}
                 </a>
               } @else {
                 <span class="info-value text-grey">No especificado</span>
@@ -129,7 +129,7 @@
             <div class="info-details">
               <span class="info-label">Fecha de Alta</span>
               <span class="info-value">
-                {{ empleado()?.fechaAlta ? (empleado()?.fechaAlta | date: 'shortDate') : 'N/A' }}
+                {{ empleado()?.registrationDate ? (empleado()?.registrationDate | date: 'shortDate') : 'N/A' }}
               </span>
             </div>
           </div>
@@ -142,7 +142,7 @@
           <span class="text-caption">Jornada</span>
         </div>
         <div class="text-h3 font-weight-bold mb-1">
-          {{ empleado()?.horasSemanales || 'N/A' }}
+          {{ empleado()?.weeklyHours || 'N/A' }}
           <span class="text-h6 font-weight-medium text-grey-darken">h/sem</span>
         </div>
         <div class="text-caption text-grey">horas semanales</div>

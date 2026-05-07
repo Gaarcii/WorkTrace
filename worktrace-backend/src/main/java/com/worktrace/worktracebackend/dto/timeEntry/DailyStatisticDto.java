@@ -11,8 +11,8 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EstadisticaDiariaDto {
-    private LocalDate fecha;
-    private long minutosTrabajados;
-    private long minutosPrevistos;
+public class DailyStatisticDto {
+    private LocalDate date;
+    private long workedMinutes;
+    private long plannedMinutes;
 }

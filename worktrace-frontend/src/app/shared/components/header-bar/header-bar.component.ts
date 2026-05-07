@@ -18,9 +18,9 @@ export class HeaderBarComponent implements OnInit {
 
   readonly userSignal = this.profileService.currentUser;
 
-  readonly userName = computed(() => this.userSignal()?.nombreCompleto ?? 'Usuario');
+  readonly userName = computed(() => this.userSignal()?.fullName ?? 'Usuario');
 
-  readonly userRole = computed(() => this.userSignal()?.puestoTrabajo ?? 'Empleado');
+  readonly userRole = computed(() => this.userSignal()?.jobPosition ?? 'Empleado');
 
   readonly userAvatar = computed(() => this.userSignal()?.avatarUrl ?? null);
 

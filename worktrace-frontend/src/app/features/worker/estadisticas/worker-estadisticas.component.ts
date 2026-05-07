@@ -92,20 +92,20 @@ export class WorkerEstadisticasComponent implements OnInit {
   });
 
   readonly horasTrabajadas = computed(() =>
-    this.formatMinutos(this.estadisticas()?.minutosTrabajadosTotal ?? 0),
+    this.formatMinutos(this.estadisticas()?.totalWorkedMinutes ?? 0),
   );
   readonly balanceHorario = computed(() => {
-    const b = this.estadisticas()?.balanceMinutos ?? 0;
+    const b = this.estadisticas()?.minutesBalance ?? 0;
     return `${b >= 0 ? '+' : '-'}${this.formatMinutos(Math.abs(b))}`;
   });
   readonly balanceClass = computed(() =>
-    (this.estadisticas()?.balanceMinutos ?? 0) >= 0 ? 'balance-positivo' : 'balance-negativo',
+    (this.estadisticas()?.minutesBalance ?? 0) >= 0 ? 'balance-positivo' : 'balance-negativo',
   );
-  readonly jornadasIncompletas = computed(() => this.estadisticas()?.jornadasIncompletas ?? 0);
-  readonly totalIncidencias = computed(() => this.estadisticas()?.incidencias ?? 0);
+  readonly jornadasIncompletas = computed(() => this.estadisticas()?.incompleteWorkdays ?? 0);
+  readonly totalIncidencias = computed(() => this.estadisticas()?.incidencesCount ?? 0);
 
   readonly incidenciasPeriodo = computed<IncidenciaVista[]>(() => {
-    const incidenciasRaw = this.estadisticas()?.incidenciasList ?? [];
+    const incidenciasRaw = this.estadisticas()?.incidenceList ?? [];
 
     return incidenciasRaw.map((inc) => {
       const estadoOriginal = inc.status || 'PENDING';
@@ -151,10 +151,10 @@ export class WorkerEstadisticasComponent implements OnInit {
   });
 
   readonly historialPaginado = computed<SemanaData[]>(() => {
-    const diarios = this.estadisticas()?.resumenDiario ?? [];
+    const diarios = this.estadisticas()?.dailySummary ?? [];
     if (diarios.length === 0) return [];
 
-    const fechas = diarios.map((d) => parseISO(d.fecha));
+    const fechas = diarios.map((d) => parseISO(d.date));
     const inicioAbsoluto = startOfWeek(new Date(Math.min(...fechas.map((f) => f.getTime()))), {
       weekStartsOn: 1,
     });
@@ -172,10 +172,10 @@ export class WorkerEstadisticasComponent implements OnInit {
 
       for (let i = 0; i < 7; i++) {
         const fechaDia = addDays(lunesActual, i);
-        const datoReal = diarios.find((d) => isSameDay(parseISO(d.fecha), fechaDia));
+        const datoReal = diarios.find((d) => isSameDay(parseISO(d.date), fechaDia));
 
-        const trabajados = datoReal?.minutosTrabajados ?? 0;
-        const previstos = datoReal?.minutosPrevistos ?? 0;
+        const trabajados = datoReal?.workedMinutes ?? 0;
+        const previstos = datoReal?.plannedMinutes ?? 0;
         const balance = trabajados - previstos;
 
         diasGrafico.push({

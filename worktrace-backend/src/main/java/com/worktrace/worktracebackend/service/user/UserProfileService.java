@@ -62,7 +62,7 @@ public class UserProfileService {
             String avatarUrl = storageService.getUrl(storedFilename, "avatars");
             profile.setAvatarUrl(avatarUrl);
 
-        } else if (Boolean.TRUE.equals(requestDto.getEliminarAvatar())) {
+        } else if (Boolean.TRUE.equals(requestDto.getDeleteAvatar())) {
 
             if (profile.getAvatarUrl() != null && !profile.getAvatarUrl().isBlank()) {
                 String oldFilename = profile.getAvatarUrl().substring(profile.getAvatarUrl().lastIndexOf('/') + 1);
@@ -71,8 +71,8 @@ public class UserProfileService {
             profile.setAvatarUrl(null);
         }
 
-        if (requestDto.getTelefono() != null) {
-            profile.setPhone(requestDto.getTelefono());
+        if (requestDto.getPhone() != null) {
+            profile.setPhone(requestDto.getPhone());
         }
         profile.setUpdatedAt(OffsetDateTime.now());
 
@@ -82,8 +82,8 @@ public class UserProfileService {
 
         if (newEmail != null && !newEmail.trim().isEmpty() && !user.getEmail().equals(newEmail)) {
 
-            if (requestDto.getContrasenaActual() == null ||
-                    !passwordEncoder.matches(requestDto.getContrasenaActual(), user.getPasswordHash())) {
+            if (requestDto.getActualPassword() == null ||
+                    !passwordEncoder.matches(requestDto.getActualPassword(), user.getPasswordHash())) {
                 throw new IllegalArgumentException("Contraseña incorrecta. No puedes cambiar el email.");
             }
             user.setEmail(newEmail);
@@ -91,7 +91,7 @@ public class UserProfileService {
         }
 
         UserResponseDto responseDto = buildUserResponseDto(profile, user);
-        responseDto.setTokenActualizado(newToken);
+        responseDto.setUpdatedToken(newToken);
         return responseDto;
     }
 
@@ -228,12 +228,12 @@ public class UserProfileService {
                 .toList();
 
         UserResponseDto responseDto = new UserResponseDto();
-        responseDto.setNombreCompleto(profile.getFullName());
+        responseDto.setFullName(profile.getFullName());
         responseDto.setAvatarUrl(profile.getAvatarUrl());
-        responseDto.setPuestoTrabajo(profile.getPosition() != null ? profile.getPosition().getTitle() : "Sin asignar");
+        responseDto.setJobPosition(profile.getPosition() != null ? profile.getPosition().getTitle() : "Sin asignar");
         responseDto.setEmail(user.getEmail());
-        responseDto.setTelefono(profile.getPhone());
-        responseDto.setHorario(schedules);
+        responseDto.setPhone(profile.getPhone());
+        responseDto.setSchedule(schedules);
 
         return responseDto;
     }

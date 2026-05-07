@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TotalHoursTodayResponseDto {
-    private Long minutosTotales;
+    private Long totalMinutes;
 }

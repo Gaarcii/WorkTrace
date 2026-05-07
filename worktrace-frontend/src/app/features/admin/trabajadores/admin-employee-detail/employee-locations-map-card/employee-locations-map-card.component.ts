@@ -197,12 +197,12 @@ export class EmployeeLocationsMapCardComponent {
   ): MapPointInfo | null {
     const latitude =
       type === 'start'
-        ? (fichaje.latEntrada ?? fichaje.start_lat)
-        : (fichaje.latSalida ?? fichaje.end_lat);
+        ? (fichaje.latStartAt ?? fichaje.start_lat)
+        : (fichaje.latEndAt ?? fichaje.end_lat);
     const longitude =
       type === 'start'
-        ? (fichaje.lngEntrada ?? fichaje.start_lng)
-        : (fichaje.lngSalida ?? fichaje.end_lng);
+        ? (fichaje.lngStartAt ?? fichaje.start_lng)
+        : (fichaje.lngEndAt ?? fichaje.end_lng);
 
     if (latitude == null || longitude == null) {
       return null;
@@ -213,8 +213,8 @@ export class EmployeeLocationsMapCardComponent {
     const typeFullName = type === 'start' ? 'Entrada' : 'Salida';
 
     const timeValue =
-      type === 'start' ? (fichaje.start_at ?? fichaje.entrada) : (fichaje.end_at ?? fichaje.salida);
-    const fallbackDate = fichaje.work_date ?? fichaje.fecha ?? '';
+      type === 'start' ? (fichaje.start_at ?? fichaje.startAt) : (fichaje.end_at ?? fichaje.endAt);
+    const fallbackDate = fichaje.work_date ?? fichaje.date ?? '';
 
     const shortDate = this.formatDateDayMonth(fallbackDate);
     const shortLabel = `${shortDate} ${typeLabel}`;
@@ -242,11 +242,11 @@ export class EmployeeLocationsMapCardComponent {
   private getDayKey(fichaje: TimeEntryTableResponseDto): string {
     const rawDay =
       fichaje.work_date ??
-      fichaje.fecha ??
+      fichaje.date ??
       fichaje.start_at ??
-      fichaje.entrada ??
+      fichaje.startAt ??
       fichaje.end_at ??
-      fichaje.salida;
+      fichaje.endAt;
     if (!rawDay) return 'sin-fecha';
 
     const dayText = String(rawDay).trim();

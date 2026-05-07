@@ -2,7 +2,7 @@ package com.worktrace.worktracebackend.dto.timeEntry;
 
 import java.time.LocalDate;
 
-public interface EstadisticaDiariaProjection {
+public interface DailyStatisticsProjection {
     LocalDate getFecha();
 
     Long getMinutosTrabajados();

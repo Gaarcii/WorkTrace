@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DailyTimeEntryCountDto {
-    private String fecha;
-    private Long numFichajes;
+    private String date;
+    private Long timeEntryNumber;
 }

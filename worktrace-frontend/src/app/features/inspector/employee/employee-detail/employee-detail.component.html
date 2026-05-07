@@ -97,24 +97,24 @@
       </div>
     } @else {
       <div class="schedule-list">
-        @for (schedule of detail()?.workSchedules; track schedule.diaSemana) {
+        @for (schedule of detail()?.workSchedules; track schedule.dayOfWeek) {
           <div class="schedule-card">
             <div class="schedule-header">
-              <mat-icon color="primary">{{ getDayIcon(schedule.diaSemana) }}</mat-icon>
-              <strong>{{ getDayName(schedule.diaSemana) }}</strong>
+              <mat-icon color="primary">{{ getDayIcon(schedule.dayOfWeek) }}</mat-icon>
+              <strong>{{ getDayName(schedule.dayOfWeek) }}</strong>
             </div>
             <div class="schedule-time">
               <mat-icon>schedule</mat-icon>
               <span>{{ formatTime(schedule.start) }} &rarr; {{ formatTime(schedule.end) }}</span>
               <span class="spacer"></span>
               <span class="hours-badge">{{
-                schedule.horas || calculateHours(schedule.start, schedule.end)
+                schedule.hours || calculateHours(schedule.start, schedule.end)
               }}</span>
             </div>
-            @if (schedule.lugar || schedule.ubicacion) {
+            @if (schedule.place || schedule.location) {
               <div class="schedule-location">
                 <mat-icon>location_on</mat-icon>
-                <span>{{ schedule.lugar || schedule.ubicacion }}</span>
+                <span>{{ schedule.place || schedule.location }}</span>
               </div>
             }
           </div>

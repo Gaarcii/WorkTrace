@@ -1,42 +1,42 @@
 import { WorkScheduleResponse } from './work-schedule.model';
 
 export interface ProfileResponse {
-  nombreCompleto: string;
+  fullName: string;
   avatarUrl: string;
-  puestoTrabajo: string;
+  jobPosition: string;
   email: string;
-  telefono: string;
-  tokenActualizado: string;
-  horario: WorkScheduleResponse[];
+  phone: string;
+  updatedToken: string;
+  schedule: WorkScheduleResponse[];
 }
 
 export interface ProfileRequest {
   avatar?: File | null;
   email: string;
-  telefono: string;
-  contrasenaActual: string;
-  eliminarAvatar: string;
+  phone: string;
+  actualPassword: string;
+  deleteAvatar: string;
 }
 
 export interface DepartmentStatDto {
-  departamento: string;
-  totalTrabajadores: number;
-  trabajadoresActivos: number;
+  department: string;
+  totalWorkers: number;
+  activeWorkers: number;
 }
 
 export interface EmployeeResponseDto {
   id: string;
-  nombre: string;
+  name: string;
   dni: string;
   email: string;
   avatarUrl: string;
-  telefono: string;
-  puesto: string;
-  horasSemanales: string;
-  estado: string;
-  fechaAlta: string;
+  phone: string;
+  jobPosition: string;
+  weeklyHours: string;
+  status: string;
+  registrationDate: string;
   positionId?: string | null;
-  horario?: WorkScheduleResponse[];
+  schedule?: WorkScheduleResponse[];
 }
 
 export interface JobPositionResponseDto {

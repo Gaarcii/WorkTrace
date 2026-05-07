@@ -10,8 +10,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UltimosFichajesResponseDto {
+public class LastTimeEntriesResponseDto {
     private UUID timeEntryId;
-    private String tipoEvento;
-    private OffsetDateTime fecha;
+    private String eventType;
+    private OffsetDateTime date;
 }

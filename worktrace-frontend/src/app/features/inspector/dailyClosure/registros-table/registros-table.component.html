@@ -18,7 +18,7 @@
     @if (registros().length === 0) {
       <div class="empty-state">
         <mat-icon class="huge-icon">folder_off</mat-icon>
-        <p>No hay registros disponibles en este rango de fechas.</p>
+        <p>No hay registros disponibles en este rango de dates.</p>
       </div>
     } @else {
       <div class="table-responsive">
@@ -34,33 +34,33 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of registros(); track item.fecha) {
-              <tr [ngClass]="getRowClass(item.estado)">
+            @for (item of registros(); track item.date) {
+              <tr [ngClass]="getRowClass(item.status)">
                 <td>
                   <div class="d-flex align-center">
                     <mat-icon class="icon-small mr-2 text-grey">calendar_today</mat-icon>
-                    <span>{{ formatDate(item.fecha) }}</span>
+                    <span>{{ formatDate(item.date) }}</span>
                   </div>
                 </td>
 
                 <td class="text-center">
-                  <span class="status-chip" [ngClass]="getStatusColor(item.estado)">
-                    {{ getStatusLabel(item.estado) }}
+                  <span class="status-chip" [ngClass]="getStatusColor(item.status)">
+                    {{ getStatusLabel(item.status) }}
                   </span>
                 </td>
 
                 <td class="text-center">
-                  <span class="count-chip">{{ item.numeroFichajes }} fichajes</span>
+                  <span class="count-chip">{{ item.timeEntriesCount }} fichajes</span>
                 </td>
 
                 <td>
                   <div class="hash-container">
-                    <code class="hash-code">{{ item.hashDelDia || '—' }}</code>
-                    @if (item.hashDelDia) {
+                    <code class="hash-code">{{ item.dayHash || '—' }}</code>
+                    @if (item.dayHash) {
                       <button
                         mat-icon-button
                         class="btn-copy"
-                        (click)="copyHash.emit(item.hashDelDia)"
+                        (click)="copyHash.emit(item.dayHash)"
                         title="Copiar"
                       >
                         <mat-icon>content_copy</mat-icon>
@@ -72,14 +72,14 @@
                 <td>
                   <div class="hash-container">
                     @if (
-                      item.hashDiaAnterior &&
-                      item.hashDiaAnterior !== 'GENESIS_HASH_0000000000000000000000000000'
+                      item.previousDayHash &&
+                      item.previousDayHash !== 'GENESIS_HASH_0000000000000000000000000000'
                     ) {
-                      <code class="hash-code prev-hash">{{ item.hashDiaAnterior }}</code>
+                      <code class="hash-code prev-hash">{{ item.previousDayHash }}</code>
                       <button
                         mat-icon-button
                         class="btn-copy"
-                        (click)="copyHash.emit(item.hashDiaAnterior)"
+                        (click)="copyHash.emit(item.previousDayHash)"
                         title="Copiar"
                       >
                         <mat-icon>content_copy</mat-icon>
@@ -93,7 +93,7 @@
                 <td>
                   <div class="d-flex align-center">
                     <mat-icon class="icon-small mr-2 text-grey">schedule</mat-icon>
-                    <span class="text-nowrap">{{ formatDateTime(item.computado) }}</span>
+                    <span class="text-nowrap">{{ formatDateTime(item.computedAt) }}</span>
                   </div>
                 </td>
               </tr>

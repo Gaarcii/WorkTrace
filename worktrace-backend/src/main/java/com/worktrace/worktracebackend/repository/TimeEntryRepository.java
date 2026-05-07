@@ -1,7 +1,7 @@
 package com.worktrace.worktracebackend.repository;
 
 import com.worktrace.worktracebackend.dto.timeEntry.DailyFichajeCountProjection;
-import com.worktrace.worktracebackend.dto.timeEntry.EstadisticaDiariaProjection;
+import com.worktrace.worktracebackend.dto.timeEntry.DailyStatisticsProjection;
 import com.worktrace.worktracebackend.model.EstadoFichaje;
 import com.worktrace.worktracebackend.model.TimeEntry;
 import org.springframework.data.domain.Page;
@@ -77,7 +77,7 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
             GROUP BY t.work_date
             ORDER BY t.work_date
             """, nativeQuery = true)
-    List<EstadisticaDiariaProjection> getEstadisticasDiariasAgrupadas(
+    List<DailyStatisticsProjection> getEstadisticasDiariasAgrupadas(
             @Param("userId") UUID userId,
             @Param("fechaInicio") LocalDate fechaInicio,
             @Param("fechaFin") LocalDate fechaFin

@@ -72,9 +72,9 @@ export class EditFichajeDialogComponent {
     const rawValue = this.form.getRawValue();
 
     this.save.emit({
-      entrada: this.toOffsetDateTime(rawValue.date, rawValue.startTime),
-      salida: rawValue.endTime ? this.toOffsetDateTime(rawValue.date, rawValue.endTime) : null,
-      justificacion: rawValue.modificationReason.trim(),
+      startAt: this.toOffsetDateTime(rawValue.date, rawValue.startTime),
+      endAt: rawValue.endTime ? this.toOffsetDateTime(rawValue.date, rawValue.endTime) : null,
+      justification: rawValue.modificationReason.trim(),
     });
   }
 
@@ -85,9 +85,9 @@ export class EditFichajeDialogComponent {
   }
 
   private toFormValue(fichaje: TimeEntryTableResponseDto): EditFichajeFormValue {
-    const startValue = fichaje.start_at ?? fichaje.entrada ?? '';
-    const endValue = fichaje.end_at ?? fichaje.salida ?? null;
-    const dateValue = fichaje.work_date ?? fichaje.fecha ?? startValue;
+    const startValue = fichaje.start_at ?? fichaje.startAt ?? '';
+    const endValue = fichaje.end_at ?? fichaje.endAt ?? null;
+    const dateValue = fichaje.work_date ?? fichaje.date ?? startValue;
 
     return {
       id: fichaje.id,

@@ -13,10 +13,10 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WorkScheduleResponseDto {
-    private String lugar;
-    private String ubicacion;
-    private DayOfWeek diaSemana;
+    private String place;
+    private String location;
+    private DayOfWeek dayOfWeek;
     private LocalTime start;
     private LocalTime end;
-    private Long horas;
+    private Long hours;
 }

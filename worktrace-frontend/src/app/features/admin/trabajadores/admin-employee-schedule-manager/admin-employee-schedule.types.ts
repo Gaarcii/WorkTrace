@@ -6,7 +6,7 @@ import {
 } from '../../../../shared/models/work-schedule.model';
 
 export interface EmployeeScheduleResponseDto extends EmployeeResponseDto {
-  horario?: WorkScheduleResponse[];
+  schedule?: WorkScheduleResponse[];
 }
 
 export interface EditableDaySchedule {

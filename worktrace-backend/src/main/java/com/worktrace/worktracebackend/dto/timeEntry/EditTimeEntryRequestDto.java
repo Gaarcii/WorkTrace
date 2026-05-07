@@ -17,11 +17,11 @@ import java.time.OffsetDateTime;
 public class EditTimeEntryRequestDto {
 
     @NotNull(message = "La fecha y hora de entrada es obligatoria")
-    private OffsetDateTime entrada;
+    private OffsetDateTime startAt;
 
-    private OffsetDateTime salida;
+    private OffsetDateTime endAt;
 
     @NotBlank(message = "La justificación es obligatoria")
     @Size(min = 10, message = "La justificación debe tener al menos 10 caracteres")
-    private String justificacion;
+    private String justification;
 }

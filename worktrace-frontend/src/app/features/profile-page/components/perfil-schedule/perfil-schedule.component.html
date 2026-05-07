@@ -7,14 +7,14 @@
     <div class="week-grid-wrapper">
       <div class="week-grid">
         @for (dia of horario(); track dia.id) {
-          <div class="day-col" [class.is-free]="!dia.trabaja">
-            <div class="day-header">{{ dia.inicial }}</div>
+          <div class="day-col" [class.is-free]="!dia.work">
+            <div class="day-header">{{ dia.initial }}</div>
 
-            @if (dia.trabaja) {
+            @if (dia.work) {
               <div class="day-body">
-                <div class="day-lugar">{{ dia.lugar }}</div>
-                @if (dia.ubicacion) {
-                  <div class="day-address">{{ dia.ubicacion }}</div>
+                <div class="day-lugar">{{ dia.place }}</div>
+                @if (dia.location) {
+                  <div class="day-address">{{ dia.location }}</div>
                 }
                 <div class="day-time-badge">
                   <mat-icon class="time-icon">schedule</mat-icon>

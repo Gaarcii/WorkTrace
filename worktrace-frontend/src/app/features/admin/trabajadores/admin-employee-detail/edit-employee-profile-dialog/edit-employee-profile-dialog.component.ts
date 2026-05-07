@@ -45,7 +45,7 @@ export class EditEmployeeProfileDialogComponent {
       if (open && data) {
         this.form.patchValue({
           positionId: data.positionId ?? null,
-          weeklyHours: this.parseWeeklyHours(data.horasSemanales),
+          weeklyHours: this.parseWeeklyHours(data.weeklyHours),
         });
       } else if (!open) {
         this.form.reset({ positionId: null, weeklyHours: 40 });
