@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+/**
+ * Controlador para gestionar los tipos de incidencia.
+ * Permite a los usuarios autenticados obtener los tipos de incidencia
+ * y a los administradores crear, actualizar y eliminar tipos de incidencia.
+ */
 @RestController
 @RequestMapping("/api/incidence-types")
 @RequiredArgsConstructor
@@ -20,6 +25,10 @@ public class IncidenceTypeController {
 
     private final IncidenceTypeService incidenceTypeService;
 
+    /**
+     * Obtiene todos los tipos de incidencia disponibles en el sistema.
+     * @return Una respuesta que contiene una lista de los tipos de incidencia.
+     */
     @GetMapping()
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<IncidenceTypeResponseDto> getIncidenceTypes() {
@@ -28,6 +37,12 @@ public class IncidenceTypeController {
         return ResponseEntity.ok(responseDto);
     }
 
+    /**
+     * Crea un nuevo tipo de incidencia.
+     * Solo los administradores pueden realizar esta operación para definir nuevas categorías de incidencias.
+     * @param dto Los datos del tipo de incidencia a crear.
+     * @return El tipo de incidencia creado.
+     */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<IncidenceTypeItemDto> createIncidenceType(
@@ -36,6 +51,13 @@ public class IncidenceTypeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    /**
+     * Actualiza un tipo de incidencia existente.
+     * Solo los administradores pueden modificar los detalles de un tipo de incidencia.
+     * @param id El identificador único del tipo de incidencia a actualizar.
+     * @param dto Los nuevos datos para el tipo de incidencia.
+     * @return El tipo de incidencia actualizado.
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<IncidenceTypeItemDto> updateIncidenceType(
@@ -45,6 +67,12 @@ public class IncidenceTypeController {
         return ResponseEntity.ok(updated);
     }
 
+    /**
+     * Elimina un tipo de incidencia existente.
+     * Solo los administradores pueden eliminar tipos de incidencia.
+     * @param id El identificador único del tipo de incidencia a eliminar.
+     * @return Una respuesta vacía indicando que la operación fue exitosa.
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteIncidenceType(@PathVariable UUID id) {

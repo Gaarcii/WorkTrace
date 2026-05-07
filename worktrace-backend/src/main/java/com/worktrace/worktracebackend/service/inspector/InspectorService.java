@@ -18,6 +18,12 @@ import java.time.LocalDate;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio que encapsula la lógica de negocio para el rol de Inspector.
+ * Su propósito es proporcionar una capa de acceso de solo lectura a los datos
+ * de la plataforma (empleados, fichajes, incidencias, auditorías), permitiendo
+ * a un inspector realizar tareas de supervisión y verificación sin capacidad de modificación.
+ */
 @Service
 @RequiredArgsConstructor
 public class InspectorService {
@@ -30,6 +36,13 @@ public class InspectorService {
     private final DailyClosureRepository dailyClosureRepository;
     private final DailyClosureService dailyClosureService;
 
+    /**
+     * Obtiene los datos agregados para la página de inicio del inspector.
+     * Este método recopila métricas clave como el número total de empleados, incidencias pendientes
+     * y registros de auditoría, proporcionando una vista general y rápida del estado del sistema.
+     *
+     * @return Un DTO {@link InspectorHomeResponseDto} con las estadísticas principales.
+     */
     @Transactional(readOnly = true)
     public InspectorHomeResponseDto getHome() {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -53,6 +66,15 @@ public class InspectorService {
         );
     }
 
+    /**
+     * Obtiene una lista paginada de empleados de la empresa.
+     * Permite al inspector consultar la plantilla de trabajadores, con la opción de filtrar
+     * por nombre o DNI para facilitar la búsqueda de un empleado específico.
+     *
+     * @param pageable La información de paginación.
+     * @param search   Un término de búsqueda opcional para filtrar por nombre o DNI.
+     * @return Una página {@link Page} de {@link EmployeeDto} con los datos de los empleados.
+     */
     @Transactional(readOnly = true)
     public Page<EmployeeDto> getEmployees(Pageable pageable, String search) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -78,6 +100,14 @@ public class InspectorService {
         ));
     }
 
+    /**
+     * Obtiene los detalles laborales de un empleado específico.
+     * Este método proporciona información detallada sobre un empleado, como sus horarios de trabajo
+     * asignados y las horas semanales teóricas, datos clave para una auditoría.
+     *
+     * @param employeeId El UUID del empleado a consultar.
+     * @return Un DTO {@link EmployeeDetailDto} con los detalles del empleado.
+     */
     @Transactional(readOnly = true)
     public EmployeeDetailDto getEmployeeDetail(UUID employeeId) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -111,6 +141,17 @@ public class InspectorService {
         );
     }
 
+    /**
+     * Obtiene una página de incidencias con capacidad de filtrado avanzado.
+     * Permite al inspector buscar incidencias por estado (pendiente, resuelta), tipo, o a través
+     * de un término de búsqueda de texto libre, facilitando la investigación de casos específicos.
+     *
+     * @param status          El estado de la incidencia a filtrar (opcional).
+     * @param incidenceTypeId El UUID del tipo de incidencia a filtrar (opcional).
+     * @param search          Un término de búsqueda de texto libre (opcional).
+     * @param pageable        La información de paginación.
+     * @return Una página {@link Page} de {@link InspectorIncidenceDto} con las incidencias filtradas.
+     */
     @Transactional(readOnly = true)
     public Page<InspectorIncidenceDto> getFilteredIncidences(
             String status,
@@ -155,6 +196,16 @@ public class InspectorService {
         );
     }
 
+    /**
+     * Obtiene una lista paginada de los cierres diarios y verifica su integridad.
+     * Para cada cierre, recalcula el hash diario y lo compara con el almacenado, permitiendo
+     * al inspector detectar de forma inmediata si los registros de un día han sido alterados.
+     *
+     * @param startDate La fecha de inicio del rango a consultar (opcional).
+     * @param endDate   La fecha de fin del rango a consultar (opcional).
+     * @param pageable  La información de paginación.
+     * @return Una página {@link Page} de {@link InspectorDailyClosureDto} con los cierres y su estado de integridad.
+     */
     @Transactional(readOnly = true)
     public Page<InspectorDailyClosureDto> getDailyClosures(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -177,6 +228,17 @@ public class InspectorService {
         ));
     }
 
+    /**
+     * Obtiene una lista paginada de los registros de auditoría del sistema.
+     * Permite al inspector filtrar por tipo de acción (p. ej., "UPDATE", "VOID") y por rango de fechas
+     * para investigar quién ha modificado qué registros y cuándo.
+     *
+     * @param action    El tipo de acción a filtrar (opcional).
+     * @param startDate La fecha de inicio del rango (opcional).
+     * @param endDate   La fecha de fin del rango (opcional).
+     * @param pageable  La información de paginación.
+     * @return Una página {@link Page} de {@link InspectorAuditDto} con los registros de auditoría.
+     */
     @Transactional(readOnly = true)
     public Page<InspectorAuditDto> getAudits(String action, java.time.LocalDate startDate, java.time.LocalDate endDate, Pageable pageable) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -205,6 +267,14 @@ public class InspectorService {
         });
     }
 
+    /**
+     * Obtiene el detalle completo de un registro de auditoría específico.
+     * Este método es crucial para la inspección, ya que devuelve no solo quién hizo el cambio y por qué,
+     * sino también una instantánea en JSON de los datos *antes* de que se realizara la modificación.
+     *
+     * @param auditId El UUID del registro de auditoría a consultar.
+     * @return Un DTO {@link InspectorAuditDetailDto} con todos los detalles de la modificación.
+     */
     @Transactional(readOnly = true)
     public InspectorAuditDetailDto getAuditDetail(UUID auditId) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();

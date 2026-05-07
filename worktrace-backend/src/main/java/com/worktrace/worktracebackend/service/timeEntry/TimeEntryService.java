@@ -29,6 +29,11 @@ import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio principal para gestionar toda la lógica de negocio relacionada con los fichajes (Time Entries).
+ * Este servicio centraliza las operaciones de creación, consulta, modificación y anulación de fichajes,
+ * así como el cálculo de estadísticas y la generación de informes tanto para empleados como para administradores.
+ */
 @Service
 @RequiredArgsConstructor
 public class TimeEntryService {
@@ -45,6 +50,17 @@ public class TimeEntryService {
     private final ObjectMapper objectMapper;
     private final AuditTimeEntryService auditTimeEntryService;
 
+    /**
+     * Procesa un nuevo fichaje, ya sea de entrada o de salida.
+     * Si el empleado ya tiene un fichaje abierto, este método lo cierra. Si no, crea uno nuevo.
+     * Además, analiza la IP para detectar posibles anomalías (VPN, Tor) y la precisión del GPS,
+     * añadiendo las banderas correspondientes para auditoría.
+     *
+     * @param requestDto Datos del fichaje enviados por el cliente (latitud, longitud, precisión).
+     * @param realIp     La dirección IP real del cliente.
+     * @param userAgent  El User-Agent del navegador o dispositivo del cliente.
+     * @return Un DTO {@link TimeEntryResponseDto} con el resultado del fichaje procesado.
+     */
     @Transactional
     public TimeEntryResponseDto processTimeEntry(TimeEntryRequestDto requestDto, String realIp, String userAgent) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -120,6 +136,13 @@ public class TimeEntryService {
         return response;
     }
 
+    /**
+     * Obtiene un resumen diario de la jornada del empleado autenticado.
+     * Calcula las horas trabajadas en el día actual, las horas objetivo según su horario
+     * y una lista de sus últimos fichajes para una visualización rápida.
+     *
+     * @return Un DTO {@link DailySummaryResponseDto} con el resumen de la jornada.
+     */
     @Transactional(readOnly = true)
     public DailySummaryResponseDto getDailySummary() {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -136,6 +159,14 @@ public class TimeEntryService {
         return dailySummary;
     }
 
+    /**
+     * Obtiene el historial detallado de fichajes para una fecha específica del empleado autenticado.
+     * Además de los fichajes del día, calcula el total de minutos trabajados en la semana
+     * en comparación con el objetivo semanal, proporcionando una visión completa del cumplimiento horario.
+     *
+     * @param date La fecha para la cual se solicita el historial.
+     * @return Un DTO {@link HistoryResponseDto} con los detalles diarios y semanales.
+     */
     @Transactional(readOnly = true)
     public HistoryResponseDto getHistoryByDate(LocalDate date) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -214,6 +245,15 @@ public class TimeEntryService {
         return dailySummary;
     }
 
+    /**
+     * Calcula y devuelve estadísticas de trabajo para el empleado autenticado en un rango de fechas.
+     * Este método es clave para los informes de empleado, ya que calcula el balance de horas
+     * (trabajadas vs. planificadas), el número de jornadas incompletas y las incidencias reportadas.
+     *
+     * @param startDate La fecha de inicio del período de estadísticas.
+     * @param endDate   La fecha de fin del período de estadísticas.
+     * @return Un DTO {@link StatisticsResponseDto} con todas las estadísticas calculadas.
+     */
     public StatisticsResponseDto getStatistics(LocalDate startDate, LocalDate endDate) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         StatisticsResponseDto responseDto = new StatisticsResponseDto();
@@ -289,6 +329,15 @@ public class TimeEntryService {
         return responseDto;
     }
 
+    /**
+     * Genera y exporta el historial de fichajes del empleado autenticado en formato PDF.
+     * Este método recopila los datos y los delega al servicio de generación de PDF para crear
+     * un informe que el empleado puede descargar.
+     *
+     * @param startDate La fecha de inicio del informe.
+     * @param endDate   La fecha de fin del informe.
+     * @return Un array de bytes (byte[]) que representa el archivo PDF.
+     */
     @Transactional(readOnly = true)
     public byte[] exportEmployeeHistoryPdf(LocalDate startDate, LocalDate endDate) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -309,6 +358,13 @@ public class TimeEntryService {
         );
     }
 
+    /**
+     * Obtiene una lista de los trabajadores que tienen un fichaje abierto en el momento de la consulta.
+     * Este método es utilizado por los administradores para ver en tiempo real quién está trabajando.
+     * También calcula la puntualidad comparando la hora de entrada con la hora de inicio de su turno.
+     *
+     * @return Una lista de DTOs {@link ActiveWorkerDto} con la información de los trabajadores activos.
+     */
     @Transactional(readOnly = true)
     public List<ActiveWorkerDto> getActiveWorkers() {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -358,6 +414,12 @@ public class TimeEntryService {
                 .toList();
     }
 
+    /**
+     * Cuenta el número total de fichajes (entradas y salidas) realizados en el día actual
+     * para la empresa del administrador autenticado.
+     *
+     * @return El número total de fichajes del día.
+     */
     @Transactional(readOnly = true)
     public Long getTimeEntriesCountToday() {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -367,6 +429,11 @@ public class TimeEntryService {
                 company.getId(), LocalDate.now(), LocalDate.now());
     }
 
+    /**
+     * Calcula el total de horas trabajadas por todos los empleados de la empresa en el día actual.
+     *
+     * @return Un DTO {@link TotalHoursTodayResponseDto} con el total de minutos trabajados.
+     */
     @Transactional(readOnly = true)
     public TotalHoursTodayResponseDto getTotalHoursToday() {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -382,6 +449,14 @@ public class TimeEntryService {
         return new TotalHoursTodayResponseDto(totalMinutes);
     }
 
+    /**
+     * Obtiene los datos para un gráfico que muestra el número de fichajes por día en un rango de fechas.
+     * Este método es útil para que los administradores visualicen la actividad de fichajes a lo largo de una semana.
+     *
+     * @param startDate La fecha de inicio del rango.
+     * @param endDate   La fecha de fin del rango.
+     * @return Una lista de DTOs {@link DailyTimeEntryCountDto} con el recuento de fichajes por día.
+     */
     @Transactional(readOnly = true)
     public List<DailyTimeEntryCountDto> getWeeklyTimeEntryCountChartData(LocalDate startDate, LocalDate endDate) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -406,6 +481,12 @@ public class TimeEntryService {
         return result;
     }
 
+    /**
+     * Obtiene la fecha del primer fichaje registrado por el empleado autenticado.
+     * Es útil para establecer la fecha de inicio por defecto en los selectores de rango de fechas.
+     *
+     * @return La {@link LocalDate} del primer fichaje, o la fecha actual si no hay ninguno.
+     */
     @Transactional(readOnly = true)
     public LocalDate getFirstTimeEntryDateForEmployee() {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -414,6 +495,14 @@ public class TimeEntryService {
         return firstDate != null ? firstDate : LocalDate.now();
     }
 
+    /**
+     * Permite a un administrador modificar un fichaje existente.
+     * Esta operación requiere una justificación y registra un evento de auditoría detallado
+     * que incluye el estado del fichaje antes y después del cambio, garantizando la trazabilidad.
+     *
+     * @param id  El UUID del fichaje a modificar.
+     * @param dto El DTO con los nuevos datos del fichaje y la justificación.
+     */
     @Transactional
     public void updateTimeEntry(UUID id, EditTimeEntryRequestDto dto) {
         if (dto.getJustification() == null || dto.getJustification().trim().length() < 10) {
@@ -450,6 +539,14 @@ public class TimeEntryService {
         }
     }
 
+    /**
+     * Permite a un administrador anular un fichaje (borrado lógico).
+     * El fichaje no se elimina de la base de datos, sino que se marca como anulado,
+     * registrando quién lo hizo, cuándo y por qué. Esta acción también genera un evento de auditoría.
+     *
+     * @param id  El UUID del fichaje a anular.
+     * @param dto El DTO con la justificación de la anulación.
+     */
     @Transactional
     public void voidTimeEntry(UUID id, VoidTimeEntryRequestDto dto) {
         if (dto.getJustification() == null || dto.getJustification().trim().length() < 10) {
@@ -476,6 +573,14 @@ public class TimeEntryService {
         }
     }
 
+    /**
+     * Obtiene una lista paginada de los fichajes de un empleado específico.
+     * Utilizado por los administradores para consultar el historial de un trabajador concreto.
+     *
+     * @param employeeId El UUID del empleado cuyos fichajes se quieren consultar.
+     * @param pageable   La información de paginación.
+     * @return Una página {@link Page} de DTOs {@link TimeEntryTableResponseDto} con los fichajes.
+     */
     @Transactional(readOnly = true)
     public Page<TimeEntryTableResponseDto> getTimeEntriesByEmployee
             (UUID employeeId, Pageable pageable) {
@@ -511,6 +616,12 @@ public class TimeEntryService {
         });
     }
 
+    /**
+     * Obtiene todos los fichajes de una fecha específica para todos los empleados de la empresa.
+     *
+     * @param date La fecha para la cual se quieren obtener los fichajes.
+     * @return Una lista de DTOs {@link AdminTimeEntryByDateResponseDto} con los fichajes del día.
+     */
     @Transactional(readOnly = true)
     public List<AdminTimeEntryByDateResponseDto> getTimeEntriesByDateForCompany(LocalDate date) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -542,6 +653,13 @@ public class TimeEntryService {
         }).toList();
     }
 
+    /**
+     * Genera y exporta un informe forense en PDF con los fichajes de la empresa en un rango de fechas.
+     *
+     * @param startDate La fecha de inicio del informe.
+     * @param endDate   La fecha de fin del informe.
+     * @return Un array de bytes (byte[]) que representa el archivo PDF.
+     */
     @Transactional(readOnly = true)
     public byte[] exportCompanyReportAsPdf(LocalDate startDate, LocalDate endDate) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -555,6 +673,13 @@ public class TimeEntryService {
         return adminPdfGeneratorService.generateCompanyTimeEntriesPdf(company, timeEntries, startDate, endDate, auditRecords);
     }
 
+    /**
+     * Genera y exporta un informe de auditoría en Excel con los fichajes de la empresa en un rango de fechas.
+     *
+     * @param startDate La fecha de inicio del informe.
+     * @param endDate   La fecha de fin del informe.
+     * @return Un array de bytes (byte[]) que representa el archivo Excel.
+     */
     @Transactional(readOnly = true)
     public byte[] exportCompanyReportAsExcel(LocalDate startDate, LocalDate endDate) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();

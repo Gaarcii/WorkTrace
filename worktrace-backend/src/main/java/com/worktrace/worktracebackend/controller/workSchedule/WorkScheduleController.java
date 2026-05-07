@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Controlador para gestionar los horarios de trabajo de los empleados.
+ * Permite a los administradores asignar y consultar los horarios de trabajo.
+ */
 @RestController
 @RequestMapping("/api/work-schedules")
 @RequiredArgsConstructor
@@ -24,6 +28,12 @@ public class WorkScheduleController {
 
     private final WorkScheduleService workScheduleService;
 
+    /**
+     * Asigna un horario de trabajo a uno o varios empleados.
+     * Esta operación permite a los administradores definir los turnos y jornadas laborales.
+     * @param dto El DTO que contiene la información del horario y los empleados a los que se asigna.
+     * @return Una respuesta vacía si la asignación fue exitosa.
+     */
     @PostMapping("/assign")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> assignWorkSchedule(
@@ -32,6 +42,11 @@ public class WorkScheduleController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Obtiene todos los horarios de trabajo asignados a un empleado específico.
+     * @param employeeId El UUID del empleado cuyos horarios se quieren consultar.
+     * @return Una lista con los horarios de trabajo del empleado.
+     */
     @GetMapping("/employee/{employeeId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<WorkScheduleResponseDto>> getEmployeeSchedules(

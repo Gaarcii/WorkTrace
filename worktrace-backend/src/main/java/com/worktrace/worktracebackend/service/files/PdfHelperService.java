@@ -10,16 +10,40 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Servicio de utilidad para la generación de documentos PDF.
+ * Su propósito es centralizar y reutilizar la lógica común para la creación de PDFs,
+ * como la generación de cabeceras y pies de página estandarizados, y el cálculo de hashes
+ * de seguridad, garantizando así la consistencia y la integridad en todos los informes generados.
+ */
 @Service
 @RequiredArgsConstructor
 public class PdfHelperService {
 
     private final HashService hashService;
 
+    /**
+     * Genera un hash criptográfico SHA-256 a partir de una cadena de datos.
+     * Este método se utiliza para crear una "huella digital" única del contenido de un informe,
+     * permitiendo verificar posteriormente que los datos no han sido alterados.
+     *
+     * @param rawData La cadena de datos brutos que se va a hashear.
+     * @return La representación hexadecimal del hash SHA-256.
+     */
     public String generateSha256Hash(String rawData) {
         return hashService.sha256Hex(rawData);
     }
 
+    /**
+     * Añade una cabecera estandarizada a un documento PDF.
+     * La cabecera incluye elementos de branding como el logo de la empresa, el nombre y el CIF,
+     * así como el título del informe y la fecha de emisión, proporcionando un formato profesional y consistente.
+     *
+     * @param document    El documento PDF al que se añadirá la cabecera.
+     * @param company     La entidad Company para obtener los datos de la empresa.
+     * @param reportTitle El título específico del informe que se está generando.
+     * @throws DocumentException Si ocurre un error al añadir elementos al documento.
+     */
     public void addCompanyHeader(Document document, Company company, String reportTitle) throws DocumentException {
         PdfPTable headerTable = new PdfPTable(2);
         headerTable.setWidthPercentage(100);
@@ -78,6 +102,11 @@ public class PdfHelperService {
         document.add(new org.openpdf.text.pdf.draw.LineSeparator(0.5f, 100, java.awt.Color.LIGHT_GRAY, Element.ALIGN_CENTER, -5));
     }
 
+    /**
+     * Clase interna que gestiona la creación de un pie de página estándar en cada página del PDF.
+     * Se utiliza para mostrar información crucial en la parte inferior de cada página, como el número de página,
+     * notas legales y, lo más importante, la huella digital (hash) del documento para garantizar su integridad.
+     */
     public static class StandardFooterEvent extends PdfPageEventHelper {
         private final String hashSeguridad;
 

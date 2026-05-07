@@ -20,6 +20,11 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Servicio para gestionar la lógica de negocio de las incidencias de los empleados.
+ * Se encarga de la creación, consulta y gestión (aprobación/rechazo) de las incidencias
+ * reportadas por los trabajadores, como olvidos de fichaje o errores en el registro horario.
+ */
 @Service
 @RequiredArgsConstructor
 public class IncidenceService {
@@ -28,6 +33,11 @@ public class IncidenceService {
     private final IncidenceRepository incidenceRepository;
     private final UserService userService;
 
+    /**
+     * Obtiene todas las incidencias registradas por el usuario actualmente autenticado.
+     * Permite a un trabajador consultar el historial y el estado de sus propias solicitudes.
+     * @return Una lista de DTOs con la información de las incidencias del trabajador.
+     */
     @Transactional(readOnly = true)
     public List<WorkerIncidenceResponseDto> getIncidencesByUserId() {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -38,6 +48,13 @@ public class IncidenceService {
         return mapToWorkerIncidenceResponseDtos(incidenceList);
     }
 
+    /**
+     * Crea una nueva incidencia para el trabajador autenticado.
+     * El trabajador puede reportar un evento, como un olvido de fichaje, que quedará
+     * pendiente de revisión por parte de un administrador.
+     * @param requestDto Los datos de la incidencia a crear.
+     * @return Un DTO con la información de la incidencia recién creada.
+     */
     @Transactional
     public WorkerIncidenceResponseDto createIncidence(WorkerIncidenceRequestDto requestDto) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -67,6 +84,12 @@ public class IncidenceService {
         );
     }
 
+    /**
+     * Obtiene las incidencias del usuario autenticado dentro de un rango de fechas específico.
+     * @param startDate La fecha de inicio del rango.
+     * @param endDate La fecha de fin del rango.
+     * @return Una lista de DTOs con las incidencias encontradas en ese período.
+     */
     @Transactional(readOnly = true)
     public List<WorkerIncidenceResponseDto> getIncidencesByDateRange(LocalDate startDate, LocalDate endDate) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -79,6 +102,14 @@ public class IncidenceService {
         return mapToWorkerIncidenceResponseDtos(incidenceList);
     }
 
+    /**
+     * Obtiene una página de incidencias de la empresa, filtradas por estado.
+     * Este método es utilizado por los administradores para revisar las incidencias
+     * que están, por ejemplo, pendientes de gestión.
+     * @param status El estado por el cual filtrar las incidencias (PENDING, RESOLVED, REJECTED).
+     * @param pageable La información de paginación.
+     * @return Una página de DTOs con las incidencias correspondientes.
+     */
     @Transactional(readOnly = true)
     public Page<AdminIncidenceResponseDto> getCompanyIncidencesByStatus(IncidenceStatus status, Pageable pageable) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -89,6 +120,12 @@ public class IncidenceService {
         return mapToAdminIncidenceResponseDtoPage(incidencePage);
     }
 
+    /**
+     * Obtiene el historial de incidencias ya gestionadas (resueltas o rechazadas) de la empresa.
+     * Permite a los administradores consultar un registro de las decisiones tomadas.
+     * @param pageable La información de paginación.
+     * @return Una página de DTOs con el historial de incidencias.
+     */
     @Transactional(readOnly = true)
     public Page<AdminIncidenceResponseDto> getCompanyIncidenceHistory(Pageable pageable) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -99,6 +136,13 @@ public class IncidenceService {
         return mapToAdminIncidenceResponseDtoPage(incidencePage);
     }
 
+    /**
+     * Permite a un administrador gestionar una incidencia pendiente.
+     * La gestión implica cambiar el estado de la incidencia a "resuelta" o "rechazada"
+     * y añadir una respuesta o comentario para el empleado.
+     * @param incidenceId El ID de la incidencia a gestionar.
+     * @param dto El DTO con el nuevo estado y la respuesta del administrador.
+     */
     @Transactional
     public void manageIncidence(UUID incidenceId, AdminIncidenceRequestDto dto) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();

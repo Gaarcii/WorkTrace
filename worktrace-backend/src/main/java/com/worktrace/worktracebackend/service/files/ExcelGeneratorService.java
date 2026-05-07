@@ -12,12 +12,33 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Servicio para generar informes de auditoría en formato Excel.
+ * Su propósito es crear un libro de trabajo Excel con varias hojas que detallan
+ * los registros horarios, la traza de auditoría de modificaciones y un certificado
+ * de integridad digital, proporcionando un documento completo y fácilmente procesable
+ * para inspecciones o análisis de datos.
+ */
 @Service
 @RequiredArgsConstructor
 public class ExcelGeneratorService {
 
     private final PdfHelperService pdfHelper;
 
+    /**
+     * Genera un informe de auditoría en formato Excel (XLSX) que contiene los registros horarios y su traza de auditoría.
+     * El libro de trabajo resultante incluye tres hojas:
+     * 1.  **Registro_Horario**: Detalla todos los fichajes del período, indicando su estado de integridad.
+     * 2.  **Traza_Auditoria**: Registra todas las modificaciones manuales realizadas sobre los fichajes.
+     * 3.  **Certificado_Integridad**: Contiene metadatos del informe y una firma digital (hash SHA-256)
+     *     del contenido de las otras dos hojas para garantizar que los datos no han sido alterados.
+     *
+     * @param timeEntries La lista de registros de fichajes a incluir.
+     * @param auditTrail La lista de registros de auditoría (modificaciones) a incluir.
+     * @param startDate La fecha de inicio del período del informe.
+     * @param endDate La fecha de fin del período del informe.
+     * @return Un array de bytes (byte[]) que representa el archivo Excel generado.
+     */
     public byte[] generateCompanyTimeEntriesExcel(List<TimeEntry> timeEntries, List<AuditRecordDto> auditTrail, LocalDate startDate, LocalDate endDate) {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 

@@ -15,12 +15,30 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Servicio dedicado a la generación de informes PDF complejos para administradores e inspectores.
+ * Su principal función es crear un "Informe Forense de Registro Horario", un documento detallado
+ * y con garantías de integridad, diseñado para cumplir con los requisitos legales y de auditoría.
+ */
 @Service
 @RequiredArgsConstructor
 public class AdminPdfGeneratorService {
 
     private final PdfHelperService pdfHelper;
 
+    /**
+     * Genera un informe forense en formato PDF con los registros horarios de una empresa para un período determinado.
+     * Este documento está diseñado para ser un registro inalterable y completo, incluyendo no solo los fichajes,
+     * sino también una traza de auditoría de todas las modificaciones realizadas. Para garantizar su integridad,
+     * se calcula y se incrusta un hash criptográfico SHA-256 del contenido.
+     *
+     * @param company      La empresa para la cual se genera el informe.
+     * @param timeEntries  La lista de registros de fichajes a incluir en el informe.
+     * @param startDate    La fecha de inicio del período del informe.
+     * @param endDate      La fecha de fin del período del informe.
+     * @param auditTrail   Una lista de registros de auditoría que detalla las modificaciones manuales.
+     * @return Un array de bytes (byte[]) que representa el archivo PDF generado.
+     */
     public byte[] generateCompanyTimeEntriesPdf(Company company, List<TimeEntry> timeEntries, LocalDate startDate, LocalDate endDate, List<AuditRecordDto> auditTrail) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

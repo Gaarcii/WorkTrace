@@ -22,6 +22,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Servicio encargado de realizar el cierre diario de fichajes para cada empresa.
+ * El propósito principal es garantizar la integridad e inmutabilidad de los registros de fichajes
+ * a través de un sistema de encadenamiento de hashes, similar a una blockchain, que se calcula
+ * y almacena diariamente de forma automatizada.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -38,6 +44,11 @@ public class DailyClosureService {
     private final AuditTimeEntryRepository auditTimeEntryRepository;
 
 
+    /**
+     * Ejecuta el proceso de cierre diario de forma automática para todas las empresas.
+     * Este método se activa mediante una tarea programada (cron) y procesa los fichajes del día anterior,
+     * generando un hash único que se encadena con el del día previo para asegurar la integridad de los datos.
+     */
    @Scheduled(cron = "0 0 10 * * ?")
     @Transactional
     public void runDailyClosure() {
@@ -86,6 +97,15 @@ public class DailyClosureService {
         dailyClosureRepository.save(closure);
     }
 
+    /**
+     * Verifica la integridad de los registros de una fecha específica para la empresa del usuario autenticado.
+     * Recalcula el hash diario basándose en los fichajes actuales y lo compara con el hash almacenado.
+     * Esto permite detectar cualquier alteración en los datos después de que el cierre se haya realizado.
+     *
+     * @param date La fecha para la cual se quiere verificar la integridad.
+     * @return "VALID" si los datos son íntegros, "MODIFIED" si ha habido modificaciones justificadas,
+     *         o "CORRUPTED" si los datos han sido alterados sin justificación.
+     */
     public String verifyIntegrity(LocalDate date) {
         UUID companyId = userService.getAuthenticatedUserAndCompanyInfo().getCompany().getId();
 

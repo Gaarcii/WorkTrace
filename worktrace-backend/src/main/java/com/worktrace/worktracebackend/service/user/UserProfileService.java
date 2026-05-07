@@ -28,6 +28,11 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Servicio para gestionar el perfil de los usuarios y la información de los empleados.
+ * Centraliza la lógica de negocio para que los usuarios puedan ver y actualizar sus propios datos,
+ * y para que los administradores puedan gestionar la información de los empleados de su empresa.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserProfileService {
@@ -39,12 +44,28 @@ public class UserProfileService {
     private final ProfileRepository profileRepository;
     private final JobPositionRepository jobPositionRepository;
 
+    /**
+     * Obtiene el perfil del usuario actualmente autenticado.
+     * Este método construye un DTO con la información combinada del perfil y el usuario
+     * para ser consumido por el frontend.
+     *
+     * @return Un {@link UserResponseDto} con los datos del perfil del usuario.
+     */
     @Transactional(readOnly = true)
     public UserResponseDto getProfile() {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         return buildUserResponseDto(info.getProfile(), info.getUser());
     }
 
+    /**
+     * Actualiza el perfil del usuario autenticado.
+     * Permite modificar datos como el teléfono, el avatar y el email. Si se cambia el email,
+     * se requiere la contraseña actual para seguridad y se genera un nuevo token JWT
+     * para mantener la sesión activa con la nueva identidad.
+     *
+     * @param requestDto El DTO con los datos a actualizar.
+     * @return Un {@link UserResponseDto} con el perfil actualizado y, opcionalmente, un nuevo token JWT.
+     */
     @Transactional
     public UserResponseDto updateProfile(UserRequestDto requestDto) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -96,6 +117,11 @@ public class UserProfileService {
     }
 
 
+    /**
+     * Cuenta el número total de empleados en la empresa del administrador autenticado.
+     *
+     * @return El número total de empleados.
+     */
     @Transactional(readOnly = true)
     public Long countCompanyEmployees() {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -103,6 +129,12 @@ public class UserProfileService {
         return userRepository.countUsersByCompany_Id(company.getId());
     }
 
+    /**
+     * Obtiene estadísticas sobre la distribución de empleados por departamento.
+     * Este método es útil para que los administradores visualicen la estructura de su plantilla.
+     *
+     * @return Una lista de {@link DepartmentStatDto} con el recuento de empleados por departamento.
+     */
     @Transactional(readOnly = true)
     public List<DepartmentStatDto> getDepartmentStats() {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -120,6 +152,12 @@ public class UserProfileService {
                 .toList();
     }
 
+    /**
+     * Obtiene una lista paginada de los empleados de la empresa del administrador.
+     *
+     * @param pageable La información de paginación.
+     * @return Una página de {@link EmployeeResponseDto} con los datos de los empleados.
+     */
     @Transactional(readOnly = true)
     public Page<EmployeeResponseDto> getEmployeesByCompany(Pageable pageable) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -143,6 +181,12 @@ public class UserProfileService {
         );
     }
 
+    /**
+     * Obtiene los detalles de un empleado específico por su ID.
+     *
+     * @param employeeId El UUID del empleado a consultar.
+     * @return Un {@link EmployeeResponseDto} con los detalles del empleado.
+     */
     @Transactional(readOnly = true)
     public EmployeeResponseDto getEmployeeById(UUID employeeId) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -169,6 +213,13 @@ public class UserProfileService {
         );
     }
 
+    /**
+     * Permite a un administrador editar los datos laborales de un empleado, como su puesto y horas semanales.
+     * Se realizan validaciones para asegurar que el empleado y el puesto de trabajo pertenecen a la misma empresa.
+     *
+     * @param employeeId El UUID del empleado a modificar.
+     * @param dto El DTO con los nuevos datos laborales.
+     */
     @Transactional
     public void editEmployeeWorkData(UUID employeeId, EditEmployeeWorkDataRequestDto dto) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();

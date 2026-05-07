@@ -26,6 +26,10 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Servicio para gestionar la autenticación, el registro de usuarios y la gestión de contraseñas.
+ * Centraliza la lógica de negocio relacionada con el acceso y la identidad de los usuarios en el sistema.
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -42,6 +46,12 @@ public class AuthenticationService {
     private final WorkScheduleService workScheduleService;
 
 
+    /**
+     * Registra una nueva empresa junto con su usuario administrador.
+     * Esta operación es el punto de entrada para nuevas empresas en la plataforma.
+     * @param requestDto Datos de la empresa y del administrador a registrar.
+     * @return Un DTO con el token de autenticación para el nuevo administrador.
+     */
     @Transactional
     public AuthResponseDto registerCompany(CompanyRequestDto requestDto) {
         Company company = Company.builder()
@@ -79,6 +89,12 @@ public class AuthenticationService {
         return new AuthResponseDto(jwt, firstLogin, role);
     }
 
+    /**
+     * Autentica a un usuario en el sistema.
+     * Valida las credenciales y, si son correctas, genera y devuelve un token JWT.
+     * @param requestDto Credenciales del usuario (email y contraseña).
+     * @return Un DTO con el token de autenticación y datos básicos del usuario.
+     */
     public AuthResponseDto signIn(AuthRequestDto requestDto) {
         try {
             authenticationManager.authenticate(
@@ -96,6 +112,11 @@ public class AuthenticationService {
         return new AuthResponseDto(jwt, firstLogin, role);
     }
 
+    /**
+     * Permite a un usuario autenticado cambiar su propia contraseña.
+     * Verifica la contraseña actual antes de permitir el cambio.
+     * @param requestDto Contiene la contraseña actual y la nueva contraseña con su confirmación.
+     */
     @Transactional
     public void changePassword(PasswordChangeRequestDto requestDto) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -113,6 +134,11 @@ public class AuthenticationService {
         user.getProfile().setIsFirstLogin(false);
     }
 
+    /**
+     * Registra un nuevo empleado en la empresa del administrador autenticado.
+     * Crea el usuario, el perfil, asigna horarios si se proporcionan y envía un correo de bienvenida.
+     * @param requestDto Datos del nuevo empleado, incluyendo perfil y horarios opcionales.
+     */
     @Transactional
     public void registerEmployee(EmployeeRequestDto requestDto) {
         if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
@@ -173,6 +199,12 @@ public class AuthenticationService {
         );
     }
 
+    /**
+     * Registra un nuevo inspector. Si el correo ya existe y pertenece a un inspector,
+     * inicia el proceso de recuperación de contraseña. Si no existe, crea el nuevo usuario
+     * y le envía un correo de bienvenida.
+     * @param requestDto Datos del inspector a registrar.
+     */
     @Transactional
     public void registerInspector(InspectorRequestDto requestDto) {
         Optional<User> existingUserOpt = userRepository.findByEmail(requestDto.getEmail());
@@ -223,6 +255,12 @@ public class AuthenticationService {
         );
     }
 
+    /**
+     * Inicia el proceso de recuperación de contraseña para un usuario.
+     * Genera un token de reseteo y envía un correo electrónico con el enlace de recuperación.
+     * No revela si el correo electrónico existe o no en el sistema para evitar enumeración de usuarios.
+     * @param email El correo electrónico del usuario que ha olvidado su contraseña.
+     */
     @Transactional
     public void processForgotPassword(String email) {
         Optional<User> userOpt = userRepository.findByEmail(email);
@@ -251,6 +289,13 @@ public class AuthenticationService {
         emailService.sendPasswordResetEmail(user.getEmail(), resetLink, companyName, companyLogoUrl);
     }
 
+    /**
+     * Ejecuta el cambio de contraseña utilizando un token de recuperación.
+     * Valida el token, comprueba que no haya expirado y actualiza la contraseña del usuario.
+     * @param token El token de recuperación de contraseña.
+     * @param newPassword La nueva contraseña.
+     * @param repeatPassword La confirmación de la nueva contraseña.
+     */
     @Transactional
     public void executePasswordReset(String token, String newPassword, String repeatPassword) {
         if (!newPassword.equals(repeatPassword)) {

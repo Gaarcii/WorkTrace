@@ -16,12 +16,30 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Servicio dedicado a la generación de informes de registro horario en formato PDF para los empleados.
+ * Su propósito es permitir que cada empleado pueda descargar un resumen de sus propios fichajes
+ * en un formato claro, profesional y fácil de archivar.
+ */
 @Service
 @RequiredArgsConstructor
 public class EmployeePdfGeneratorService {
 
     private final PdfHelperService pdfHelper;
 
+    /**
+     * Genera un informe en PDF con los registros horarios de un empleado para un período determinado.
+     * Este método crea un documento personalizado que incluye los datos del empleado, su empresa,
+     * y una tabla detallada con sus fichajes (fecha, entrada, salida, total de horas).
+     * Además, se añade un hash de seguridad para certificar la integridad de los datos presentados.
+     *
+     * @param profile      El perfil del empleado para obtener su nombre completo y DNI.
+     * @param user         El usuario para obtener la información de la empresa.
+     * @param timeEntries  La lista de registros de fichajes a incluir en el informe.
+     * @param startDate    La fecha de inicio del período del informe.
+     * @param endDate      La fecha de fin del período del informe.
+     * @return Un array de bytes (byte[]) que representa el archivo PDF generado.
+     */
     public byte[] generateTimeEntriesPdf(Profile profile, User user, List<TimeEntry> timeEntries, LocalDate startDate, LocalDate endDate) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

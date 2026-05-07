@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Controlador para gestionar las incidencias de los empleados.
+ * Permite a los empleados crear y ver sus incidencias, y a los administradores
+ * gestionarlas.
+ */
 @RestController
 @RequestMapping("/api/incidences")
 @RequiredArgsConstructor
@@ -24,6 +29,11 @@ public class IncidenceController {
 
     private final IncidenceService incidenceService;
 
+    /**
+     * Obtiene todas las incidencias del usuario autenticado.
+     *
+     * @return Una lista de las incidencias del usuario.
+     */
     @GetMapping()
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<WorkerIncidenceResponseDto>> getIncidencesByUserId() {
@@ -32,6 +42,11 @@ public class IncidenceController {
         return ResponseEntity.ok(responseDtoList);
     }
 
+    /**
+     * Permite a un empleado crear una nueva incidencia.
+     * @param requestDto Los datos de la incidencia a crear.
+     * @return La incidencia creada.
+     */
     @PostMapping()
     @PreAuthorize("hasRole('WORKER')")
     public ResponseEntity<WorkerIncidenceResponseDto> createIncidence(
@@ -40,6 +55,13 @@ public class IncidenceController {
         return ResponseEntity.ok(responseDto);
     }
 
+    /**
+     * Obtiene las incidencias de la empresa por estado.
+     * Si no se especifica un estado, por defecto se obtienen las pendientes.
+     * @param status El estado de las incidencias a obtener.
+     * @param pageable La información de paginación.
+     * @return Una página de incidencias.
+     */
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<AdminIncidenceResponseDto>> getCompanyIncidencesByStatus(
@@ -55,6 +77,11 @@ public class IncidenceController {
         return ResponseEntity.ok(responsePage);
     }
 
+    /**
+     * Obtiene el historial de incidencias de la empresa.
+     * @param pageable La información de paginación.
+     * @return Una página con el historial de incidencias.
+     */
     @GetMapping("/history")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<AdminIncidenceResponseDto>> getCompanyIncidenceHistory(Pageable pageable) {
@@ -64,6 +91,12 @@ public class IncidenceController {
         return ResponseEntity.ok(responseDtos);
     }
 
+    /**
+     * Permite a un administrador gestionar una incidencia (aprobarla o rechazarla).
+     * @param incidenceId El ID de la incidencia a gestionar.
+     * @param dto Los datos para la gestión de la incidencia.
+     * @return Una respuesta vacía si la operación fue exitosa.
+     */
     @PatchMapping("/{id}/manage")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> manageIncidence(

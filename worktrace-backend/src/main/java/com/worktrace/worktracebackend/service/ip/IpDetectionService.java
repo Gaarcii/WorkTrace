@@ -16,6 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Servicio encargado de analizar direcciones IP para detectar posibles riesgos de seguridad y obtener datos de geolocalización.
+ * Su propósito es identificar si una IP proviene de una red anónima (VPN, Tor, Proxy), lo cual es crucial
+ * para la integridad de los fichajes. Para optimizar el rendimiento y reducir costes, utiliza un sistema de caché
+ * que almacena los resultados de las consultas a la API externa.
+ */
 @Service
 @RequiredArgsConstructor
 public class IpDetectionService {
@@ -26,9 +32,25 @@ public class IpDetectionService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final KnownIpRepository knownIpRepository;
 
+    /**
+     * Contenedor de datos para el resultado del análisis de una dirección IP.
+     * @param flags Lista de banderas de seguridad detectadas (p. ej., "VPN_DETECTED").
+     * @param geoIpMap Mapa con los datos de geolocalización y seguridad obtenidos de la API.
+     */
     public record IpAnalysisResult(List<String> flags, Map<String, Object> geoIpMap) {
     }
 
+    /**
+     * Analiza una dirección IP para obtener sus detalles de seguridad y geolocalización.
+     * El método sigue un flujo de trabajo optimizado:
+     * 1. Ignora las direcciones locales (localhost).
+     * 2. Busca la IP en la caché local para una respuesta inmediata.
+     * 3. Si no está en caché, consulta la API externa de inteligencia de IP.
+     * 4. Procesa la respuesta, extrae las banderas de seguridad (VPN, Tor, etc.) y almacena el resultado en la caché para futuras consultas.
+     *
+     * @param ipAddress La dirección IP que se va a analizar.
+     * @return Un objeto {@link IpAnalysisResult} que contiene las banderas de seguridad y los datos de geolocalización.
+     */
     public IpAnalysisResult analyzeIpWithDetails(String ipAddress) {
         if (ipAddress.equals("127.0.0.1") ||
                 ipAddress.equals("0:0:0:0:0:0:0:1") ||

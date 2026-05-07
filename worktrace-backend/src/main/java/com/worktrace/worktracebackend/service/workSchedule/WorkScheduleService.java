@@ -30,6 +30,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Servicio para gestionar la lógica de negocio de los horarios de trabajo de los empleados.
+ * Su propósito es permitir a los administradores asignar, actualizar y consultar los horarios
+ * semanales de los trabajadores, definiendo qué días trabajan, en qué centro y en qué franja horaria.
+ */
 @Service
 @RequiredArgsConstructor
 public class WorkScheduleService {
@@ -39,6 +44,17 @@ public class WorkScheduleService {
     private final UserService userService;
     private final WorkSiteRepository workSiteRepository;
 
+    /**
+     * Asigna o actualiza el horario de trabajo semanal de un empleado.
+     * Este método realiza una sincronización completa:
+     * 1.  Compara los horarios existentes del empleado con los nuevos proporcionados.
+     * 2.  Elimina los horarios de los días que ya no están en la nueva solicitud.
+     * 3.  Actualiza los horarios de los días que han cambiado (centro de trabajo, horas).
+     * 4.  Crea nuevos horarios para los días que no existían previamente.
+     * Esto asegura que el horario del empleado siempre refleje exactamente lo enviado en la última petición.
+     *
+     * @param dto El DTO que contiene el ID del empleado y la lista de sus horarios por día de la semana.
+     */
     @Transactional
     public void assignWorkSchedule(WorkScheduleRequestDto dto) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
@@ -128,6 +144,14 @@ public class WorkScheduleService {
         }
     }
 
+    /**
+     * Obtiene la lista de horarios de trabajo asignados a un empleado específico.
+     * La lista se devuelve ordenada por el día de la semana (de lunes a domingo) para una
+     * visualización coherente en la interfaz de usuario.
+     *
+     * @param employeeId El UUID del empleado cuyos horarios se quieren consultar.
+     * @return Una lista de {@link WorkScheduleResponseDto} con los horarios del empleado.
+     */
     @Transactional(readOnly = true)
     public List<WorkScheduleResponseDto> getEmployeeSchedules(UUID employeeId) {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();

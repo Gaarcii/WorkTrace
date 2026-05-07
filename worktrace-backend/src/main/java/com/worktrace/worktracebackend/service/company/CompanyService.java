@@ -14,6 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+/**
+ * Servicio para gestionar las operaciones relacionadas con la empresa.
+ * Centraliza la lógica de negocio para que los administradores puedan consultar
+ * y actualizar la información de su propia empresa.
+ */
 @Service
 @RequiredArgsConstructor
 public class CompanyService {
@@ -22,6 +27,11 @@ public class CompanyService {
     private final StorageService storageService;
     private final UserService userService;
 
+    /**
+     * Obtiene los datos de la empresa asociada al administrador autenticado.
+     * Este método permite a un administrador ver la información de su propia empresa.
+     * @return Un DTO con los datos de la empresa.
+     */
     @Transactional(readOnly = true)
     public CompanyResponseDto getMyCompanyData() {
         User admin = userService.getAuthenticatedUser();
@@ -41,6 +51,13 @@ public class CompanyService {
         );
     }
 
+    /**
+     * Actualiza el logo de la empresa del administrador autenticado.
+     * Se encarga de almacenar el nuevo archivo de logo, actualizar la URL en la base de datos
+     * y eliminar el logo anterior si existía.
+     * @param file El nuevo archivo de logo.
+     * @return La URL pública del nuevo logo.
+     */
     @Transactional
     public String updateMyCompanyLogo(MultipartFile file) {
         if (file.isEmpty()) {
@@ -69,6 +86,10 @@ public class CompanyService {
         return newLogoUrl;
     }
 
+    /**
+     * Actualiza los datos generales (nombre y CIF) de la empresa del administrador autenticado.
+     * @param dto El DTO con los nuevos datos para la empresa.
+     */
     @Transactional
     public void updateMyCompanyData(UpdateCompanyDto dto) {
         User admin = userService.getAuthenticatedUser();
