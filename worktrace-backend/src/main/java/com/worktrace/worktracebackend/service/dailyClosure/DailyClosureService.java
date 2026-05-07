@@ -2,7 +2,7 @@ package com.worktrace.worktracebackend.service.dailyClosure;
 
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.DailyClosure;
-import com.worktrace.worktracebackend.model.EstadoFichaje;
+import com.worktrace.worktracebackend.model.TimeEntryStatus;
 import com.worktrace.worktracebackend.model.TimeEntry;
 import com.worktrace.worktracebackend.repository.AuditTimeEntryRepository;
 import com.worktrace.worktracebackend.repository.CompanyRepository;
@@ -58,8 +58,8 @@ public class DailyClosureService {
             throw new RuntimeException("El cierre para la fecha " + targetDate + " ya está realizado.");
         }
 
-        long openShifts = timeEntryRepository.countByCompanyIdAndWorkDateAndEstadoFichaje(
-                company.getId(), targetDate, EstadoFichaje.OPEN);
+        long openShifts = timeEntryRepository.countByCompanyIdAndWorkDateAndTimeEntryStatus(
+                company.getId(), targetDate, TimeEntryStatus.OPEN);
 
         if (openShifts > 0) {
             throw new RuntimeException("Hay " + openShifts + " turnos abiertos.");
@@ -135,7 +135,7 @@ public class DailyClosureService {
                         .append(entry.getStartGeoip())
                         .append(entry.getEndGeoip() != null ? entry.getEndGeoip() : "NULL")
                         .append(entry.getFlags() != null ? entry.getFlags() : "NULL")
-                        .append(entry.getEstadoFichaje())
+                        .append(entry.getTimeEntryStatus())
                         .append(entry.getDeletedAt() != null ? entry.getDeletedAt().truncatedTo(ChronoUnit.SECONDS) : "NULL")
                         .append(entry.getDeletedBy() != null ? entry.getDeletedBy().getId() : "NULL").append(entry.getDeleteReason() != null ? entry.getDeleteReason() : "NULL")
                         .append(entry.getCreatedAt() != null ? entry.getCreatedAt().truncatedTo(ChronoUnit.SECONDS) : "NULL")

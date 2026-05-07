@@ -41,7 +41,7 @@ public class InspectorService {
         long trabajadoresActivosHoy = timeEntryRepository.countDistinctActiveWorkersByCompanyAndWorkDate(
                 companyId,
                 today,
-                EstadoFichaje.OPEN
+                TimeEntryStatus.OPEN
         );
         long totalAuditLogs = auditTimeEntryRepository.countByCompanyId(companyId);
 

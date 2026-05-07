@@ -53,7 +53,7 @@ public class TimeEntryService {
         Profile profile = info.getProfile();
 
         Optional<TimeEntry> openTimeEntryOpt = timeEntryRepository.
-                findByEmployee_UserIdAndEndAtIsNullAndEstadoFichaje(profile.getUserId(), EstadoFichaje.OPEN);
+                findByEmployee_UserIdAndEndAtIsNullAndTimeEntryStatus(profile.getUserId(), TimeEntryStatus.OPEN);
 
         IpDetectionService.IpAnalysisResult ipResult = ipDetectionService.
                 analyzeIpWithDetails(realIp);
@@ -85,7 +85,7 @@ public class TimeEntryService {
                 openTimeEntry.setFlags(flags);
             }
 
-            openTimeEntry.setEstadoFichaje(EstadoFichaje.CLOSED);
+            openTimeEntry.setTimeEntryStatus(TimeEntryStatus.CLOSED);
             savedTimeEntry = timeEntryRepository.save(openTimeEntry);
 
         } else {
@@ -106,7 +106,7 @@ public class TimeEntryService {
             newTimeEntry.setStartGeoip(ipResult.geoIpMap());
 
             newTimeEntry.setFlags(flags);
-            newTimeEntry.setEstadoFichaje(EstadoFichaje.OPEN);
+            newTimeEntry.setTimeEntryStatus(TimeEntryStatus.OPEN);
 
             savedTimeEntry = timeEntryRepository.save(newTimeEntry);
         }
@@ -115,7 +115,7 @@ public class TimeEntryService {
         response.setId(savedTimeEntry.getId());
         response.setStartAt(savedTimeEntry.getStartAt());
         response.setEndAt(savedTimeEntry.getEndAt());
-        response.setStatus(savedTimeEntry.getEstadoFichaje().name());
+        response.setStatus(savedTimeEntry.getTimeEntryStatus().name());
 
         return response;
     }
@@ -184,7 +184,7 @@ public class TimeEntryService {
         DayOfWeek dayOfWeek = date.getDayOfWeek();
 
         Optional<TimeEntry> currentTimeEntryOpt = timeEntryRepository.
-                findByEmployee_UserIdAndEndAtIsNullAndEstadoFichaje(user.getId(), EstadoFichaje.OPEN);
+                findByEmployee_UserIdAndEndAtIsNullAndTimeEntryStatus(user.getId(), TimeEntryStatus.OPEN);
 
         Long accumulatedMinutes = timeEntryRepository.
                 getWorkedMinutesByEmployeeAndDate(user.getId(), date);
@@ -232,7 +232,7 @@ public class TimeEntryService {
         }
 
         List<DailyStatisticsProjection> groupedRecords = timeEntryRepository
-                .getEstadisticasDiariasAgrupadas(info.getProfile().getUserId(), startDate, endDate);
+                .getGroupedDailyStatistics(info.getProfile().getUserId(), startDate, endDate);
 
         Map<LocalDate, Long> workedMinutesByDateMap = groupedRecords.stream()
                 .collect(Collectors.toMap(
@@ -273,7 +273,7 @@ public class TimeEntryService {
             currentDate = currentDate.plusDays(1);
         }
 
-        int totalIncidences = incidentRepository.countIncidentsByUsuarioYFechas(
+        int totalIncidences = incidentRepository.countIncidentsByUserAndDates(
                 info.getUser().getId(),
                 startDate,
                 endDate
@@ -387,12 +387,12 @@ public class TimeEntryService {
         UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
         Company company = info.getCompany();
 
-        List<DailyFichajeCountProjection> groupedTimeEntries = timeEntryRepository
-                .getFichajesCountByCompanyAndDateRange(
+        List<DailyTimeEntryCountProjection> groupedTimeEntries = timeEntryRepository
+                .getTimeEntryCountByCompanyAndDateRange(
                         company.getId(), startDate, endDate);
 
         Map<LocalDate, Long> countByDate = new HashMap<>();
-        for (DailyFichajeCountProjection projection : groupedTimeEntries) {
+        for (DailyTimeEntryCountProjection projection : groupedTimeEntries) {
             countByDate.put(projection.getFecha(), projection.getNumFichajes());
         }
 
@@ -432,10 +432,10 @@ public class TimeEntryService {
 
             if (dto.getEndAt() != null) {
                 timeEntry.setEndAt(dto.getEndAt());
-                timeEntry.setEstadoFichaje(EstadoFichaje.CLOSED);
+                timeEntry.setTimeEntryStatus(TimeEntryStatus.CLOSED);
             } else {
                 timeEntry.setEndAt(null);
-                timeEntry.setEstadoFichaje(EstadoFichaje.OPEN);
+                timeEntry.setTimeEntryStatus(TimeEntryStatus.OPEN);
             }
 
             timeEntry.setModificationReason(dto.getJustification());

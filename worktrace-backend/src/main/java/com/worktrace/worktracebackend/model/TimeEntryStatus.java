@@ -1,5 +1,5 @@
 package com.worktrace.worktracebackend.model;
 
-public enum EstadoFichaje {
+public enum TimeEntryStatus {
     OPEN, CLOSED
 }

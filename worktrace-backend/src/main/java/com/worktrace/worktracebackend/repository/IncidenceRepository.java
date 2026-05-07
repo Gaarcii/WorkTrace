@@ -1,7 +1,7 @@
 package com.worktrace.worktracebackend.repository;
 
-import com.worktrace.worktracebackend.model.IncidenceStatus;
 import com.worktrace.worktracebackend.model.Incidence;
+import com.worktrace.worktracebackend.model.IncidenceStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,12 +28,12 @@ public interface IncidenceRepository extends JpaRepository<Incidence, UUID> {
             SELECT COUNT(*)
             FROM incidences
             WHERE user_id = :userId
-              AND date BETWEEN :fechaInicio AND :fechaFin
+              AND date BETWEEN :startDate AND :endDate
             """, nativeQuery = true)
-    int countIncidentsByUsuarioYFechas(
+    int countIncidentsByUserAndDates(
             @Param("userId") UUID userId,
-            @Param("fechaInicio") LocalDate fechaInicio,
-            @Param("fechaFin") LocalDate fechaFin
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
     );
 
     Page<Incidence> findByCompany_IdAndStatus(UUID companyId, IncidenceStatus status, Pageable pageable);
@@ -44,15 +44,15 @@ public interface IncidenceRepository extends JpaRepository<Incidence, UUID> {
 
     @Query("SELECT i FROM Incidence i " +
             "WHERE i.company.id = :companyId " +
-            "AND (:estado IS NULL OR i.status = :estado) " +
-            "AND (cast(:tipoIncidenciaId as uuid) IS NULL OR i.type.id = :tipoIncidenciaId) " +
-            "AND (cast(:busqueda as string) IS NULL OR LOWER(i.profile.fullName) " +
-            "LIKE LOWER(CONCAT('%', cast(:busqueda as string), '%')))")
+            "AND (:status IS NULL OR i.status = :status) " +
+            "AND (cast(:incidenceTypeId as uuid) IS NULL OR i.type.id = :incidenceTypeId) " +
+            "AND (cast(:search as string) IS NULL OR LOWER(i.profile.fullName) " +
+            "LIKE LOWER(CONCAT('%', cast(:search as string), '%')))")
     Page<Incidence> findFilteredIncidences(
             @Param("companyId") UUID companyId,
-            @Param("estado") IncidenceStatus estado,
-            @Param("tipoIncidenciaId") UUID tipoIncidenciaId,
-            @Param("busqueda") String busqueda,
+            @Param("status") IncidenceStatus status,
+            @Param("incidenceTypeId") UUID incidenceTypeId,
+            @Param("search") String search,
             Pageable pageable
     );
 }

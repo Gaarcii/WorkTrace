@@ -87,7 +87,7 @@ public class TimeEntry {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private EstadoFichaje estadoFichaje;
+    private TimeEntryStatus timeEntryStatus;
 
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;

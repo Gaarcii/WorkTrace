@@ -1,9 +1,9 @@
 package com.worktrace.worktracebackend.repository;
 
-import com.worktrace.worktracebackend.dto.timeEntry.DailyFichajeCountProjection;
 import com.worktrace.worktracebackend.dto.timeEntry.DailyStatisticsProjection;
-import com.worktrace.worktracebackend.model.EstadoFichaje;
+import com.worktrace.worktracebackend.dto.timeEntry.DailyTimeEntryCountProjection;
 import com.worktrace.worktracebackend.model.TimeEntry;
+import com.worktrace.worktracebackend.model.TimeEntryStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,10 +18,10 @@ import java.util.UUID;
 
 @Repository
 public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
-    Optional<TimeEntry> findByEmployee_UserIdAndEndAtIsNullAndEstadoFichaje(UUID userId, EstadoFichaje estadoFichaje);
+    Optional<TimeEntry> findByEmployee_UserIdAndEndAtIsNullAndTimeEntryStatus(UUID userId, TimeEntryStatus timeEntryStatus);
 
     List<TimeEntry> findTimeEntriesByEmployee_UserIdAndWorkDate(UUID employeeUserId, LocalDate workDate);
-     @Query(value = """
+    @Query(value = """
              SELECT COALESCE(SUM(
                  CASE
                      WHEN t.status = 'CLOSED' THEN EXTRACT(EPOCH FROM (t.end_at - t.start_at)) / 60
@@ -51,42 +51,42 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
             ), 0)
             FROM time_entries t
             WHERE t.employee_id = :userId
-              AND t.work_date BETWEEN :fechaInicio AND :fechaFin
+              AND t.work_date BETWEEN :startDate AND :endDate
               AND t.deleted_at IS NULL
             """, nativeQuery = true)
     Long getWorkedMinutesByEmployeeAndDateRange(
             @Param("userId") UUID userId,
-            @Param("fechaInicio") LocalDate fechaInicio,
-            @Param("fechaFin") LocalDate fechaFin
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
     );
 
     @Query(value = """
             SELECT
-                t.work_date AS fecha,
+                t.work_date AS date,
                 COALESCE(SUM(
                     CASE
                         WHEN t.status = 'CLOSED' THEN EXTRACT(EPOCH FROM (t.end_at - t.start_at)) / 60
                         WHEN t.status = 'OPEN' THEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.start_at)) / 60
                         ELSE 0
                     END
-                ), 0) AS minutosTrabajados
+                ), 0) AS workedMinutes
             FROM time_entries t
             WHERE t.employee_id = :userId
-              AND t.work_date BETWEEN :fechaInicio AND :fechaFin
+              AND t.work_date BETWEEN :startDate AND :endDate
               AND t.deleted_at IS NULL
             GROUP BY t.work_date
             ORDER BY t.work_date
             """, nativeQuery = true)
-    List<DailyStatisticsProjection> getEstadisticasDiariasAgrupadas(
+    List<DailyStatisticsProjection> getGroupedDailyStatistics(
             @Param("userId") UUID userId,
-            @Param("fechaInicio") LocalDate fechaInicio,
-            @Param("fechaFin") LocalDate fechaFin
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
     );
 
     List<TimeEntry> findTimeEntriesByEmployee_UserIdAndWorkDateBetweenOrderByWorkDateDesc(
             UUID userId,
-            LocalDate fechaInicio,
-            LocalDate fechaFin
+            LocalDate startDate,
+            LocalDate endDate
     );
 
     @Query("SELECT MIN(t.workDate) FROM TimeEntry t WHERE t.employee.userId = :userId")
@@ -100,12 +100,12 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
             WHERE t.company.id = :companyId
               AND t.workDate = :workDate
               AND t.endAt IS NULL
-              AND t.estadoFichaje = :estadoFichaje
+              AND t.timeEntryStatus = :timeEntryStatus
             """)
     long countDistinctActiveWorkersByCompanyAndWorkDate(
             @Param("companyId") UUID companyId,
             @Param("workDate") LocalDate workDate,
-            @Param("estadoFichaje") EstadoFichaje estadoFichaje
+            @Param("timeEntryStatus") TimeEntryStatus timeEntryStatus
     );
 
     @Query(value = """
@@ -130,7 +130,7 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
             UUID companyId, LocalDate startDate, LocalDate endDate);
 
     @Query(value = """
-            SELECT t.work_date AS fecha, COUNT(t.id) AS numFichajes
+            SELECT t.work_date AS date, COUNT(t.id) AS timeEntryCount
             FROM time_entries t
             WHERE t.company_id = :companyId
               AND t.work_date BETWEEN :startDate AND :endDate
@@ -138,7 +138,7 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
             GROUP BY t.work_date
             ORDER BY t.work_date
             """, nativeQuery = true)
-    List<DailyFichajeCountProjection> getFichajesCountByCompanyAndDateRange(
+    List<DailyTimeEntryCountProjection> getTimeEntryCountByCompanyAndDateRange(
             @Param("companyId") UUID companyId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
@@ -152,5 +152,5 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
 
     List<TimeEntry> findByCompanyIdAndWorkDateOrderByStartAtAscIdAsc(UUID companyId, LocalDate date);
 
-    long countByCompanyIdAndWorkDateAndEstadoFichaje(UUID companyId, LocalDate workDate, EstadoFichaje estadoFichaje);
+    long countByCompanyIdAndWorkDateAndTimeEntryStatus(UUID companyId, LocalDate workDate, TimeEntryStatus timeEntryStatus);
 }

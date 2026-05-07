@@ -91,7 +91,7 @@ public class EmployeePdfGeneratorService {
                     strTotal = String.format("%dh %dm", dur.toHours(), dur.toMinutesPart());
                 }
 
-                String strEstado = "CLOSED".equalsIgnoreCase(f.getEstadoFichaje().name()) ? "Cerrado" : "Abierto";
+                String strEstado = "CLOSED".equalsIgnoreCase(f.getTimeEntryStatus().name()) ? "Cerrado" : "Abierto";
 
                 PdfPCell[] row = new PdfPCell[]{
                         new PdfPCell(new Phrase(strFecha, fontNormal)),

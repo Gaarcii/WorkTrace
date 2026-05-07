@@ -18,7 +18,7 @@ public interface KnownIpRepository extends JpaRepository<KnownIp, String> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO known_ips (ip, geoip_data, created_at) VALUES (CAST(:ip AS inet), CAST(:geoipData AS jsonb), :createdAt)", nativeQuery = true)
+    @Query(value = "INSERT INTO known_ips (ip, geo_ip_data, created_at) VALUES (CAST(:ip AS inet), CAST(:geoipData AS jsonb), :createdAt)", nativeQuery = true)
     void guardarIpNativa(@Param("ip") String ip, @Param("geoipData") String geoipData, @Param("createdAt") OffsetDateTime createdAt);
 }
 
