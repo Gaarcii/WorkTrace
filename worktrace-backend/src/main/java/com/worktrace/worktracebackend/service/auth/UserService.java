@@ -32,12 +32,12 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado con email: " + email));
     }
 
-    public UsuarioYCompaniaInfo extraerUsuarioYCompania() {
+    public UserAndCompanyInfo getAuthenticatedUserAndCompanyInfo() {
         User user = this.getAuthenticatedUser();
         Company company = user.getCompany();
         Profile profile = user.getProfile();
 
-        return new UsuarioYCompaniaInfo(user, company, profile);
+        return new UserAndCompanyInfo(user, company, profile);
     }
 
     public User getUserById(UUID id) {

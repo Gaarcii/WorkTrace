@@ -43,7 +43,7 @@ public class UserController {
     @GetMapping("/total-workers")
     @PreAuthorize("hasRole('ADMIN')")
     public Long getTotalWorkers() {
-        return userProfileService.getCompanyWorkers();
+        return userProfileService.countCompanyEmployees();
     }
 
     @GetMapping("/departments")

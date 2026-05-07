@@ -8,12 +8,12 @@ import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
-import com.worktrace.worktracebackend.service.archivos.AdminPdfGeneratorService;
-import com.worktrace.worktracebackend.service.archivos.EmployeePdfGeneratorService;
-import com.worktrace.worktracebackend.service.archivos.ExcelGeneratorService;
+import com.worktrace.worktracebackend.service.files.AdminPdfGeneratorService;
+import com.worktrace.worktracebackend.service.files.EmployeePdfGeneratorService;
+import com.worktrace.worktracebackend.service.files.ExcelGeneratorService;
 import com.worktrace.worktracebackend.service.auditTimeEntry.AuditTimeEntryService;
 import com.worktrace.worktracebackend.service.auth.UserService;
-import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
+import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
 import com.worktrace.worktracebackend.service.incidence.IncidenceService;
 import com.worktrace.worktracebackend.service.ip.IpDetectionService;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class TimeEntryService {
 
     @Transactional
     public TimeEntryResponseDto processTimeEntry(TimeEntryRequestDto requestDto, String realIp, String userAgent) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         User user = info.getUser();
         Company company = info.getCompany();
         Profile profile = info.getProfile();
@@ -122,12 +122,12 @@ public class TimeEntryService {
 
     @Transactional(readOnly = true)
     public DailySummaryResponseDto getDailySummary() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
 
-        DailySummaryResponseDto dailySummary = calculateDailyData(info.getUser(), info.getProfile(), LocalDate.now());
+        DailySummaryResponseDto dailySummary = calculateDailySummary(info.getUser(), info.getProfile(), LocalDate.now());
 
         List<TimeEntry> latestTimeEntriesList = timeEntryRepository.findTop5ByEmployee_UserIdOrderByStartAtDesc(info.getUser().getId());
-        List<LastTimeEntriesResponseDto> latest5TimeEntries = mapTimeEntriesToEvents(latestTimeEntriesList).stream()
+        List<LastTimeEntriesResponseDto> latest5TimeEntries = mapTimeEntriesToDto(latestTimeEntriesList).stream()
                 .sorted((e1, e2) -> e2.getDate().compareTo(e1.getDate()))
                 .limit(5)
                 .toList();
@@ -138,8 +138,8 @@ public class TimeEntryService {
 
     @Transactional(readOnly = true)
     public HistoryResponseDto getHistoryByDate(LocalDate date) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
-        DailySummaryResponseDto dailySummary = calculateDailyData(info.getUser(), info.getProfile(), date);
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
+        DailySummaryResponseDto dailySummary = calculateDailySummary(info.getUser(), info.getProfile(), date);
 
         List<TimeEntry> dailyTimeEntries = timeEntryRepository.
                 findTimeEntriesByEmployee_UserIdAndWorkDate(info.getUser().getId(), date);
@@ -154,7 +154,7 @@ public class TimeEntryService {
                 ? info.getProfile().getWeeklyHours().multiply(BigDecimal.valueOf(60)).longValue()
                 : 0L;
 
-        List<LastTimeEntriesResponseDto> dailyRecords = mapTimeEntriesToEvents(dailyTimeEntries).stream()
+        List<LastTimeEntriesResponseDto> dailyRecords = mapTimeEntriesToDto(dailyTimeEntries).stream()
                 .sorted((e1, e2) -> e2.getDate().compareTo(e1.getDate()))
                 .toList();
         HistoryResponseDto historyResponseDto = new HistoryResponseDto();
@@ -167,20 +167,20 @@ public class TimeEntryService {
     }
 
 
-    private List<LastTimeEntriesResponseDto> mapTimeEntriesToEvents(List<TimeEntry> timeEntries) {
-        List<LastTimeEntriesResponseDto> events = new ArrayList<>();
+    private List<LastTimeEntriesResponseDto> mapTimeEntriesToDto(List<TimeEntry> timeEntries) {
+        List<LastTimeEntriesResponseDto> dtos = new ArrayList<>();
         for (TimeEntry timeEntry : timeEntries) {
-            events.add(new LastTimeEntriesResponseDto(
+            dtos.add(new LastTimeEntriesResponseDto(
                     timeEntry.getId(), "Entrada", timeEntry.getStartAt()));
             if (timeEntry.getEndAt() != null) {
-                events.add(new LastTimeEntriesResponseDto(
+                dtos.add(new LastTimeEntriesResponseDto(
                         timeEntry.getId(), "Salida", timeEntry.getEndAt()));
             }
         }
-        return events;
+        return dtos;
     }
 
-    private DailySummaryResponseDto calculateDailyData(User user, Profile profile, LocalDate date) {
+    private DailySummaryResponseDto calculateDailySummary(User user, Profile profile, LocalDate date) {
         DayOfWeek dayOfWeek = date.getDayOfWeek();
 
         Optional<TimeEntry> currentTimeEntryOpt = timeEntryRepository.
@@ -215,45 +215,45 @@ public class TimeEntryService {
     }
 
     public StatisticsResponseDto getStatistics(LocalDate startDate, LocalDate endDate) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         StatisticsResponseDto responseDto = new StatisticsResponseDto();
 
         List<WorkSchedule> schedulesList = workScheduleRepository
                 .findByEmployee_UserId(info.getProfile().getUserId());
 
-        Map<DayOfWeek, Long> dailyTargetMinutesMap = new EnumMap<>(DayOfWeek.class);
+        Map<DayOfWeek, Long> dailyTargetMinutes = new EnumMap<>(DayOfWeek.class);
         for (WorkSchedule schedule : schedulesList) {
             Duration duration = Duration.between(schedule.getStartTime(), schedule.getEndTime());
             if (duration.isNegative()) {
                 duration = duration.plusDays(1);
             }
-            dailyTargetMinutesMap.put(DayOfWeek.valueOf(
+            dailyTargetMinutes.put(DayOfWeek.valueOf(
                     schedule.getDayOfWeek().toString()), duration.toMinutes());
         }
 
-        List<DailyStatisticsProjection> groupedRecords = timeEntryRepository
+        List<DailyStatisticsProjection> dailyStatistics = timeEntryRepository
                 .getGroupedDailyStatistics(info.getProfile().getUserId(), startDate, endDate);
 
-        Map<LocalDate, Long> workedMinutesByDateMap = groupedRecords.stream()
+        Map<LocalDate, Long> workedMinutesByDate = dailyStatistics.stream()
                 .collect(Collectors.toMap(
                         DailyStatisticsProjection::getFecha,
                         DailyStatisticsProjection::getMinutosTrabajados
                 ));
 
-        List<WorkerIncidenceResponseDto> incidences = incidenceService
-                .getIncidenciaPorFechas(startDate, endDate);
+        List<WorkerIncidenceResponseDto> incidencesInRange = incidenceService
+                .getIncidencesByDateRange(startDate, endDate);
 
         long totalWorkedMinutes = 0L;
-        long totalBalanceMinutes = 0L;
-        int incompleteDays = 0;
+        long totalMinutesBalance = 0L;
+        int incompleteWorkdays = 0;
 
         LocalDate currentDate = startDate;
         List<DailyStatisticDto> dailySummaries = new ArrayList<>();
 
         while (!currentDate.isAfter(endDate)) {
-            long plannedMinutes = dailyTargetMinutesMap.getOrDefault(
+            long plannedMinutes = dailyTargetMinutes.getOrDefault(
                     currentDate.getDayOfWeek(), 0L);
-            long workedMinutes = workedMinutesByDateMap.getOrDefault(
+            long workedMinutes = workedMinutesByDate.getOrDefault(
                     currentDate, 0L);
 
             DailyStatisticDto dailyStatisticDto = new DailyStatisticDto();
@@ -262,10 +262,10 @@ public class TimeEntryService {
             dailyStatisticDto.setWorkedMinutes(workedMinutes);
 
             totalWorkedMinutes += workedMinutes;
-            totalBalanceMinutes += (workedMinutes - plannedMinutes);
+            totalMinutesBalance += (workedMinutes - plannedMinutes);
 
             if (plannedMinutes > 0 && workedMinutes < plannedMinutes) {
-                incompleteDays++;
+                incompleteWorkdays++;
             }
 
             dailySummaries.add(dailyStatisticDto);
@@ -280,18 +280,18 @@ public class TimeEntryService {
         );
 
         responseDto.setTotalWorkedMinutes(totalWorkedMinutes);
-        responseDto.setMinutesBalance(totalBalanceMinutes);
-        responseDto.setIncompleteWorkdays(incompleteDays);
+        responseDto.setMinutesBalance(totalMinutesBalance);
+        responseDto.setIncompleteWorkdays(incompleteWorkdays);
         responseDto.setIncidencesCount(totalIncidences);
         responseDto.setDailySummary(dailySummaries);
-        responseDto.setIncidenceList(incidences);
+        responseDto.setIncidenceList(incidencesInRange);
 
         return responseDto;
     }
 
     @Transactional(readOnly = true)
-    public byte[] exportHistoryPdf(LocalDate startDate, LocalDate endDate) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+    public byte[] exportEmployeeHistoryPdf(LocalDate startDate, LocalDate endDate) {
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
 
         List<TimeEntry> timeEntries = timeEntryRepository
                 .findTimeEntriesByEmployee_UserIdAndWorkDateBetweenOrderByWorkDateDesc(
@@ -300,7 +300,7 @@ public class TimeEntryService {
                         endDate
                 );
 
-        return employeePdfGeneratorService.generarPDFFichajes(
+        return employeePdfGeneratorService.generateTimeEntriesPdf(
                 info.getProfile(),
                 info.getUser(),
                 timeEntries,
@@ -311,7 +311,7 @@ public class TimeEntryService {
 
     @Transactional(readOnly = true)
     public List<ActiveWorkerDto> getActiveWorkers() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         List<TimeEntry> timeEntryList = timeEntryRepository
@@ -323,9 +323,9 @@ public class TimeEntryService {
                 .map(timeEntry -> {
                     Profile employee = timeEntry.getEmployee();
 
-                    String jobPosition = null;
+                    String jobPositionTitle = null;
                     if (employee.getPosition() != null) {
-                        jobPosition = employee.getPosition().getTitle();
+                        jobPositionTitle = employee.getPosition().getTitle();
                     }
 
                     Long punctuality = null;
@@ -349,7 +349,7 @@ public class TimeEntryService {
                     return new ActiveWorkerDto(
                             employee.getUserId(),
                             employee.getFullName(),
-                            jobPosition,
+                            jobPositionTitle,
                             employee.getAvatarUrl(),
                             timeEntry.getStartAt(),
                             punctuality
@@ -360,7 +360,7 @@ public class TimeEntryService {
 
     @Transactional(readOnly = true)
     public Long getTimeEntriesCountToday() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         return timeEntryRepository.countAllByCompany_IdAndWorkDateBetween(
@@ -369,7 +369,7 @@ public class TimeEntryService {
 
     @Transactional(readOnly = true)
     public TotalHoursTodayResponseDto getTotalHoursToday() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         Long totalMinutes = timeEntryRepository
@@ -383,32 +383,32 @@ public class TimeEntryService {
     }
 
     @Transactional(readOnly = true)
-    public List<DailyTimeEntryCountDto> getWeeklyChartData(LocalDate startDate, LocalDate endDate) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+    public List<DailyTimeEntryCountDto> getWeeklyTimeEntryCountChartData(LocalDate startDate, LocalDate endDate) {
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
-        List<DailyTimeEntryCountProjection> groupedTimeEntries = timeEntryRepository
+        List<DailyTimeEntryCountProjection> timeEntryCounts = timeEntryRepository
                 .getTimeEntryCountByCompanyAndDateRange(
                         company.getId(), startDate, endDate);
 
-        Map<LocalDate, Long> countByDate = new HashMap<>();
-        for (DailyTimeEntryCountProjection projection : groupedTimeEntries) {
-            countByDate.put(projection.getFecha(), projection.getNumFichajes());
+        Map<LocalDate, Long> countByDateMap = new HashMap<>();
+        for (DailyTimeEntryCountProjection projection : timeEntryCounts) {
+            countByDateMap.put(projection.getFecha(), projection.getNumFichajes());
         }
 
         List<DailyTimeEntryCountDto> result = new ArrayList<>();
         LocalDate date = startDate;
         while (!date.isAfter(endDate)) {
-            Long numTimeEntries = countByDate.getOrDefault(date, 0L);
-            result.add(new DailyTimeEntryCountDto(date.toString(), numTimeEntries));
+            Long timeEntryCount = countByDateMap.getOrDefault(date, 0L);
+            result.add(new DailyTimeEntryCountDto(date.toString(), timeEntryCount));
             date = date.plusDays(1);
         }
         return result;
     }
 
     @Transactional(readOnly = true)
-    public LocalDate getFirstTimeEntryDate() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+    public LocalDate getFirstTimeEntryDateForEmployee() {
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         LocalDate firstDate = timeEntryRepository.findFirstWorkDateByEmployee
                 (info.getProfile().getUserId());
         return firstDate != null ? firstDate : LocalDate.now();
@@ -420,9 +420,9 @@ public class TimeEntryService {
             throw new IllegalArgumentException("La justificación es obligatoria y debe tener al menos 10 caracteres.");
         }
 
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
-        TimeEntry timeEntry = checkTimeEntry(id, company);
+        TimeEntry timeEntry = findAndValidateTimeEntry(id, company);
 
         try {
             String oldDataJson = objectMapper.writeValueAsString(timeEntry);
@@ -456,9 +456,9 @@ public class TimeEntryService {
             throw new IllegalArgumentException("El motivo de anulación es obligatorio y debe tener al menos 10 caracteres.");
         }
 
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
-        TimeEntry timeEntry = checkTimeEntry(id, company);
+        TimeEntry timeEntry = findAndValidateTimeEntry(id, company);
 
         try {
             String oldDataJson = objectMapper.writeValueAsString(timeEntry);
@@ -477,9 +477,9 @@ public class TimeEntryService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TimeEntryTableResponseDto> getTimeEntriesByEmployeePaginated
+    public Page<TimeEntryTableResponseDto> getTimeEntriesByEmployee
             (UUID employeeId, Pageable pageable) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
 
         User employee = userService.getUserById(employeeId);
         if (!employee.getCompany().getId().equals(info.getCompany().getId())) {
@@ -490,11 +490,11 @@ public class TimeEntryService {
                 .findByEmployee_UserIdAndDeletedAtIsNullOrderByWorkDateDesc(employeeId, pageable);
 
         return page.map(f -> {
-            Long workedHours = null;
+            Long workedMinutes = null;
 
             if (f.getStartAt() != null && f.getEndAt() != null) {
                 Duration duration = Duration.between(f.getStartAt(), f.getEndAt());
-                workedHours = duration.toMinutes();
+                workedMinutes = duration.toMinutes();
             }
 
             return new TimeEntryTableResponseDto(
@@ -506,14 +506,14 @@ public class TimeEntryService {
                     f.getStartLng(),
                     f.getEndLat(),
                     f.getEndLng(),
-                    workedHours
+                    workedMinutes
             );
         });
     }
 
     @Transactional(readOnly = true)
     public List<AdminTimeEntryByDateResponseDto> getTimeEntriesByDateForCompany(LocalDate date) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         List<TimeEntry> timeEntries = timeEntryRepository
@@ -525,15 +525,15 @@ public class TimeEntryService {
                 workedMinutes = Duration.between(timeEntry.getStartAt(), timeEntry.getEndAt()).toMinutes();
             }
 
-            Profile employeeProfile = timeEntry.getEmployee();
-            String jobPosition = employeeProfile.getPosition() != null ? employeeProfile.getPosition().getTitle() : null;
+            Profile employee = timeEntry.getEmployee();
+            String jobPositionTitle = employee.getPosition() != null ? employee.getPosition().getTitle() : null;
 
             return new AdminTimeEntryByDateResponseDto(
                     timeEntry.getId(),
-                    employeeProfile.getUserId(),
-                    employeeProfile.getFullName(),
-                    jobPosition,
-                    employeeProfile.getAvatarUrl(),
+                    employee.getUserId(),
+                    employee.getFullName(),
+                    jobPositionTitle,
+                    employee.getAvatarUrl(),
                     timeEntry.getWorkDate(),
                     timeEntry.getStartAt(),
                     timeEntry.getEndAt(),
@@ -543,8 +543,8 @@ public class TimeEntryService {
     }
 
     @Transactional(readOnly = true)
-    public byte[] exportCompanyReportPdf(LocalDate startDate, LocalDate endDate) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+    public byte[] exportCompanyReportAsPdf(LocalDate startDate, LocalDate endDate) {
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         List<TimeEntry> timeEntries = timeEntryRepository
@@ -552,12 +552,12 @@ public class TimeEntryService {
 
         List<AuditRecordDto> auditRecords = List.of();
 
-        return adminPdfGeneratorService.generarPDFFichajesEmpresa(company, timeEntries, startDate, endDate, auditRecords);
+        return adminPdfGeneratorService.generateCompanyTimeEntriesPdf(company, timeEntries, startDate, endDate, auditRecords);
     }
 
     @Transactional(readOnly = true)
-    public byte[] exportCompanyReportExcel(LocalDate startDate, LocalDate endDate) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+    public byte[] exportCompanyReportAsExcel(LocalDate startDate, LocalDate endDate) {
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         List<TimeEntry> timeEntries = timeEntryRepository
@@ -565,10 +565,10 @@ public class TimeEntryService {
 
         List<AuditRecordDto> auditRecords = List.of();
 
-        return excelGeneratorService.generarExcelFichajesEmpresa(timeEntries, auditRecords, startDate, endDate);
+        return excelGeneratorService.generateCompanyTimeEntriesExcel(timeEntries, auditRecords, startDate, endDate);
     }
 
-    private TimeEntry checkTimeEntry(UUID id, Company company) {
+    private TimeEntry findAndValidateTimeEntry(UUID id, Company company) {
         Optional<TimeEntry> timeEntryOpt = timeEntryRepository.findById(id);
         if (timeEntryOpt.isEmpty()) {
             throw new NotFoundException("No se encontró el fichajeOp");

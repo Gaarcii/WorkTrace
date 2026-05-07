@@ -14,11 +14,11 @@ import java.util.Optional;
 @Repository
 public interface KnownIpRepository extends JpaRepository<KnownIp, String> {
     @Query(value = "SELECT * FROM known_ips WHERE ip = CAST(:ip AS inet)", nativeQuery = true)
-    Optional<KnownIp> buscarPorIp(@Param("ip") String ip);
+    Optional<KnownIp> findByIp(@Param("ip") String ip);
 
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO known_ips (ip, geo_ip_data, created_at) VALUES (CAST(:ip AS inet), CAST(:geoipData AS jsonb), :createdAt)", nativeQuery = true)
-    void guardarIpNativa(@Param("ip") String ip, @Param("geoipData") String geoipData, @Param("createdAt") OffsetDateTime createdAt);
+    void saveNativeIp(@Param("ip") String ip, @Param("geoipData") String geoipData, @Param("createdAt") OffsetDateTime createdAt);
 }
 

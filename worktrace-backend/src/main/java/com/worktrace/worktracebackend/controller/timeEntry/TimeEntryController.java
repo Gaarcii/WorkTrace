@@ -64,7 +64,7 @@ public class TimeEntryController {
             endDate = LocalDate.now();
         }
         if (startDate == null) {
-            startDate = timeEntryService.getFirstTimeEntryDate();
+            startDate = timeEntryService.getFirstTimeEntryDateForEmployee();
         }
         StatisticsResponseDto statistics = timeEntryService.getStatistics(startDate, endDate);
         return ResponseEntity.ok(statistics);
@@ -81,10 +81,10 @@ public class TimeEntryController {
         }
 
         if (startDate == null) {
-            startDate = timeEntryService.getFirstTimeEntryDate();
+            startDate = timeEntryService.getFirstTimeEntryDateForEmployee();
         }
 
-        byte[] pdfBytes = timeEntryService.exportHistoryPdf(startDate, endDate);
+        byte[] pdfBytes = timeEntryService.exportEmployeeHistoryPdf(startDate, endDate);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
@@ -127,7 +127,7 @@ public class TimeEntryController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         List<DailyTimeEntryCountDto> dailyTimeEntryCounts =
-                timeEntryService.getWeeklyChartData(startDate, endDate);
+                timeEntryService.getWeeklyTimeEntryCountChartData(startDate, endDate);
         return ResponseEntity.ok(dailyTimeEntryCounts);
 
     }
@@ -164,7 +164,7 @@ public class TimeEntryController {
             @PathVariable UUID employeeId,
             Pageable pageable) {
         Page<TimeEntryTableResponseDto> response = timeEntryService
-                .getTimeEntriesByEmployeePaginated(employeeId, pageable);
+                .getTimeEntriesByEmployee(employeeId, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -174,7 +174,7 @@ public class TimeEntryController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        byte[] pdfBytes = timeEntryService.exportCompanyReportPdf(startDate, endDate);
+        byte[] pdfBytes = timeEntryService.exportCompanyReportAsPdf(startDate, endDate);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
@@ -193,7 +193,7 @@ public class TimeEntryController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        byte[] excelBytes = timeEntryService.exportCompanyReportExcel(startDate, endDate);
+        byte[] excelBytes = timeEntryService.exportCompanyReportAsExcel(startDate, endDate);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));

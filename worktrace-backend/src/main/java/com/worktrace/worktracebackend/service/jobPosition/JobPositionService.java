@@ -6,7 +6,7 @@ import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.JobPosition;
 import com.worktrace.worktracebackend.repository.JobPositionRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
-import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
+import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +24,10 @@ public class JobPositionService {
 
     @Transactional(readOnly = true)
     public List<JobPositionResponseDto> getJobPositions() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
 
         List<JobPosition> jobPositionList = jobPositionRepository
-                .getJobPositionsByCompany_Id(info.getCompany().getId());
+                .findByCompany_Id(info.getCompany().getId());
 
         return jobPositionList.stream().map(
                 position -> new JobPositionResponseDto(
@@ -38,7 +38,7 @@ public class JobPositionService {
 
     @Transactional
     public JobPositionResponseDto createJobPosition(JobPositionRequestDto requestDto) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         String name = requestDto.getName().trim();
         boolean exists = jobPositionRepository.findByTitleIgnoreCaseAndCompany_Id(name, info.getCompany().getId()).isPresent();
         if (exists) {
@@ -57,7 +57,7 @@ public class JobPositionService {
 
     @Transactional
     public void deleteJobPosition(UUID jobPositionId) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         JobPosition jobPosition = jobPositionRepository.findById(jobPositionId)

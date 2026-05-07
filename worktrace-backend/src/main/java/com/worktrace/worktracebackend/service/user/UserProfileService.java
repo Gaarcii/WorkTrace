@@ -13,7 +13,7 @@ import com.worktrace.worktracebackend.repository.ProfileRepository;
 import com.worktrace.worktracebackend.repository.UserRepository;
 import com.worktrace.worktracebackend.security.JwtService;
 import com.worktrace.worktracebackend.service.auth.UserService;
-import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
+import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
 import com.worktrace.worktracebackend.service.storage.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,13 +41,13 @@ public class UserProfileService {
 
     @Transactional(readOnly = true)
     public UserResponseDto getProfile() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         return buildUserResponseDto(info.getProfile(), info.getUser());
     }
 
     @Transactional
     public UserResponseDto updateProfile(UserRequestDto requestDto) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Profile profile = info.getProfile();
         User user = info.getUser();
 
@@ -76,7 +76,7 @@ public class UserProfileService {
         }
         profile.setUpdatedAt(OffsetDateTime.now());
 
-        String newToken = null;
+        String updatedJwtToken = null;
 
         String newEmail = requestDto.getEmail();
 
@@ -87,25 +87,25 @@ public class UserProfileService {
                 throw new IllegalArgumentException("Contraseña incorrecta. No puedes cambiar el email.");
             }
             user.setEmail(newEmail);
-            newToken = jwtService.generateToken(user);
+            updatedJwtToken = jwtService.generateToken(user);
         }
 
         UserResponseDto responseDto = buildUserResponseDto(profile, user);
-        responseDto.setUpdatedToken(newToken);
+        responseDto.setUpdatedToken(updatedJwtToken);
         return responseDto;
     }
 
 
     @Transactional(readOnly = true)
-    public Long getCompanyWorkers() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+    public Long countCompanyEmployees() {
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
         return userRepository.countUsersByCompany_Id(company.getId());
     }
 
     @Transactional(readOnly = true)
     public List<DepartmentStatDto> getDepartmentStats() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         List<DepartmentStatProjection> departmentStatProjections = userRepository
@@ -122,7 +122,7 @@ public class UserProfileService {
 
     @Transactional(readOnly = true)
     public Page<EmployeeResponseDto> getEmployeesByCompany(Pageable pageable) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         Page<Profile> profilePage = profileRepository
@@ -145,7 +145,7 @@ public class UserProfileService {
 
     @Transactional(readOnly = true)
     public EmployeeResponseDto getEmployeeById(UUID employeeId) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         Profile profile = profileRepository.findById(employeeId)
@@ -171,7 +171,7 @@ public class UserProfileService {
 
     @Transactional
     public void editEmployeeWorkData(UUID employeeId, EditEmployeeWorkDataRequestDto dto) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         Profile profile = profileRepository.findById(employeeId)

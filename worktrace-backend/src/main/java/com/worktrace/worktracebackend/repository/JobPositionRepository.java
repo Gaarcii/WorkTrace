@@ -10,7 +10,7 @@ import java.util.UUID;
 @Repository
 public interface JobPositionRepository extends JpaRepository<JobPosition, UUID> {
 
-    List<JobPosition> getJobPositionsByCompany_Id(UUID companyId);
+    List<JobPosition> findByCompany_Id(UUID companyId);
 
     java.util.Optional<JobPosition> findByTitleIgnoreCaseAndCompany_Id(String title, UUID companyId);
 }

@@ -2,8 +2,8 @@ package com.worktrace.worktracebackend.service.dailyClosure;
 
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.DailyClosure;
-import com.worktrace.worktracebackend.model.TimeEntryStatus;
 import com.worktrace.worktracebackend.model.TimeEntry;
+import com.worktrace.worktracebackend.model.TimeEntryStatus;
 import com.worktrace.worktracebackend.repository.AuditTimeEntryRepository;
 import com.worktrace.worktracebackend.repository.CompanyRepository;
 import com.worktrace.worktracebackend.repository.DailyClosureRepository;
@@ -46,14 +46,14 @@ public class DailyClosureService {
 
         for (Company company : companies) {
             try {
-                procesarCierreIndividual(company, targetDate);
+                processIndividualClosure(company, targetDate);
             } catch (Exception e) {
                 log.error("Fallo en cierre de empresa {}: {}", company.getCompanyName(), e.getMessage());
             }
         }
    }
 
-    private void procesarCierreIndividual(Company company, LocalDate targetDate) {
+    private void processIndividualClosure(Company company, LocalDate targetDate) {
         if (dailyClosureRepository.existsByCompanyIdAndWorkDate(company.getId(), targetDate)) {
             throw new RuntimeException("El cierre para la fecha " + targetDate + " ya está realizado.");
         }
@@ -73,7 +73,7 @@ public class DailyClosureService {
         List<TimeEntry> entries = timeEntryRepository.findByCompanyIdAndWorkDateOrderByStartAtAscIdAsc(
                 company.getId(), targetDate);
 
-        String newHash = generarHashDelDia(entries, previousHash);
+        String newHash = generateDailyHash(entries, previousHash);
 
         DailyClosure closure = new DailyClosure();
         closure.setWorkDate(targetDate);
@@ -86,32 +86,32 @@ public class DailyClosureService {
         dailyClosureRepository.save(closure);
     }
 
-    public String verificarIntegridad(LocalDate date) {
-        UUID companyId = userService.extraerUsuarioYCompania().getCompany().getId();
+    public String verifyIntegrity(LocalDate date) {
+        UUID companyId = userService.getAuthenticatedUserAndCompanyInfo().getCompany().getId();
 
         DailyClosure closure = dailyClosureRepository.findByCompanyIdAndWorkDate(companyId, date)
                 .orElseThrow(() -> new RuntimeException("No hay cierre para esta fecha"));
 
         List<TimeEntry> entries = timeEntryRepository.findByCompanyIdAndWorkDateOrderByStartAtAscIdAsc(companyId, date);
 
-        String currentHash = generarHashDelDia(entries, closure.getPrevDayHash());
+        String currentHash = generateDailyHash(entries, closure.getPrevDayHash());
         String storedHash = closure.getDayHash();
 
         if (!storedHash.startsWith(HASH_VERSION_V2 + HASH_SEPARATOR)) {
-            currentHash = generarHashDelDia(entries, closure.getPrevDayHash());
+            currentHash = generateDailyHash(entries, closure.getPrevDayHash());
         }
 
         if (currentHash.equals(storedHash)) {
             return "VALID";
         }
 
-        boolean modificadoConJustificacion = auditTimeEntryRepository.existsEditsAfterClosure(
+        boolean modifiedWithJustification = auditTimeEntryRepository.existsEditsAfterClosure(
                 companyId, date, closure.getComputedAt());
 
-        return modificadoConJustificacion ? "MODIFIED" : "CORRUPTED";
+        return modifiedWithJustification ? "MODIFIED" : "CORRUPTED";
     }
 
-    private String generarHashDelDia(List<TimeEntry> entries, String prevHash) {
+    private String generateDailyHash(List<TimeEntry> entries, String prevHash) {
         StringBuilder rawData = new StringBuilder();
         if (entries.isEmpty()) {
             rawData.append("NO_ACTIVITY");
@@ -145,7 +145,7 @@ public class DailyClosureService {
             }
         }
 
-        String stringGigante = prevHash + rawData;
-        return hashService.sha256Hex(stringGigante);
+        String concatenatedData = prevHash + rawData;
+        return hashService.sha256Hex(concatenatedData);
     }
 }

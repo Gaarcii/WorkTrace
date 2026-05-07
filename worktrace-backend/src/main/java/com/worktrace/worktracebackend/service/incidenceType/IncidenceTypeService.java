@@ -8,7 +8,7 @@ import com.worktrace.worktracebackend.model.IncidenceType;
 import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.IncidenceTypeRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
-import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
+import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class IncidenceTypeService {
 
     @Transactional(readOnly = true)
     public IncidenceTypeResponseDto getIncidenceTypes() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         IncidenceTypeResponseDto typeResponseDto = new IncidenceTypeResponseDto();
         typeResponseDto.setTypes(
                 incidenceTypeRepository.findByCompany_IdAndDeletedAtIsNull(
@@ -38,7 +38,7 @@ public class IncidenceTypeService {
 
     @Transactional
     public IncidenceTypeItemDto createIncidenceType(IncidenceTypeRequestDto dto) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         String name = dto.getName().trim();
@@ -71,7 +71,7 @@ public class IncidenceTypeService {
 
     @Transactional
     public IncidenceTypeItemDto updateIncidenceType(UUID id, IncidenceTypeRequestDto dto) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         IncidenceType incidenceType = incidenceTypeRepository.findByIdAndCompany_IdAndDeletedAtIsNull(id, company.getId())
@@ -98,7 +98,7 @@ public class IncidenceTypeService {
 
     @Transactional
     public void deleteIncidenceType(UUID id) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
 
         IncidenceType incidenceType = incidenceTypeRepository.findByIdAndCompany_IdAndDeletedAtIsNull(id, company.getId())

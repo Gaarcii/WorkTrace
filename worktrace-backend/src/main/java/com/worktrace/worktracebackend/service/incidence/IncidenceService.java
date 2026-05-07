@@ -8,7 +8,7 @@ import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.IncidenceTypeRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
-import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
+import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,18 +30,18 @@ public class IncidenceService {
 
     @Transactional(readOnly = true)
     public List<WorkerIncidenceResponseDto> getIncidencesByUserId() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
 
         List<Incidence> incidenceList = incidenceRepository
                 .findByProfile_UserId(info.getUser().getId());
 
-        return mapearAIncidenceResponse(incidenceList);
+        return mapToWorkerIncidenceResponseDtos(incidenceList);
     }
 
     @Transactional
     public WorkerIncidenceResponseDto createIncidence(WorkerIncidenceRequestDto requestDto) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
-        IncidenceType tipoRef = incidenceTypeRepository
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
+        IncidenceType incidenceType = incidenceTypeRepository
                 .findByIdAndCompany_IdAndDeletedAtIsNull(requestDto.getTypeId(), info.getCompany().getId())
                 .orElseThrow(() -> new IllegalStateException("Tipo de incidencia no encontrado"));
 
@@ -51,7 +51,7 @@ public class IncidenceService {
         incidence.setComment(requestDto.getComment());
         incidence.setStatus(IncidenceStatus.PENDING);
         incidence.setCreatedAt(OffsetDateTime.now());
-        incidence.setType(tipoRef);
+        incidence.setType(incidenceType);
         incidence.setIncidenceTime(requestDto.getTime());
         incidence.setCompany(info.getCompany());
         incidence.setUpdatedAt(OffsetDateTime.now());
@@ -68,44 +68,44 @@ public class IncidenceService {
     }
 
     @Transactional(readOnly = true)
-    public List<WorkerIncidenceResponseDto> getIncidenciaPorFechas(LocalDate fechaInicio, LocalDate fechaFin) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+    public List<WorkerIncidenceResponseDto> getIncidencesByDateRange(LocalDate startDate, LocalDate endDate) {
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
 
         List<Incidence> incidenceList = incidenceRepository
                 .getIncidencesByProfile_UserIdAndDateBetween(
                         info.getUser().getId(),
-                        fechaInicio, fechaFin);
+                        startDate, endDate);
 
-        return mapearAIncidenceResponse(incidenceList);
+        return mapToWorkerIncidenceResponseDtos(incidenceList);
     }
 
     @Transactional(readOnly = true)
     public Page<AdminIncidenceResponseDto> getCompanyIncidencesByStatus(IncidenceStatus status, Pageable pageable) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
 
         Page<Incidence> incidencePage = incidenceRepository
                 .findByCompany_IdAndStatus(info.getCompany().getId(), status, pageable);
 
-        return mapearAdminResponse(incidencePage);
+        return mapToAdminIncidenceResponseDtoPage(incidencePage);
     }
 
     @Transactional(readOnly = true)
     public Page<AdminIncidenceResponseDto> getCompanyIncidenceHistory(Pageable pageable) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
         Page<Incidence> incidencePage = incidenceRepository.findByCompany_IdAndStatusIn
                 (company.getId(), List.of(IncidenceStatus.RESOLVED, IncidenceStatus.REJECTED), pageable);
 
-        return mapearAdminResponse(incidencePage);
+        return mapToAdminIncidenceResponseDtoPage(incidencePage);
     }
 
     @Transactional
-    public void manageIncidence(UUID incidenciaId, AdminIncidenceRequestDto dto) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+    public void manageIncidence(UUID incidenceId, AdminIncidenceRequestDto dto) {
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
         User user = info.getUser();
 
-        Incidence incidence = incidenceRepository.findById(incidenciaId)
+        Incidence incidence = incidenceRepository.findById(incidenceId)
                 .orElseThrow(() -> new IllegalStateException("Incidencia no encontrada"));
 
         if (!incidence.getCompany().getId().equals(company.getId())) {
@@ -124,7 +124,7 @@ public class IncidenceService {
         }
     }
 
-    private List<WorkerIncidenceResponseDto> mapearAIncidenceResponse(List<Incidence> incidenceList) {
+    private List<WorkerIncidenceResponseDto> mapToWorkerIncidenceResponseDtos(List<Incidence> incidenceList) {
         return incidenceList.stream()
                 .map(incident -> new WorkerIncidenceResponseDto(
                         incident.getType().getName(),
@@ -137,11 +137,11 @@ public class IncidenceService {
                 .toList();
     }
 
-    private Page<AdminIncidenceResponseDto> mapearAdminResponse(Page<Incidence> incidencePage) {
+    private Page<AdminIncidenceResponseDto> mapToAdminIncidenceResponseDtoPage(Page<Incidence> incidencePage) {
         return incidencePage.map(incident -> new AdminIncidenceResponseDto(
                 incident.getId(),
                 incident.getProfile().getFullName(),
-                obtenerPuestoTrabajo(incident),
+                getJobPositionTitle(incident),
                 incident.getType().getName(),
                 incident.getComment(),
                 incident.getStatus(),
@@ -152,7 +152,7 @@ public class IncidenceService {
         ));
     }
 
-    private String obtenerPuestoTrabajo(Incidence incident) {
+    private String getJobPositionTitle(Incidence incident) {
         if (incident.getProfile() == null || incident.getProfile().getPosition() == null) {
             return "Sin asignar";
         }

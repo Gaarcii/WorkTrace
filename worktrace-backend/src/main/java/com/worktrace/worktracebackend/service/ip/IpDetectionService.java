@@ -36,7 +36,7 @@ public class IpDetectionService {
             return new IpAnalysisResult(new ArrayList<>(), null);
         }
 
-        Optional<KnownIp> cachedIp = knownIpRepository.buscarPorIp(ipAddress);
+        Optional<KnownIp> cachedIp = knownIpRepository.findByIp(ipAddress);
 
         if (cachedIp.isPresent()) {
             Map<String, Object> cachedData = cachedIp.get().getGeoIpData();
@@ -66,13 +66,13 @@ public class IpDetectionService {
             geoIpMap = mapper.convertValue(ipInfo, new TypeReference<>() {
             });
 
-            KnownIp nuevaIp = new KnownIp();
-            nuevaIp.setIp(ipAddress);
-            nuevaIp.setGeoIpData(geoIpMap);
+            KnownIp newIp = new KnownIp();
+            newIp.setIp(ipAddress);
+            newIp.setGeoIpData(geoIpMap);
             try {
                 String jsonString = mapper.writeValueAsString(geoIpMap);
 
-                knownIpRepository.guardarIpNativa(ipAddress, jsonString, OffsetDateTime.now());
+                knownIpRepository.saveNativeIp(ipAddress, jsonString, OffsetDateTime.now());
             } catch (Exception e) {
                 System.err.println("No se pudo guardar la IP en caché: " + e.getMessage());
             }
@@ -98,7 +98,6 @@ public class IpDetectionService {
         if (cachedData != null && cachedData.containsKey("security")) {
             Object secObj = cachedData.get("security");
             if (secObj instanceof Map<?, ?> securityMap) {
-                // Cast seguro
                 if (Boolean.TRUE.equals(securityMap.get("is_vpn"))) flags.add("VPN_DETECTED");
                 if (Boolean.TRUE.equals(securityMap.get("is_tor"))) flags.add("TOR_NETWORK");
                 if (Boolean.TRUE.equals(securityMap.get("is_proxy"))) flags.add("PROXY_DETECTED");

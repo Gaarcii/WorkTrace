@@ -5,7 +5,7 @@ import com.worktrace.worktracebackend.dto.workSchedule.WorkScheduleResponseDto;
 import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.*;
 import com.worktrace.worktracebackend.service.auth.UserService;
-import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
+import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
 import com.worktrace.worktracebackend.service.dailyClosure.DailyClosureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,13 +32,13 @@ public class InspectorService {
 
     @Transactional(readOnly = true)
     public InspectorHomeResponseDto getHome() {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         var companyId = info.getCompany().getId();
         LocalDate today = LocalDate.now();
 
-        long totalEmpleados = userRepository.countUsersByCompany_Id(companyId);
-        long totalIncidencias = incidenceRepository.countByCompany_IdAndStatus(companyId, IncidenceStatus.PENDING);
-        long trabajadoresActivosHoy = timeEntryRepository.countDistinctActiveWorkersByCompanyAndWorkDate(
+        long totalEmployees = userRepository.countUsersByCompany_Id(companyId);
+        long totalPendingIncidences = incidenceRepository.countByCompany_IdAndStatus(companyId, IncidenceStatus.PENDING);
+        long activeWorkersToday = timeEntryRepository.countDistinctActiveWorkersByCompanyAndWorkDate(
                 companyId,
                 today,
                 TimeEntryStatus.OPEN
@@ -46,16 +46,16 @@ public class InspectorService {
         long totalAuditLogs = auditTimeEntryRepository.countByCompanyId(companyId);
 
         return new InspectorHomeResponseDto(
-                totalEmpleados,
-                totalIncidencias,
-                trabajadoresActivosHoy,
+                totalEmployees,
+                totalPendingIncidences,
+                activeWorkersToday,
                 totalAuditLogs
         );
     }
 
     @Transactional(readOnly = true)
     public Page<EmployeeDto> getEmployees(Pageable pageable, String search) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         var companyId = info.getCompany().getId();
 
         Page<User> users;
@@ -80,7 +80,7 @@ public class InspectorService {
 
     @Transactional(readOnly = true)
     public EmployeeDetailDto getEmployeeDetail(UUID employeeId) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         var companyId = info.getCompany().getId();
 
         User user = userRepository.findByIdAndCompanyId(employeeId, companyId)
@@ -97,14 +97,14 @@ public class InspectorService {
                 user.getProfile().getIsActive(),
                 user.getProfile().getWorkSchedules().stream()
                         .map(ws -> {
-                            long horas = Duration.between(ws.getStartTime(), ws.getEndTime()).toHours();
+                            long hours = Duration.between(ws.getStartTime(), ws.getEndTime()).toHours();
                             return new WorkScheduleResponseDto(
                                     ws.getSite().getName(),
                                     ws.getSite().getAddress(),
                                     ws.getDayOfWeek(),
                                     ws.getStartTime(),
                                     ws.getEndTime(),
-                                    horas
+                                    hours
                             );
                         })
                         .collect(Collectors.toList())
@@ -118,13 +118,13 @@ public class InspectorService {
             String search,
             Pageable pageable) {
 
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         var companyId = info.getCompany().getId();
 
-        IncidenceStatus estadoEnum = null;
+        IncidenceStatus statusEnum = null;
         if (status != null && !status.trim().isEmpty()) {
             try {
-                estadoEnum = IncidenceStatus.valueOf(status.toUpperCase());
+                statusEnum = IncidenceStatus.valueOf(status.toUpperCase());
             } catch (IllegalArgumentException e) {
                 throw new RuntimeException("Estado no válido: " + status);
             }
@@ -132,7 +132,7 @@ public class InspectorService {
 
         Page<Incidence> incidences = incidenceRepository.findFilteredIncidences(
                 companyId,
-                estadoEnum != null ? IncidenceStatus.valueOf(estadoEnum.name()) : null,
+                statusEnum != null ? IncidenceStatus.valueOf(statusEnum.name()) : null,
                 incidenceTypeId,
                 (search != null && !search.trim().isEmpty()) ? search.trim() : "",
                 pageable
@@ -157,7 +157,7 @@ public class InspectorService {
 
     @Transactional(readOnly = true)
     public Page<InspectorDailyClosureDto> getDailyClosures(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         var companyId = info.getCompany().getId();
 
         Page<DailyClosure> closures = dailyClosureRepository.findFilteredClosures(
@@ -169,7 +169,7 @@ public class InspectorService {
 
         return closures.map(closure -> new InspectorDailyClosureDto(
                 closure.getWorkDate(),
-                dailyClosureService.verificarIntegridad(closure.getWorkDate()),
+                dailyClosureService.verifyIntegrity(closure.getWorkDate()),
                 closure.getRecordsCount(),
                 closure.getDayHash(),
                 closure.getPrevDayHash(),
@@ -179,7 +179,7 @@ public class InspectorService {
 
     @Transactional(readOnly = true)
     public Page<InspectorAuditDto> getAudits(String action, java.time.LocalDate startDate, java.time.LocalDate endDate, Pageable pageable) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         var companyId = info.getCompany().getId();
 
         Page<AuditTimeEntry> audits = auditTimeEntryRepository.findFilteredAudits(
@@ -207,7 +207,7 @@ public class InspectorService {
 
     @Transactional(readOnly = true)
     public InspectorAuditDetailDto getAuditDetail(UUID auditId) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         var companyId = info.getCompany().getId();
 
         AuditTimeEntry audit = auditTimeEntryRepository.findById(auditId)

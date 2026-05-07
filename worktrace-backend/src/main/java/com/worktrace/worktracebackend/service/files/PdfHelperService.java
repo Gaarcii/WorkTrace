@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.service.archivos;
+package com.worktrace.worktracebackend.service.files;
 
 import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.service.hash.HashService;
@@ -16,7 +16,7 @@ public class PdfHelperService {
 
     private final HashService hashService;
 
-    public String generarHashSha256(String rawData) {
+    public String generateSha256Hash(String rawData) {
         return hashService.sha256Hex(rawData);
     }
 

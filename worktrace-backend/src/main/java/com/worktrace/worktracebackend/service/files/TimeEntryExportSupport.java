@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.service.archivos;
+package com.worktrace.worktracebackend.service.files;
 
 import com.worktrace.worktracebackend.model.TimeEntry;
 

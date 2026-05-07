@@ -12,7 +12,7 @@ import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
 import com.worktrace.worktracebackend.repository.ProfileRepository;
 import com.worktrace.worktracebackend.repository.WorkSiteRepository;
 import com.worktrace.worktracebackend.service.auth.UserService;
-import com.worktrace.worktracebackend.service.auth.UsuarioYCompaniaInfo;
+import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +41,7 @@ public class WorkScheduleService {
 
     @Transactional
     public void assignWorkSchedule(WorkScheduleRequestDto dto) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
         User worker = userService.getUserById(dto.getEmployeeId());
         Profile employeeProfile = profileRepository.findById(dto.getEmployeeId())
@@ -130,7 +130,7 @@ public class WorkScheduleService {
 
     @Transactional(readOnly = true)
     public List<WorkScheduleResponseDto> getEmployeeSchedules(UUID employeeId) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         Company company = info.getCompany();
         User worker = userService.getUserById(employeeId);
 

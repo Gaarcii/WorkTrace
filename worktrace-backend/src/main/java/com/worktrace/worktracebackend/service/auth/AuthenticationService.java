@@ -98,7 +98,7 @@ public class AuthenticationService {
 
     @Transactional
     public void changePassword(PasswordChangeRequestDto requestDto) {
-        UsuarioYCompaniaInfo info = userService.extraerUsuarioYCompania();
+        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         User user = info.getUser();
 
         boolean isCurrentPasswordCorrect = passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPasswordHash());

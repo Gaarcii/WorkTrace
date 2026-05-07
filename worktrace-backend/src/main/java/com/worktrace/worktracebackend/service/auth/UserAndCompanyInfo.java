@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UsuarioYCompaniaInfo {
+public class UserAndCompanyInfo {
     private final User user;
     private final Company company;
     private final Profile profile;

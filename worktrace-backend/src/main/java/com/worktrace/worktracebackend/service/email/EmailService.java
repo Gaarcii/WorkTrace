@@ -25,10 +25,10 @@ public class EmailService {
             String toEmail,
             String employeeName,
             String plainPassword,
-            String empresaLogoUrl,
-            String empresaNombre,
-            String nombreAdmin,
-            String urlAccesoApp
+            String companyLogoUrl,
+            String companyName,
+            String adminName,
+            String appAccessUrl
     ) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -42,18 +42,16 @@ public class EmailService {
             context.setVariable("nombre", employeeName);
             context.setVariable("email", toEmail);
             context.setVariable("password", plainPassword);
-            context.setVariable("empresaLogoUrl", empresaLogoUrl);
-            context.setVariable("empresaNombre", empresaNombre);
-            context.setVariable("nombreAdmin", nombreAdmin);
-            context.setVariable("urlAccesoApp", urlAccesoApp);
+            context.setVariable("empresaLogoUrl", companyLogoUrl);
+            context.setVariable("empresaNombre", companyName);
+            context.setVariable("nombreAdmin", adminName);
+            context.setVariable("urlAccesoApp", appAccessUrl);
 
             String htmlContent = templateEngine.process("email-bienvenida", context);
 
             helper.setText(htmlContent, true);
 
-            System.out.println("DEBUG: Iniciando envío de correo HTML a " + toEmail);
             mailSender.send(message);
-            System.out.println("DEBUG: ¡Correo HTML enviado con éxito a " + toEmail + "!");
 
         } catch (Exception e) {
             System.err.println("Error al enviar el correo HTML: " + e.getMessage());
@@ -91,9 +89,7 @@ public class EmailService {
 
             helper.setText(htmlContent, true);
 
-            System.out.println("DEBUG: Iniciando envío de correo de bienvenida para inspector a " + toEmail);
             mailSender.send(message);
-            System.out.println("DEBUG: ¡Correo de bienvenida para inspector enviado con éxito a " + toEmail + "!");
 
         } catch (Exception e) {
             System.err.println("Error al enviar el correo de bienvenida para inspector: " + e.getMessage());
@@ -119,9 +115,7 @@ public class EmailService {
 
             helper.setText(htmlContent, true);
 
-            System.out.println("DEBUG: Iniciando envío de correo HTML de reset a " + to);
             mailSender.send(message);
-            System.out.println("DEBUG: ¡Correo HTML de reset enviado con éxito a " + to + "!");
 
         } catch (Exception e) {
             System.err.println("Error al enviar el correo HTML de reset de contraseña: " + e.getMessage());
