@@ -5,6 +5,13 @@ import { ProfileRequest, ProfileResponse } from '../models/profile.model';
 import { API_CONFIG } from '../../core/api/api.config';
 import { TokenStorageService } from '../../core/auth/token-storage.service';
 
+/**
+ * @class ProfileService
+ * @description
+ * Servicio encargado de gestionar la información del perfil del usuario autenticado.
+ * Proporciona métodos para obtener y actualizar los datos del perfil, interactuando
+ * con los endpoints correspondientes de la API.
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -16,8 +23,13 @@ export class ProfileService {
   readonly currentUser = signal<ProfileResponse | null>(null);
 
   /**
-   * Obtiene el perfil del usuario actual
-   * Endpoint: GET /api/user/profile
+   * Recupera el perfil del usuario actualmente autenticado desde el backend.
+   *
+   * @description
+   * Realiza una petición HTTP GET para obtener los datos del perfil y, si tiene éxito,
+   * actualiza el estado local (`currentUser` signal) con la información recibida.
+   *
+   * @returns Un `Observable` que emite un objeto `ProfileResponse` con los datos del perfil.
    */
   fetchMyProfile(): Observable<ProfileResponse> {
     return this.http.get<ProfileResponse>(`${this.BASE_URL}user/profile`).pipe(
@@ -28,8 +40,17 @@ export class ProfileService {
   }
 
   /**
-   * Actualiza el perfil del usuario actual (soporta subida de avatar)
-   * Endpoint: PATCH /api/user (Multipart Form Data)
+   * Actualiza los datos del perfil del usuario autenticado.
+   *
+   * @description
+   * Envía una petición HTTP PATCH con los datos del perfil a actualizar.
+   * Construye un objeto `FormData` para poder enviar tanto datos de texto como
+   * un archivo de imagen (avatar) en una sola petición `multipart/form-data`.
+   * Si la actualización es exitosa y el backend devuelve un nuevo token (ej. por cambio de email),
+   * este se guarda en el almacenamiento.
+   *
+   * @param request - Un objeto `ProfileRequest` que contiene los campos a modificar.
+   * @returns Un `Observable` que emite un objeto `ProfileResponse` con el perfil ya actualizado.
    */
   updateMyProfile(request: ProfileRequest): Observable<ProfileResponse> {
     // Al requerir MULTIPART_FORM_DATA_VALUE en Spring Boot, construimos un FormData
@@ -45,8 +66,6 @@ export class ProfileService {
       formData.append('avatar', request.avatar);
     }
 
-    // Nota: Según tu captura, el @PatchMapping no tiene sub-ruta,
-    // por lo que apunta a la raíz del @RequestMapping del controlador ("user")
     return this.http.patch<ProfileResponse>(`${this.BASE_URL}user`, formData).pipe(
       tap((profile: ProfileResponse) => {
         if (profile.updatedToken != null) {

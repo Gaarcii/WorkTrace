@@ -279,7 +279,7 @@ export class AdminHomeComponent implements OnInit {
       const blob = await firstValueFrom(
         formato === 'pdf'
           ? this.adminHomeService.exportReportPdf(inicio, fin)
-          : this.adminHomeService.exportarInformeEmpresaExcel(inicio, fin),
+          : this.adminHomeService.exportReportExcel(inicio, fin),
       );
 
       const extension = formato === 'pdf' ? 'pdf' : 'xlsx';
@@ -375,7 +375,7 @@ export class AdminHomeComponent implements OnInit {
     finSemana.setDate(inicioSemana.getDate() + 6);
 
     const weeklyData = await firstValueFrom(
-      this.adminHomeService.obtenerWeeklyChart(
+      this.adminHomeService.getWeeklyChart(
         this.toIsoDate(inicioSemana),
         this.toIsoDate(finSemana),
       ),

@@ -10,6 +10,12 @@ interface SpringPageResponse<T> {
   totalElements?: number;
 }
 
+/**
+ * @class InspectorRegistroDiarioService
+ * @description
+ * Servicio para el rol de Inspector, enfocado en la consulta de los registros de cierre diario.
+ * Permite obtener una vista paginada y filtrable por fechas de los resúmenes de jornada laboral.
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -17,6 +23,20 @@ export class InspectorRegistroDiarioService {
   private readonly BASE_URL = API_CONFIG.baseUrl + 'inspector';
   private readonly http = inject(HttpClient);
   readonly incidenceTypesSignal = signal<IncidenceTypeProjection[]>([]);
+
+  /**
+   * Obtiene una lista paginada y filtrable por fechas de los registros de cierre diario.
+   *
+   * @description
+   * Realiza una petición GET para consultar los cierres diarios, que resumen la actividad
+   * laboral de cada día. Permite acotar la búsqueda a un rango de fechas específico.
+   *
+   * @param page - El número de página a solicitar (basado en 0).
+   * @param size - El número de elementos por página.
+   * @param startDate - La fecha de inicio para el filtro (string 'YYYY-MM-DD' o Date).
+   * @param endDate - La fecha de fin para el filtro (string 'YYYY-MM-DD' o Date).
+   * @returns Un `Observable` que emite una respuesta paginada `SpringPageResponse<InspectorDailyClosureDto>`.
+   */
   getRegistrosDiarios(
     page: number = 0,
     size: number = 10,
