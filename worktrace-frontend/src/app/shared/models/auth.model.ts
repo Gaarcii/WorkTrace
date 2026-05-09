@@ -29,3 +29,21 @@ export interface PasswordChangeRequest {
 export interface GenericMessageResponse {
   message: string;
 }
+
+export interface AdminProfileRequestDto {
+  fullName: string;
+  employeeCode: string;
+  phone: string;
+}
+
+export interface AdminRequestDto {
+  email: string;
+  password: string;
+  profile: AdminProfileRequestDto;
+}
+
+export interface CompanyRequestDto {
+  companyName: string;
+  cif: string;
+  admin: AdminRequestDto;
+}

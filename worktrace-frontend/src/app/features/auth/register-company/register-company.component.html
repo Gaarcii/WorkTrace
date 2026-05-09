@@ -1,0 +1,250 @@
+<div class="split-layout">
+  <div class="form-panel">
+    <div class="form-wrapper">
+      <div class="form-header">
+        <h2>Registra tu empresa</h2>
+        <p>Completa los datos de tu empresa y crea la cuenta de administrador.</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+        <div class="form-section">
+          <h3 class="section-title">Datos de la empresa</h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre de la empresa</mat-label>
+              <input
+                matInput
+                formControlName="companyName"
+                type="text"
+                placeholder="Mi Empresa S.L."
+                autocomplete="organization"
+              />
+              <mat-icon matPrefix>business</mat-icon>
+              @if (registerForm.get('companyName')?.hasError('required')) {
+                <mat-error>El nombre es requerido</mat-error>
+              }
+              @if (registerForm.get('companyName')?.hasError('minlength')) {
+                <mat-error>Mínimo 3 caracteres</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>CIF</mat-label>
+              <input
+                matInput
+                formControlName="cif"
+                type="text"
+                placeholder="X12345678"
+                autocomplete="off"
+              />
+              <mat-icon matPrefix>badge</mat-icon>
+              @if (registerForm.get('cif')?.hasError('required')) {
+                <mat-error>El CIF es requerido</mat-error>
+              }
+              @if (registerForm.get('cif')?.hasError('minlength')) {
+                <mat-error>Mínimo 8 caracteres</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">Logo de la empresa (opcional)</h3>
+
+          <div class="logo-grid">
+            @if (logoPreview()) {
+              <div class="logo-preview-card">
+                <div class="logo-checker-bg">
+                  <img [src]="logoPreview()" alt="Logo de la empresa" class="logo-preview-img" />
+                </div>
+                <button
+                  type="button"
+                  class="btn-icon-danger"
+                  (click)="removeLogo()"
+                  [disabled]="isSubmitting()"
+                  aria-label="Eliminar logo"
+                  title="Eliminar logo"
+                >
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            }
+
+            <div class="file-upload-wrapper" [class.is-disabled]="isSubmitting()">
+              <input
+                id="company-logo"
+                type="file"
+                class="hidden-file-input"
+                accept="image/*"
+                [disabled]="isSubmitting()"
+                (change)="onFileSelected($event)"
+              />
+              <label for="company-logo" class="file-dropzone">
+                <div class="dropzone-content">
+                  <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                  <span class="upload-title">Subir nueva imagen</span>
+                  <span class="hint">PNG, JPG o SVG (Máx. 5MB)</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">Administrador de la empresa</h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre completo</mat-label>
+              <input
+                matInput
+                formControlName="adminFullName"
+                type="text"
+                placeholder="Nombre Admin"
+              />
+              <mat-icon matPrefix>person</mat-icon>
+              @if (registerForm.get('adminFullName')?.hasError('required')) {
+                <mat-error>El nombre es requerido</mat-error>
+              }
+              @if (registerForm.get('adminFullName')?.hasError('minlength')) {
+                <mat-error>Mínimo 3 caracteres</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>DNI</mat-label>
+              <input
+                matInput
+                formControlName="adminEmployeeCode"
+                type="text"
+                placeholder="12345678A"
+                autocomplete="off"
+              />
+              <mat-icon matPrefix>assignment_ind</mat-icon>
+              @if (registerForm.get('adminEmployeeCode')?.hasError('required')) {
+                <mat-error>El código es requerido</mat-error>
+              }
+              @if (registerForm.get('adminEmployeeCode')?.hasError('minlength')) {
+                <mat-error>Mínimo 9 caracteres</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Teléfono</mat-label>
+              <input
+                matInput
+                formControlName="adminPhone"
+                type="tel"
+                placeholder="+34123456789"
+                autocomplete="tel"
+              />
+              <mat-icon matPrefix>phone</mat-icon>
+              @if (registerForm.get('adminPhone')?.hasError('required')) {
+                <mat-error>El teléfono es requerido</mat-error>
+              }
+              @if (registerForm.get('adminPhone')?.hasError('pattern')) {
+                <mat-error>Formato no válido</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Email del administrador</mat-label>
+              <input
+                matInput
+                formControlName="adminEmail"
+                type="email"
+                placeholder="admin@empresa.com"
+                autocomplete="email"
+              />
+              <mat-icon matPrefix>mail</mat-icon>
+              @if (registerForm.get('adminEmail')?.hasError('required')) {
+                <mat-error>El email es requerido</mat-error>
+              }
+              @if (registerForm.get('adminEmail')?.hasError('email')) {
+                <mat-error>Formato no válido</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Contraseña</mat-label>
+              <input
+                matInput
+                formControlName="adminPassword"
+                [type]="hidePassword() ? 'password' : 'text'"
+                autocomplete="new-password"
+              />
+              <mat-icon matPrefix>lock</mat-icon>
+              <button mat-icon-button matSuffix type="button" (click)="togglePassword()">
+                <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (registerForm.get('adminPassword')?.hasError('required')) {
+                <mat-error>Requerida</mat-error>
+              }
+              @if (registerForm.get('adminPassword')?.hasError('minlength')) {
+                <mat-error>Mínimo 6 caracteres</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Confirmar contraseña</mat-label>
+              <input
+                matInput
+                formControlName="adminRepeatPassword"
+                [type]="hideRepeatPassword() ? 'password' : 'text'"
+                autocomplete="new-password"
+              />
+              <mat-icon matPrefix>lock</mat-icon>
+              <button mat-icon-button matSuffix type="button" (click)="toggleRepeatPassword()">
+                <mat-icon>{{ hideRepeatPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (registerForm.get('adminRepeatPassword')?.hasError('required')) {
+                <mat-error>Confirma tu contraseña</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          @if (registerForm.hasError('passwordMismatch')) {
+            <div class="error-box mt-2">
+              <mat-icon>error_outline</mat-icon>
+              <span>Las contraseñas no coinciden</span>
+            </div>
+          }
+        </div>
+
+        @if (errorMessage()) {
+          <div class="error-box">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="registerForm.invalid || isSubmitting()"
+          class="submit-btn"
+        >
+          @if (isSubmitting()) {
+            <mat-spinner diameter="24"></mat-spinner>
+          } @else {
+            Crear empresa y cuenta
+          }
+        </button>
+
+        <button mat-button type="button" class="helper-link" (click)="returnToLogin()">
+          Ya tengo cuenta, volver al inicio de sesión
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="brand-panel">
+    <div class="brand-content">
+      <img src="logo.webp" alt="Logo WorkTrace" class="brand-logo" />
+      <h1>WorkTrace</h1>
+      <p>Gestión horaria inteligente para equipos de alto rendimiento.</p>
+    </div>
+  </div>
+</div>

@@ -27,5 +27,5 @@ public class AdminRequestDto {
 
     @Valid
     @NotNull(message = "Los datos del administrador son obligatorios")
-    private ProfileRequestDto profile;
+    private AdminProfileRequestDto profile;
 }

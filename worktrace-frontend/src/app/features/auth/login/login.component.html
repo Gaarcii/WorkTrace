@@ -122,6 +122,21 @@
           <button mat-button type="button" class="helper-link" (click)="enableForgotPasswordMode()">
             ¿Has olvidado tu contraseña?
           </button>
+
+          <div class="register-divider">
+            <span>¿Aún no tienes empresa?</span>
+          </div>
+
+          <button
+            mat-stroked-button
+            color="primary"
+            type="button"
+            class="register-btn"
+            routerLink="/register-company"
+          >
+            <mat-icon class="register-icon">business</mat-icon>
+            Registra tu empresa
+          </button>
         </form>
       }
     </div>

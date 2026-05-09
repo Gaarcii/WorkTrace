@@ -1,0 +1,305 @@
+.split-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* El panel del formulario ajustado para acomodar las dos columnas sin scroll */
+.form-panel {
+  flex: 1;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 650px; /* Aumentado para dar espacio a las 2 columnas */
+  padding: 24px 40px; /* Padding vertical reducido */
+}
+
+.form-header {
+  margin-bottom: 24px; /* Margen reducido */
+
+  h2 {
+    font-size: 28px; /* Ligeramente más pequeño para optimizar espacio */
+    color: #000026;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+
+  p {
+    color: #666;
+    font-size: 15px;
+    margin-top: 0;
+  }
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-section {
+  margin-bottom: 16px; /* Reducido para evitar el scroll */
+
+  .section-title {
+    font-size: 16px; /* Ligeramente reducido */
+    font-weight: 600;
+    color: #000026;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+}
+
+/* NUEVO: Sistema de Grid para poner campos en 2 columnas */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 16px; /* 0 vertical (mat-form-field ya tiene margen), 16px horizontal */
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  /* En móviles, vuelve a 1 sola columna */
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mt-2 {
+  margin-top: 8px;
+}
+
+.error-box,
+.success-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
+.error-box {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.success-box {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+}
+
+.submit-btn {
+  height: 48px; /* Ligeramente más compacto */
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+
+  ::ng-deep .mdc-button__label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.helper-link {
+  margin-top: 8px;
+  align-self: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #00004d;
+}
+
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.logo-preview-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+  background: white;
+
+  .logo-checker-bg {
+    width: 100%;
+    aspect-ratio: 1;
+    background-image:
+      linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+      linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+      linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 20px 20px;
+    background-position:
+      0 0,
+      0 10px,
+      10px -10px,
+      -10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .logo-preview-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      padding: 16px;
+    }
+  }
+
+  .btn-icon-danger {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #c62828;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+
+    mat-icon {
+      color: white;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: #b71c1c;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.file-upload-wrapper {
+  border: 2px dashed #d0d0d0;
+  border-radius: 8px;
+  padding: 0;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover:not(.is-disabled) {
+    border-color: #00004d;
+    background-color: #f5f5ff;
+  }
+
+  &.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    .file-dropzone {
+      cursor: not-allowed;
+    }
+  }
+
+  .hidden-file-input {
+    display: none;
+  }
+
+  .file-dropzone {
+    display: block;
+    padding: 24px 16px;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .dropzone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    .upload-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: #999;
+    }
+
+    .upload-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #999;
+    }
+  }
+}
+
+.brand-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #000026 0%, #00004d 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.brand-content {
+  max-width: 400px;
+
+  .brand-logo {
+    width: 200px;
+    height: auto;
+    margin: 0 auto 24px auto;
+    filter: brightness(0) invert(1);
+  }
+
+  h1 {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+  }
+
+  p {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+  }
+}

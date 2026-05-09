@@ -61,6 +61,13 @@ public class AuthenticationService {
                 .build();
         companyRepository.save(company);
 
+        JobPosition jefePosition = JobPosition.builder()
+                .title("Jefe")
+                .createdAt(OffsetDateTime.now())
+                .company(company)
+                .build();
+        jobPositionRepository.save(jefePosition);
+
         User admin = User.builder()
                 .email(requestDto.getAdmin().getEmail())
                 .passwordHash(passwordEncoder.encode(requestDto.getAdmin().getPassword()))
@@ -75,6 +82,7 @@ public class AuthenticationService {
                 .fullName(requestDto.getAdmin().getProfile().getFullName())
                 .employeeCode(requestDto.getAdmin().getProfile().getEmployeeCode())
                 .phone(requestDto.getAdmin().getProfile().getPhone())
+                .position(jefePosition)
                 .isFirstLogin(false)
                 .isActive(true)
                 .updatedAt(OffsetDateTime.now())

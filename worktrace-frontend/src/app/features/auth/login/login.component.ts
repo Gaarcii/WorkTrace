@@ -1,7 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { take, finalize } from 'rxjs/operators';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -17,6 +17,7 @@ import { TokenStorageService } from '../../../core/auth/token-storage.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,

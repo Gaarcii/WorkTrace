@@ -10,6 +10,7 @@ import {
   PasswordChangeRequest,
   GenericMessageResponse,
   ResetPasswordRequest,
+  CompanyRequestDto,
 } from '../../shared/models/auth.model';
 
 /**
@@ -108,5 +109,27 @@ export class AuthService {
    */
   changeFirstPassword(passwordData: PasswordChangeRequest): Observable<GenericMessageResponse> {
     return this.http.patch<GenericMessageResponse>(`${this.BASE_URL}auth/password`, passwordData);
+  }
+
+  /**
+   * Registra una nueva empresa con su administrador en el sistema.
+   *
+   * @description
+   * Realiza una petición HTTP POST al backend para registrar una nueva empresa junto con
+   * su administrador principal. Envía los datos en formato JSON.
+   * Si el registro es exitoso, guarda el token JWT en el almacenamiento local.
+   *
+   * @param companyData - Un objeto `CompanyRequestDto` que contiene los datos de la empresa y del administrador.
+   * @returns Un `Observable` que emite una respuesta `AuthResponse` con el token de acceso.
+   */
+  registerCompany(companyData: CompanyRequestDto): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.BASE_URL}auth/register-company`, companyData).pipe(
+      tap((response: AuthResponse) => {
+        if (response.token) {
+          this.tokenStorage.saveToken(response.token);
+          this.loggedIn.next(true);
+        }
+      }),
+    );
   }
 }
