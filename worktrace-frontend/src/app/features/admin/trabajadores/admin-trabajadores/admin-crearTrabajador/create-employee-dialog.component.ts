@@ -36,8 +36,8 @@ export class CreateEmployeeDialogComponent {
   readonly puestosTrabajo = input.required<JobPositionRequestDto[]>();
   readonly workSites = input.required<WorkSiteResponseDto[]>();
 
-  readonly close = output<void>();
-  readonly submit = output<CreateEmployeeForm>();
+  readonly closeClicked = output<void>();
+  readonly submitForm = output<CreateEmployeeForm>();
   readonly openJobPositions = output<void>();
   readonly copyCredentials = output<unknown>();
 
@@ -89,13 +89,13 @@ export class CreateEmployeeDialogComponent {
   closeDialog(): void {
     this.showScheduleSection.set(false);
     this.weeklySchedules.set(this.createEmptySchedules());
-    this.close.emit();
+    this.closeClicked.emit();
   }
 
-  submitForm(): void {
+  submitFormDialog(): void {
     const schedules = this.collectActiveSchedules();
     this.syncFormSchedules();
-    this.submit.emit({ ...this.formData(), schedules });
+    this.submitForm.emit({ ...this.formData(), schedules });
   }
 
   getScheduleForDay(day: DayOfWeek): WeeklyScheduleRow | null {

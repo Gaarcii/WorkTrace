@@ -46,7 +46,7 @@
                 <td>{{ getSalida(item) ? (getSalida(item) | date: 'HH:mm') : '-' }}</td>
 
                 <td>
-                  @if (getLatitud(item, 'start') != null && getLongitud(item, 'start') != null) {
+                  @if (getLatitud(item, 'start') !== null && getLongitud(item, 'start') !== null) {
                     <div class="location-cell">
                       <span class="material-icons icon-small text-success mr-1">place</span>
                       <span class="text-caption">
@@ -66,7 +66,7 @@
                 </td>
 
                 <td>
-                  @if (getLatitud(item, 'end') != null && getLongitud(item, 'end') != null) {
+                  @if (getLatitud(item, 'end') !== null && getLongitud(item, 'end') !== null) {
                     <div class="location-cell">
                       <span class="material-icons icon-small text-error mr-1">place</span>
                       <span class="text-caption">

@@ -65,8 +65,23 @@
 }
 
 @if (dialogAnular()) {
-  <div class="modal-overlay delete-modal-overlay" (click)="cerrarModalAnular()">
-    <div class="modal-card delete-modal-card" (click)="$event.stopPropagation()">
+  <div
+    class="modal-overlay delete-modal-overlay"
+    role="button"
+    tabindex="0"
+    (click)="cerrarModalAnular()"
+    (keydown.enter)="cerrarModalAnular()"
+    (keydown.space)="cerrarModalAnular()"
+    (keydown)="$event.stopPropagation()"
+  >
+    <div
+      class="modal-card delete-modal-card"
+      role="dialog"
+      tabindex="-1"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+      (keyup)="$event.stopPropagation()"
+    >
       <div class="modal-header delete-modal-header d-flex align-center">
         <span class="material-icons mr-2">delete_forever</span>
         Anular Fichaje
@@ -93,8 +108,9 @@
 
         <form [formGroup]="anularForm" (ngSubmit)="confirmarAnulacion()">
           <div class="form-group delete-form-group">
-            <label>Justificación de la anulación *</label>
+            <label for="justificacion-anulacion">Justificación de la anulación *</label>
             <textarea
+              id="justificacion-anulacion"
               formControlName="justificacion"
               class="form-control delete-textarea"
               rows="3"

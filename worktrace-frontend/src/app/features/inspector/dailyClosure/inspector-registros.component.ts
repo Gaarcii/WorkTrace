@@ -67,7 +67,7 @@ export class InspectorRegistrosComponent implements OnInit {
         next: (response) => {
           this._registros.set(response.content || []);
         },
-        error: (err: unknown) => {
+        error: () => {
           this._error.set('Error al cargar los registros diarios de la base de datos.');
           this._registros.set([]);
         },
@@ -86,7 +86,8 @@ export class InspectorRegistrosComponent implements OnInit {
     if (!text) return;
     try {
       await navigator.clipboard.writeText(text);
-    } catch (err) {
+    } catch {
+      // Silently handle clipboard errors
     }
   }
 }

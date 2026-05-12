@@ -72,8 +72,23 @@
   }
 
   @if (dialogCreateOpen()) {
-    <div class="modal-overlay" (click)="closeCreateDialog.emit()">
-      <div class="modal-card spring-in" (click)="$event.stopPropagation()">
+    <div
+      class="modal-overlay"
+      role="button"
+      tabindex="0"
+      (click)="closeCreateDialog.emit()"
+      (keydown.enter)="closeCreateDialog.emit()"
+      (keydown.space)="closeCreateDialog.emit()"
+      (keydown)="$event.stopPropagation()"
+    >
+      <div
+        class="modal-card spring-in"
+        role="dialog"
+        tabindex="-1"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()"
+        (keyup)="$event.stopPropagation()"
+      >
         <div class="modal-header">
           <div class="header-title-group">
             <span class="material-icons">{{
@@ -159,8 +174,23 @@
   }
 
   @if (dialogDeleteOpen()) {
-    <div class="modal-overlay" (click)="closeDeleteDialog.emit()">
-      <div class="modal-card small spring-in" (click)="$event.stopPropagation()">
+    <div
+      class="modal-overlay"
+      role="button"
+      tabindex="0"
+      (click)="closeDeleteDialog.emit()"
+      (keydown.enter)="closeDeleteDialog.emit()"
+      (keydown.space)="closeDeleteDialog.emit()"
+      (keydown)="$event.stopPropagation()"
+    >
+      <div
+        class="modal-card small spring-in"
+        role="dialog"
+        tabindex="-1"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()"
+        (keyup)="$event.stopPropagation()"
+      >
         <div class="modal-header danger-header">
           <div class="header-title-group">
             <span class="material-icons text-danger">warning</span>

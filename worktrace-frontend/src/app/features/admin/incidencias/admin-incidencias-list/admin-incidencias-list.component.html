@@ -1,6 +1,13 @@
 <div class="incidencias-list">
   @for (incidencia of incidencias(); track incidencia.id) {
-    <article class="incidencia-card mb-3" (click)="emitDetalle(incidencia)">
+    <article
+      class="incidencia-card mb-3"
+      role="button"
+      tabindex="0"
+      (click)="emitDetalle(incidencia)"
+      (keydown.enter)="emitDetalle(incidencia)"
+      (keydown.space)="emitDetalle(incidencia)"
+    >
       <div class="status-border" [class]="getStatusColor()(incidencia.status)"></div>
 
       <div class="card-content pa-4">

@@ -65,12 +65,12 @@ export interface CreateEmployeeProfileRequestDto {
 export interface CreateEmployeeRequestDto {
   email: string;
   profile: CreateEmployeeProfileRequestDto;
-  schedules?: Array<{
+  schedules?: {
     dayOfWeek: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
     startTime: string;
     endTime: string;
     siteId: string;
-  }>;
+  }[];
 }
 
 export interface SpringPageResponse<T> {

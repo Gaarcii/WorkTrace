@@ -24,7 +24,7 @@ export class EmployeeDetailComponent {
   readonly detail = input<EmployeeDetailDto | null>(null);
   readonly loadingSchedule = input<boolean>(false);
 
-  readonly close = output<void>();
+  readonly closeClicked = output<void>();
 
   formatDate(dateString?: string): string {
     if (!dateString) return 'N/A';

@@ -1,8 +1,8 @@
 <mat-card class="filter-card mb-4">
   <form [formGroup]="filterForm()" class="filters-grid">
     <div class="native-filter">
-      <label>Tipo de Acción</label>
-      <select formControlName="action">
+      <label for="action">Tipo de Acción</label>
+      <select id="action" formControlName="action">
         @for (option of actionOptions(); track $index) {
           <option [value]="option.value">{{ option.title }}</option>
         }
@@ -10,13 +10,13 @@
     </div>
 
     <div class="native-filter">
-      <label>Fecha Inicio</label>
-      <input type="date" formControlName="startDate" />
+      <label for="startDate">Fecha Inicio</label>
+      <input id="startDate" type="date" formControlName="startDate" />
     </div>
 
     <div class="native-filter">
-      <label>Fecha Fin</label>
-      <input type="date" formControlName="endDate" />
+      <label for="endDate">Fecha Fin</label>
+      <input id="endDate" type="date" formControlName="endDate" />
     </div>
 
     <div class="filter-actions">

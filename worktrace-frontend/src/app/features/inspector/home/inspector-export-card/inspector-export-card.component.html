@@ -39,36 +39,52 @@
       <div class="period-options">
         <div
           class="period-card"
+          role="button"
+          tabindex="0"
           [class.active]="selectedPeriod() === 'TODAY'"
           [class.disabled]="isExporting()"
           (click)="setPeriod('TODAY')"
+          (keydown.enter)="setPeriod('TODAY')"
+          (keydown.space)="setPeriod('TODAY')"
         >
           <mat-icon>event</mat-icon>
           <span>Hoy</span>
         </div>
         <div
           class="period-card"
+          role="button"
+          tabindex="0"
           [class.active]="selectedPeriod() === 'MONTH'"
           [class.disabled]="isExporting()"
           (click)="setPeriod('MONTH')"
+          (keydown.enter)="setPeriod('MONTH')"
+          (keydown.space)="setPeriod('MONTH')"
         >
           <mat-icon>calendar_month</mat-icon>
           <span>Este Mes</span>
         </div>
         <div
           class="period-card"
+          role="button"
+          tabindex="0"
           [class.active]="selectedPeriod() === 'YEAR'"
           [class.disabled]="isExporting()"
           (click)="setPeriod('YEAR')"
+          (keydown.enter)="setPeriod('YEAR')"
+          (keydown.space)="setPeriod('YEAR')"
         >
           <mat-icon>date_range</mat-icon>
           <span>Este Año</span>
         </div>
         <div
           class="period-card"
+          role="button"
+          tabindex="0"
           [class.active]="selectedPeriod() === 'ALL'"
           [class.disabled]="isExporting()"
           (click)="setPeriod('ALL')"
+          (keydown.enter)="setPeriod('ALL')"
+          (keydown.space)="setPeriod('ALL')"
         >
           <mat-icon>history</mat-icon>
           <span>Histórico (4 años)</span>

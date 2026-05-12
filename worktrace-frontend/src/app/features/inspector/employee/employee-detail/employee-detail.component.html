@@ -10,7 +10,7 @@
     <h2>{{ employee().name }}</h2>
     <p>{{ employee().jobPosition || 'Sin cargo' }}</p>
   </div>
-  <button mat-icon-button class="close-btn" (click)="close.emit()">
+  <button mat-icon-button class="close-btn" (click)="closeClicked.emit()">
     <mat-icon>close</mat-icon>
   </button>
 </div>
@@ -25,7 +25,7 @@
       <div class="info-item">
         <mat-icon>email</mat-icon>
         <div class="info-data">
-          <label>Email</label>
+          <div>Email</div>
           <span>{{ employee().email || 'N/A' }}</span>
         </div>
       </div>
@@ -33,7 +33,7 @@
         <div class="info-item">
           <mat-icon>phone</mat-icon>
           <div class="info-data">
-            <label>Teléfono</label>
+            <div>Teléfono</div>
             <span>{{ employee().phone }}</span>
           </div>
         </div>
@@ -42,7 +42,7 @@
         <div class="info-item">
           <mat-icon>badge</mat-icon>
           <div class="info-data">
-            <label>DNI</label>
+            <div>DNI</div>
             <span>{{ employee().employeeCode }}</span>
           </div>
         </div>
@@ -51,7 +51,7 @@
         <div class="info-item">
           <mat-icon>calendar_today</mat-icon>
           <div class="info-data">
-            <label>Fecha de Alta</label>
+            <div>Fecha de Alta</div>
             <span>{{ formatDate(detail()?.registrationDate) }}</span>
           </div>
         </div>
@@ -59,7 +59,7 @@
           <div class="info-item">
             <mat-icon>schedule</mat-icon>
             <div class="info-data">
-              <label>Horas Semanales</label>
+              <div>Horas Semanales</div>
               <span>{{ detail()?.weeklyHours }} horas</span>
             </div>
           </div>
@@ -67,7 +67,7 @@
         <div class="info-item">
           <mat-icon>verified_user</mat-icon>
           <div class="info-data">
-            <label>Estado</label>
+            <div>Estado</div>
             <span class="info-data" [ngClass]="detail()?.isActive ? 'success' : 'error'">
               {{ detail()?.isActive ? 'Activo' : 'Inactivo' }}
             </span>

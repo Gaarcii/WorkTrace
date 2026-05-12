@@ -32,8 +32,6 @@ export class AuthService {
   private loggedIn = new BehaviorSubject<boolean>(!!this.tokenStorage.getToken());
   isLoggedIn$ = this.loggedIn.asObservable();
 
-  constructor() {}
-
   /**
    * Envía las credenciales del usuario al backend para iniciar sesión.
    *

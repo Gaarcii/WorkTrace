@@ -10,9 +10,9 @@ import { SnackbarState } from '../../../admin-trabajadores.types';
 export class AdminEmployeeScheduleSnackbarComponent {
   public readonly snackbar = input.required<SnackbarState>();
 
-  public readonly close = output<void>();
+  public readonly closeClicked = output<void>();
 
   public onClose(): void {
-    this.close.emit();
+    this.closeClicked.emit();
   }
 }

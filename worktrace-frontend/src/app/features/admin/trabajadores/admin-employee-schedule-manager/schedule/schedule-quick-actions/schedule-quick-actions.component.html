@@ -35,8 +35,23 @@
 </div>
 
 @if (showWorkweekDialog()) {
-  <div class="modal-overlay" (click)="onCloseWorkweekDialog()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
+  <div
+    class="modal-overlay"
+    role="button"
+    tabindex="0"
+    (click)="onCloseWorkweekDialog()"
+    (keydown.enter)="onCloseWorkweekDialog()"
+    (keydown.space)="onCloseWorkweekDialog()"
+    (keydown)="$event.stopPropagation()"
+  >
+    <div
+      class="modal-card"
+      role="dialog"
+      tabindex="-1"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+      (keyup)="$event.stopPropagation()"
+    >
       <div class="modal-header">Aplicar a Semana Laboral</div>
       <div class="modal-body">
         <p class="mb-2">Selecciona el dia cuya configuracion quieres aplicar de lunes a viernes:</p>
@@ -54,10 +69,24 @@
         }
       </div>
       <div class="modal-actions">
-        <button type="button" class="btn btn-text" (click)="onCloseWorkweekDialog()">
+        <button
+          type="button"
+          class="btn btn-text"
+          (click)="onCloseWorkweekDialog()"
+          (keydown.enter)="onCloseWorkweekDialog()"
+          (keydown.space)="onCloseWorkweekDialog()"
+        >
           Cancelar
         </button>
-        <button type="button" class="btn btn-primary" (click)="onApplyToWorkweek()">Aplicar</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="onApplyToWorkweek()"
+          (keydown.enter)="onApplyToWorkweek()"
+          (keydown.space)="onApplyToWorkweek()"
+        >
+          Aplicar
+        </button>
       </div>
     </div>
   </div>

@@ -15,13 +15,13 @@ export class PerfilAvatarModalComponent {
   readonly avatarPreview = input.required<string>();
   readonly loading = input.required<boolean>();
 
-  readonly close = output<void>();
+  readonly closeClicked = output<void>();
   readonly fileSelected = output<Event>();
   readonly delete = output<void>();
   readonly save = output<void>();
 
   onClose(): void {
-    this.close.emit();
+    this.closeClicked.emit();
   }
   onFileSelect(event: Event): void {
     this.fileSelected.emit(event);

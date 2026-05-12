@@ -24,8 +24,8 @@
   [error]="null"
   [puestosTrabajo]="puestosTrabajo()"
   [workSites]="workSites()"
-  (close)="cerrarModalCrearSeguro()"
-  (submit)="crearEmpleado($event)"
+  (closeClicked)="cerrarModalCrearSeguro()"
+  (submitForm)="crearEmpleado($event)"
   (openJobPositions)="abrirModalPuestosDesdeCrear()"
 ></app-create-employee-dialog>
 

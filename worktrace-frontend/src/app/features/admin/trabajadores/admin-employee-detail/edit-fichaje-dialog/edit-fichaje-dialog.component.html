@@ -1,6 +1,21 @@
 @if (isOpen()) {
-  <div class="modal-overlay" (click)="onClose()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
+  <div
+    class="modal-overlay"
+    role="button"
+    tabindex="0"
+    (click)="onClose()"
+    (keydown.enter)="onClose()"
+    (keydown.space)="onClose()"
+    (keydown)="$event.stopPropagation()"
+  >
+    <div
+      class="modal-card"
+      role="dialog"
+      tabindex="-1"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+      (keyup)="$event.stopPropagation()"
+    >
       <div class="modal-header d-flex align-center">
         <span class="material-icons mr-2">edit</span>
         Editar Fichaje
@@ -9,10 +24,10 @@
       <div class="modal-body pt-4">
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
           <div class="form-group mb-3">
-            <label>Fecha del Turno</label>
+            <label for="date">Fecha del Turno</label>
             <div class="input-with-icon">
               <span class="material-icons">calendar_today</span>
-              <input type="date" formControlName="date" class="form-control" />
+              <input id="date" type="date" formControlName="date" class="form-control" />
             </div>
             @if (form.controls.date.touched && form.controls.date.invalid) {
               <span class="error-text">La fecha es obligatoria.</span>
@@ -22,10 +37,15 @@
           <div class="row mb-3">
             <div class="col-6">
               <div class="form-group">
-                <label>Hora Entrada</label>
+                <label for="startTime">Hora Entrada</label>
                 <div class="input-with-icon">
                   <span class="material-icons">login</span>
-                  <input type="time" formControlName="startTime" class="form-control" />
+                  <input
+                    id="startTime"
+                    type="time"
+                    formControlName="startTime"
+                    class="form-control"
+                  />
                 </div>
                 @if (form.controls.startTime.touched && form.controls.startTime.invalid) {
                   <span class="error-text">Hora requerida.</span>
@@ -34,20 +54,23 @@
             </div>
             <div class="col-6">
               <div class="form-group">
-                <label>Hora Salida</label>
+                <label for="endTime">Hora Salida</label>
                 <div class="input-with-icon">
                   <span class="material-icons">logout</span>
-                  <input type="time" formControlName="endTime" class="form-control" />
+                  <input id="endTime" type="time" formControlName="endTime" class="form-control" />
                 </div>
               </div>
             </div>
           </div>
 
           <div class="form-group mb-4">
-            <label>Motivo del cambio / Justificación (mínimo 10 caracteres)</label>
+            <label for="modificationReason"
+              >Motivo del cambio / Justificación (mínimo 10 caracteres)</label
+            >
             <div class="input-with-icon textarea-icon">
               <span class="material-icons">sticky_note_2</span>
               <textarea
+                id="modificationReason"
                 formControlName="modificationReason"
                 class="form-control"
                 rows="2"

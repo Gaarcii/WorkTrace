@@ -1,18 +1,13 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../../core/api/api.config';
 import {
   EmployeeDetailDto,
   EmployeeDto,
-  InspectorAuditDetailDto,
-  InspectorAuditDto,
-  InspectorDailyClosureDto,
-  InspectorIncidenceDto,
 } from '../../models/inspector.model';
 import {
   IncidenceTypeProjection,
-  IncidenceTypeResponseDto,
 } from '../../models/incidence-type.model';
 
 interface SpringPageResponse<T> {
@@ -49,8 +44,8 @@ export class InspectorWorkerService {
    * @returns Un `Observable` que emite una respuesta paginada `SpringPageResponse<EmployeeDto>`.
    */
   getEmpleados(
-    page: number = 0,
-    size: number = 10,
+    page = 0,
+    size = 10,
     search?: string,
   ): Observable<SpringPageResponse<EmployeeDto>> {
     let params = new HttpParams().set('page', page).set('size', size);

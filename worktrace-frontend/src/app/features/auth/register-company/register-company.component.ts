@@ -15,7 +15,7 @@ import { of } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { TokenStorageService } from '../../../core/auth/token-storage.service';
 import { AdminConfigService } from '../../../shared/services/admin/admin-config.service';
-import { CompanyRequestDto, AdminRequestDto } from '../../../shared/models/auth.model';
+import { CompanyRequestDto } from '../../../shared/models/auth.model';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -56,7 +56,7 @@ export class RegisterCompanyComponent {
     cif: ['', [Validators.required, Validators.minLength(8)]],
     adminFullName: ['', [Validators.required, Validators.minLength(3)]],
     adminEmployeeCode: ['', [Validators.required, Validators.minLength(6)]],
-    adminPhone: ['', [Validators.required, Validators.pattern(/^\+?[0-9\s\-\(\)]{9,}$/)]],
+    adminPhone: ['', [Validators.required, Validators.pattern(/^\+?[0-9\s\-()]{9,}$/)]],
     adminEmail: ['', [Validators.required, Validators.email]],
     adminPassword: ['', [Validators.required, Validators.minLength(6)]],
     adminRepeatPassword: ['', Validators.required],

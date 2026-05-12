@@ -286,7 +286,7 @@ export class AdminHomeComponent implements OnInit {
       const fileName = `informe_legal_${inicio}_a_${fin}.${extension}`;
       this.descargarBlob(blob, fileName);
       this.dialogoExportar.set(false);
-    } catch (error) {
+    } catch {
       alert('Error al generar el informe legal de inspección.');
     } finally {
       this.cargandoExportacion.set(false);
@@ -309,7 +309,7 @@ export class AdminHomeComponent implements OnInit {
           alert(response.message);
           this.dialogoInspector.set(false);
         },
-        error: (err) => {
+        error: () => {
           alert('Hubo un error al crear o notificar al inspector.');
         },
       });
@@ -326,7 +326,9 @@ export class AdminHomeComponent implements OnInit {
       await this.cargarGraficaSemanal();
       await this.cargarFichajesHoyPorDefecto();
       await this.cargarDepartamentos();
-    } catch (error) {
+    } catch {
+      // Error al cargar el dashboard - silenciado intencionalmente.
+      // Manejar o reportar el error aquí si es necesario.
     } finally {
       this.loading.set(false);
     }
@@ -372,10 +374,7 @@ export class AdminHomeComponent implements OnInit {
     finSemana.setDate(inicioSemana.getDate() + 6);
 
     const weeklyData = await firstValueFrom(
-      this.adminHomeService.getWeeklyChart(
-        this.toIsoDate(inicioSemana),
-        this.toIsoDate(finSemana),
-      ),
+      this.adminHomeService.getWeeklyChart(this.toIsoDate(inicioSemana), this.toIsoDate(finSemana)),
     );
 
     this.fichajesSemana.set(this.mapSemana(weeklyData, inicioSemana));

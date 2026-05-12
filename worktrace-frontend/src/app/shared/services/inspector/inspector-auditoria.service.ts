@@ -41,8 +41,8 @@ export class InspectorAuditoriaService {
    * @returns Un `Observable` que emite una respuesta paginada `SpringPageResponse<InspectorAuditDto>`.
    */
   getAuditorias(
-    page: number = 0,
-    size: number = 10,
+    page = 0,
+    size = 10,
     action?: string,
     startDate?: string | Date,
     endDate?: string | Date,

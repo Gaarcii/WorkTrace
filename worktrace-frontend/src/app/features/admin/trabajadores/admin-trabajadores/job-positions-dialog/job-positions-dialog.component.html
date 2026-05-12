@@ -1,12 +1,33 @@
 @if (isOpen()) {
-  <div class="modal-overlay" (click)="onClose()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
+  <div
+    class="modal-overlay"
+    role="button"
+    tabindex="0"
+    (click)="onClose()"
+    (keydown.enter)="onClose()"
+    (keydown.space)="onClose()"
+    (keydown)="$event.stopPropagation()"
+  >
+    <div
+      class="modal-card"
+      role="dialog"
+      tabindex="-1"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+      (keyup)="$event.stopPropagation()"
+    >
       <div class="modal-header d-flex justify-space-between align-center">
         <span class="d-flex align-center">
           <span class="material-icons mr-2">work</span>
           Gestionar Puestos de Trabajo
         </span>
-        <button class="btn-icon" (click)="onClose()">
+        <button
+          class="btn-icon"
+          (click)="onClose()"
+          (keydown.enter)="onClose()"
+          (keydown.space)="onClose()"
+          aria-label="Cerrar diálogo"
+        >
           <span class="material-icons text-white">close</span>
         </button>
       </div>
@@ -48,7 +69,13 @@
                   <span class="material-icons icon-primary mr-2">work_outline</span>
                   {{ puesto.title }}
                 </span>
-                <button class="btn-icon btn-error" (click)="confirmDelete.emit(puesto)">
+                <button
+                  class="btn-icon btn-error"
+                  (click)="confirmDelete.emit(puesto)"
+                  (keydown.enter)="confirmDelete.emit(puesto)"
+                  (keydown.space)="confirmDelete.emit(puesto)"
+                  aria-label="Eliminar puesto"
+                >
                   <span class="material-icons">delete</span>
                 </button>
               </li>

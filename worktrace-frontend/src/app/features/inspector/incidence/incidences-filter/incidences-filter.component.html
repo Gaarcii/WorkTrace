@@ -2,7 +2,14 @@
   <div class="filters-grid">
     <div class="filter-field">
       <label for="estado">Estado</label>
-      <div class="input-wrapper clickable" (click)="estadoSelect.focus()">
+      <div
+        class="input-wrapper clickable"
+        role="button"
+        tabindex="0"
+        (click)="estadoSelect.focus()"
+        (keydown.enter)="estadoSelect.focus()"
+        (keydown.space)="estadoSelect.focus()"
+      >
         <select #estadoSelect id="estado" [formControl]="statusControl()" class="form-control">
           <option value="" disabled>Selecciona un estado</option>
           @for (option of statusOptions(); track option.value) {
@@ -25,7 +32,14 @@
 
     <div class="filter-field">
       <label for="tipo">Tipo</label>
-      <div class="input-wrapper clickable" (click)="tipoSelect.focus()">
+      <div
+        class="input-wrapper clickable"
+        role="button"
+        tabindex="0"
+        (click)="tipoSelect.focus()"
+        (keydown.enter)="tipoSelect.focus()"
+        (keydown.space)="tipoSelect.focus()"
+      >
         <select #tipoSelect id="tipo" [formControl]="typeControl()" class="form-control">
           <option value="" disabled>Selecciona un tipo</option>
           @for (tipo of tipos(); track tipo.id) {
@@ -48,7 +62,14 @@
 
     <div class="filter-field">
       <label for="busqueda">Buscar</label>
-      <div class="input-wrapper clickable" (click)="searchInput.focus()">
+      <div
+        class="input-wrapper clickable"
+        role="button"
+        tabindex="0"
+        (click)="searchInput.focus()"
+        (keydown.enter)="searchInput.focus()"
+        (keydown.space)="searchInput.focus()"
+      >
         <span class="input-leading-icon">
           <mat-icon>search</mat-icon>
         </span>

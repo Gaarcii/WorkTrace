@@ -17,7 +17,7 @@ export class AdminExportLegalDialogComponent {
   readonly updateFormatoExportacion = output<FormatoExportacion>();
   readonly updateRangoExportacion = output<RangoExportacion>();
   readonly confirm = output<void>();
-  readonly cancel = output<void>();
+  readonly cancelClicked = output<void>();
 
   onSelectFormato(formato: FormatoExportacion): void {
     this.updateFormatoExportacion.emit(formato);
@@ -29,7 +29,7 @@ export class AdminExportLegalDialogComponent {
 
   handleCancel(): void {
     this.updateModelValue.emit(false);
-    this.cancel.emit();
+    this.cancelClicked.emit();
   }
 
   handleConfirm(): void {

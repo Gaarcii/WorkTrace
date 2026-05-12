@@ -15,7 +15,7 @@ import { TokenStorageService } from './token-storage.service';
  *
  * @returns `true` si el usuario está autenticado, de lo contrario `false` y redirige a '/login'.
  */
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = () => {
   const tokenStorage = inject(TokenStorageService);
   const router = inject(Router);
 

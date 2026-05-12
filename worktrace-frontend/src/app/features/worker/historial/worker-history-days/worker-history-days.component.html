@@ -4,6 +4,10 @@
       class="day-card"
       [class.day-selected]="dia.seleccionado"
       (click)="onSelectDia(dia)"
+      (keydown.enter)="onSelectDia(dia)"
+      (keydown.space)="onSelectDia(dia)"
+      role="button"
+      tabindex="0"
       matRipple
     >
       <div class="day-name">{{ dia.nombre }}</div>

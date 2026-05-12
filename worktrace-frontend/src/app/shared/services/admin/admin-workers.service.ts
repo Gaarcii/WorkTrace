@@ -51,8 +51,8 @@ export class AdminWorkersService {
    * @returns Un `Observable` que emite la respuesta paginada `SpringPageResponse<EmployeeResponseDto>`.
    */
   obtenerTrabajadoresPaginados(
-    page: number = 0,
-    size: number = 10,
+    page = 0,
+    size = 10,
   ): Observable<SpringPageResponse<EmployeeResponseDto>> {
     const params = new HttpParams().set('page', page).set('size', size);
 
@@ -87,8 +87,8 @@ export class AdminWorkersService {
    */
   obtenerFichajesPorEmpleado(
     employeeId: string,
-    page: number = 0,
-    size: number = 10,
+    page = 0,
+    size = 10,
   ): Observable<SpringPageResponse<TimeEntryTableResponseDto>> {
     const params = new HttpParams().set('page', page).set('size', size);
 

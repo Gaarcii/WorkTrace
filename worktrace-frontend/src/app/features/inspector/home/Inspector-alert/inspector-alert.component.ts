@@ -13,15 +13,15 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class InspectorAlertComponent {
   error = input.required<string>();
-  
-  onRetry = output<void>();
-  onClear = output<void>();
 
-  retry(): void {
-    this.onRetry.emit();
+  retry = output<void>();
+  clear = output<void>();
+
+  onRetry(): void {
+    this.retry.emit();
   }
 
   clearError(): void {
-    this.onClear.emit();
+    this.clear.emit();
   }
 }

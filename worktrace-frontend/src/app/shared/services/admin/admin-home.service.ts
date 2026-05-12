@@ -95,9 +95,9 @@ export class AdminHomeService {
    * @returns Un `Observable` que emite un array con las `AdminIncidenceResponseDto` de la página solicitada.
    */
   obtenerIncidenciasAdmin(
-    status: string = 'PENDING',
-    page: number = 0,
-    size: number = 10,
+    status = 'PENDING',
+    page = 0,
+    size = 10,
   ): Observable<AdminIncidenceResponseDto[]> {
     const params = new HttpParams().set('status', status).set('page', page).set('size', size);
 

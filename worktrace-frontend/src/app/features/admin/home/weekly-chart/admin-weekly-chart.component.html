@@ -22,7 +22,14 @@
     <div class="chart-container">
       <div class="chart-bars">
         @for (dia of fichajesSemana(); track dia.workDate) {
-          <div class="chart-bar-wrapper" (click)="emitSelectDay(dia)">
+          <div
+            class="chart-bar-wrapper"
+            role="button"
+            tabindex="0"
+            (click)="emitSelectDay(dia)"
+            (keydown.enter)="emitSelectDay(dia)"
+            (keydown.space)="emitSelectDay(dia)"
+          >
             <div
               class="chart-bar"
               [class.chart-bar-active]="dia.seleccionado"

@@ -71,7 +71,7 @@ export class AuditDetailComponent {
   readonly recordDetail = input<InspectorAuditDetailDto | null>(null);
   readonly parsedOldData = input<Record<string, unknown> | null>(null);
 
-  readonly close = output<void>();
+  readonly closeClicked = output<void>();
 
   readonly groupedOldData = computed<AuditDataGroup[]>(() => {
     const rawData = this.parsedOldData();

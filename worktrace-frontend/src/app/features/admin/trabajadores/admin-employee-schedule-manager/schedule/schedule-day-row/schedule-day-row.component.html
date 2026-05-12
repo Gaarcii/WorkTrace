@@ -14,8 +14,8 @@
       </div>
 
       <div class="field">
-        <label>Centro de trabajo</label>
-        <select formControlName="siteId" (change)="onFieldChanged()">
+        <label for="siteId">Centro de trabajo</label>
+        <select id="siteId" formControlName="siteId" (change)="onFieldChanged()">
           <option value="">Selecciona un centro</option>
           @for (site of workSites(); track site.id) {
             <option [value]="site.id">{{ site.name }}</option>
@@ -24,13 +24,13 @@
       </div>
 
       <div class="field">
-        <label>Inicio</label>
-        <input type="time" formControlName="startTime" (input)="onFieldChanged()" />
+        <label for="startTime">Inicio</label>
+        <input id="startTime" type="time" formControlName="startTime" (input)="onFieldChanged()" />
       </div>
 
       <div class="field">
-        <label>Fin</label>
-        <input type="time" formControlName="endTime" (input)="onFieldChanged()" />
+        <label for="endTime">Fin</label>
+        <input id="endTime" type="time" formControlName="endTime" (input)="onFieldChanged()" />
       </div>
 
       <div class="field field-copy">

@@ -40,7 +40,7 @@ export class AdminIncidenciasService {
    * @param size - El número de incidencias por página.
    * @returns Un `Observable` que emite un array del modelo de vista `AdminIncidenciaView`.
    */
-  obtenerPendientes(page: number = 0, size: number = 100): Observable<AdminIncidenciaView[]> {
+  obtenerPendientes(page = 0, size = 100): Observable<AdminIncidenciaView[]> {
     const params = new HttpParams().set('status', 'PENDING').set('page', page).set('size', size);
 
     return this.http
@@ -62,7 +62,7 @@ export class AdminIncidenciasService {
    * @param size - El número de incidencias por página.
    * @returns Un `Observable` que emite un array del modelo de vista `AdminIncidenciaView`.
    */
-  obtenerHistorial(page: number = 0, size: number = 100): Observable<AdminIncidenciaView[]> {
+  obtenerHistorial(page = 0, size = 100): Observable<AdminIncidenciaView[]> {
     const params = new HttpParams().set('page', page).set('size', size);
 
     return this.http

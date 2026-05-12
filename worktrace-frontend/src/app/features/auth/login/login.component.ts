@@ -102,7 +102,7 @@ export class LoginComponent {
             this.router.navigate(['/worker/home']);
           }
         },
-        error: (err: HttpErrorResponse) => {
+        error: () => {
           this.errorMessage.set('Credenciales incorrectas. Inténtalo de nuevo.');
         },
       });

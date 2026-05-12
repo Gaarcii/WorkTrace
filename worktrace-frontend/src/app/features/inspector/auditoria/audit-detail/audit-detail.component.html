@@ -9,7 +9,7 @@
       </h2>
       <p class="dialog-subtitle">{{ formatFullDateTime(recordBase()?.dateTime) }}</p>
     </div>
-    <button mat-icon-button (click)="close.emit()"><mat-icon>close</mat-icon></button>
+    <button mat-icon-button (click)="closeClicked.emit()"><mat-icon>close</mat-icon></button>
   </div>
 </div>
 
@@ -108,5 +108,5 @@
 </div>
 
 <div class="dialog-actions bg-grey-lighten-4">
-  <button mat-flat-button color="primary" (click)="close.emit()">CERRAR</button>
+  <button mat-flat-button color="primary" (click)="closeClicked.emit()">CERRAR</button>
 </div>

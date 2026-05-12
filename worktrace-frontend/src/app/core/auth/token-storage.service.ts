@@ -15,8 +15,6 @@ export class TokenStorageService {
   private readonly TOKEN_KEY = 'worktrace_jwt';
   private readonly ROLE_KEY = 'worktrace_role';
 
-  constructor() { }
-
   /**
    * Guarda el token de autenticación JWT en el `localStorage`.
    *

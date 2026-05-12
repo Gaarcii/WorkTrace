@@ -6,10 +6,10 @@ import {
   JobPositionRequestDto,
 } from '../../../../../shared/models/profile.model';
 
-type EditEmployeeProfileFormGroup = {
+interface EditEmployeeProfileFormGroup {
   positionId: FormControl<string | null>;
   weeklyHours: FormControl<number | null>;
-};
+}
 
 @Component({
   selector: 'app-edit-employee-profile-dialog',

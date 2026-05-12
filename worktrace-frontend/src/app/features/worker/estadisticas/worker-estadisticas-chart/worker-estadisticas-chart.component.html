@@ -21,7 +21,14 @@
   </div>
   <div class="grafico-container">
     @for (dia of semanaVisible()?.dias; track $index) {
-      <div class="barra-container" (click)="onMostrarTooltip(dia)">
+      <div
+        class="barra-container"
+        (click)="onMostrarTooltip(dia)"
+        (keydown.enter)="onMostrarTooltip(dia)"
+        (keydown.space)="onMostrarTooltip(dia)"
+        role="button"
+        tabindex="0"
+      >
         <div class="barra-wrapper">
           <div class="barra-horas-flotante" [style.bottom.%]="dia.altura">{{ dia.horas }}</div>
           <div class="barra" [style.height.%]="dia.altura"></div>

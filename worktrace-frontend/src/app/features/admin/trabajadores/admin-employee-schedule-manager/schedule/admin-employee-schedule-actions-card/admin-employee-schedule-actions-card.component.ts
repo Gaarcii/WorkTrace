@@ -11,14 +11,14 @@ export class AdminEmployeeScheduleActionsCardComponent {
   public readonly guardando = input.required<boolean>();
   public readonly hayModificaciones = input.required<boolean>();
 
-  public readonly cancel = output<void>();
-  public readonly save = output<void>();
+  public readonly cancelClicked = output<void>();
+  public readonly saveClicked = output<void>();
 
   public onCancel(): void {
-    this.cancel.emit();
+    this.cancelClicked.emit();
   }
 
   public onSave(): void {
-    this.save.emit();
+    this.saveClicked.emit();
   }
 }

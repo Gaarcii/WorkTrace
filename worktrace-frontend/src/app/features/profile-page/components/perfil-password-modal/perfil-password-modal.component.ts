@@ -25,8 +25,8 @@ export class PerfilPasswordModalComponent {
   readonly passwordError = input.required<string>();
   readonly loading = input.required<boolean>();
 
-  readonly close = output<void>();
-  readonly save = output<void>();
+  readonly closeClicked = output<void>();
+  readonly saveClicked = output<void>();
 
   readonly showCurrentPassword = signal<boolean>(false);
   readonly showNewPassword = signal<boolean>(false);
@@ -43,9 +43,9 @@ export class PerfilPasswordModalComponent {
   }
 
   onClose(): void {
-    this.close.emit();
+    this.closeClicked.emit();
   }
   onSave(): void {
-    this.save.emit();
+    this.saveClicked.emit();
   }
 }

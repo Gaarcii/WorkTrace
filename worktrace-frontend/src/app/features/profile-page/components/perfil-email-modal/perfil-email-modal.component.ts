@@ -24,7 +24,7 @@ export class PerfilEmailModalComponent {
   readonly passwordControl = input.required<FormControl>();
   readonly loading = input.required<boolean>();
 
-  readonly close = output<void>();
+  readonly closeClicked = output<void>();
   readonly confirm = output<void>();
 
   readonly hideConfirmPassword = signal<boolean>(true);
@@ -34,7 +34,7 @@ export class PerfilEmailModalComponent {
   }
 
   onClose(): void {
-    this.close.emit();
+    this.closeClicked.emit();
   }
   onConfirm(): void {
     this.confirm.emit();

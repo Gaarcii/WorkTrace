@@ -25,11 +25,11 @@
         [loading]="loading()"
         [guardando]="guardando()"
         [hayModificaciones]="hayModificaciones()"
-        (cancel)="volverADetalle()"
-        (save)="guardarHorarios()"
+        (cancelClicked)="volverADetalle()"
+        (saveClicked)="guardarHorarios()"
       />
     </div>
   </div>
 </div>
 
-<app-admin-employee-schedule-snackbar [snackbar]="snackbar()" (close)="closeSnackbar()" />
+<app-admin-employee-schedule-snackbar [snackbar]="snackbar()" (closeClicked)="closeSnackbar()" />

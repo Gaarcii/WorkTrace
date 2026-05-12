@@ -17,7 +17,7 @@ import { TokenStorageService } from './token-storage.service';
  *
  * @returns `true` si el rol del usuario está en la lista de roles permitidos, de lo contrario `false` y provoca una redirección.
  */
-export const roleGuard: CanActivateFn = (route, state) => {
+export const roleGuard: CanActivateFn = (route) => {
   const tokenStorage = inject(TokenStorageService);
   const router = inject(Router);
 

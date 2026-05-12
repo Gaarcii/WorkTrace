@@ -39,7 +39,7 @@
   <app-perfil-email-modal
     [passwordControl]="passwordConfirmacion"
     [loading]="loading()"
-    (close)="cerrarModalPasswordEmail()"
+    (closeClicked)="cerrarModalPasswordEmail()"
     (confirm)="confirmarGuardarConPassword()"
   />
 }
@@ -49,7 +49,7 @@
     [avatarUrl]="profile()?.avatarUrl"
     [avatarPreview]="avatarPreview()"
     [loading]="loading()"
-    (close)="cerrarSelectorAvatar()"
+    (closeClicked)="cerrarSelectorAvatar()"
     (fileSelected)="procesarArchivo($event)"
     (delete)="eliminarFoto()"
     (save)="guardarPerfil()"
@@ -61,7 +61,7 @@
     [passwordForm]="passwordForm"
     [passwordError]="passwordError()"
     [loading]="loadingPassword()"
-    (close)="cerrarModalPassword()"
-    (save)="actualizarPassword()"
+    (closeClicked)="cerrarModalPassword()"
+    (saveClicked)="actualizarPassword()"
   />
 }

@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "compodoc": "compodoc -p tsconfig.app.json -s -r 8085 -o"
+    "compodoc": "compodoc -p tsconfig.app.json -s -r 8085 -o",
+    "lint": "ng lint"
   },
   "prettier": {
     "printWidth": 100,
@@ -47,8 +48,12 @@
     "@angular/compiler-cli": "^21.2.8",
     "@babel/plugin-proposal-private-methods": "^7.18.6",
     "@compodoc/compodoc": "^1.1.16",
+    "@eslint/js": "^10.0.1",
     "@types/date-fns": "^2.5.3",
     "@types/leaflet": "^1.9.21",
-    "typescript": "~5.9.2"
+    "angular-eslint": "21.3.1",
+    "eslint": "^10.0.3",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "8.56.1"
   }
 }

@@ -103,10 +103,19 @@ export class ProfilePageComponent implements OnInit {
     const horarioBackend = this.profile()?.schedule || [];
 
     return diasSemana.map((diaEnum) => {
-      const turno = horarioBackend.find((h: any) => {
-        const rawDay = h?.dayOfWeek ?? h?.diaSemana;
-        return typeof rawDay === 'string' && rawDay.toUpperCase() === diaEnum;
-      });
+      const turno = horarioBackend.find(
+        (h: {
+          dayOfWeek?: string;
+          diaSemana?: string;
+          start?: string;
+          end?: string;
+          place?: string;
+          location?: string;
+        }) => {
+          const rawDay = h?.dayOfWeek ?? h?.diaSemana;
+          return typeof rawDay === 'string' && rawDay.toUpperCase() === diaEnum;
+        },
+      );
       return {
         id: diaEnum,
         initial: iniciales[diaEnum],

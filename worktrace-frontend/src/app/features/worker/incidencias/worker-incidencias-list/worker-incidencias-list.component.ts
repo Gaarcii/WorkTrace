@@ -10,7 +10,6 @@ export interface IncidenciaVista {
   fecha: string;
   horaFormateada: string;
   comentario?: string;
-  [key: string]: any;
 }
 
 @Component({

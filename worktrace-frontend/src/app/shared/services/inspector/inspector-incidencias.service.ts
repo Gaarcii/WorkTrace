@@ -44,8 +44,8 @@ export class InspectorIncidenciaService {
    * @returns Un `Observable` que emite una respuesta paginada `SpringPageResponse<InspectorIncidenceDto>`.
    */
   getIncidencias(
-    page: number = 0,
-    size: number = 10,
+    page = 0,
+    size = 10,
     estado?: string,
     tipoIncidenciaId?: string,
     busqueda?: string,

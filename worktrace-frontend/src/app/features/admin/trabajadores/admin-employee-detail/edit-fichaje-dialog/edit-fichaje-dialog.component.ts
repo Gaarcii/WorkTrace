@@ -5,21 +5,21 @@ import {
   TimeEntryTableResponseDto,
 } from '../../../../../shared/models/time-entry.model';
 
-type EditFichajeFormGroup = {
+interface EditFichajeFormGroup {
   id: FormControl<string>;
   date: FormControl<string>;
   startTime: FormControl<string>;
   endTime: FormControl<string | null>;
   modificationReason: FormControl<string>;
-};
+}
 
-type EditFichajeFormValue = {
+interface EditFichajeFormValue {
   id: string;
   date: string;
   startTime: string;
   endTime: string | null;
   modificationReason: string;
-};
+}
 
 @Component({
   selector: 'app-edit-fichaje-dialog',

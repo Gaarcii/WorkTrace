@@ -61,7 +61,7 @@ export class InspectorEmployeesComponent implements OnInit {
       });
   }
 
-  private loadEmployees(search: string = ''): void {
+  private loadEmployees(search = ''): void {
     this._loading.set(true);
 
     this.inspectorWorkerService

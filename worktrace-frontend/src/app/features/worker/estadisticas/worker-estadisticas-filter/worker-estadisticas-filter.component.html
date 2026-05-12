@@ -2,12 +2,17 @@
   <form [formGroup]="form()" (ngSubmit)="onSubmit()" class="filtro-fechas-container">
     <div class="fechas-inputs">
       <div class="input-group">
-        <label>Fecha inicio</label>
-        <input type="date" formControlName="fechaInicio" class="native-date-input" />
+        <label for="fechaInicio">Fecha inicio</label>
+        <input
+          id="fechaInicio"
+          type="date"
+          formControlName="fechaInicio"
+          class="native-date-input"
+        />
       </div>
       <div class="input-group">
-        <label>Fecha fin</label>
-        <input type="date" formControlName="fechaFin" class="native-date-input" />
+        <label for="fechaFin">Fecha fin</label>
+        <input id="fechaFin" type="date" formControlName="fechaFin" class="native-date-input" />
       </div>
     </div>
     <button

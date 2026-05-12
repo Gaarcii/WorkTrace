@@ -8,7 +8,6 @@ export interface FormattedRegistro {
   tipoStr: string;
   fechaStr: string;
   horaStr: string;
-  [key: string]: any; 
 }
 
 @Component({

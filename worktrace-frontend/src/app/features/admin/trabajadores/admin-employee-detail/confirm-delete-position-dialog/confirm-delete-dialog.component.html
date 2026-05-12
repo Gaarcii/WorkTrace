@@ -1,6 +1,21 @@
 @if (isOpen()) {
-  <div class="modal-overlay" (click)="onCancel()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
+  <div
+    class="modal-overlay"
+    role="button"
+    tabindex="0"
+    (click)="onCancel()"
+    (keydown.enter)="onCancel()"
+    (keydown.space)="onCancel()"
+    (keydown)="$event.stopPropagation()"
+  >
+    <div
+      class="modal-card"
+      role="dialog"
+      tabindex="-1"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+      (keyup)="$event.stopPropagation()"
+    >
       <div class="modal-header bg-error text-white d-flex align-center">
         <span class="material-icons mr-2">warning</span>
         Confirmar eliminación

@@ -99,7 +99,7 @@ export class InspectorHomeComponent implements OnInit {
         next: (blob: Blob) => {
           this.downloadBlob(blob, event.format, startDate, endDate);
         },
-        error: (err: unknown) => {
+        error: () => {
           this._error.set('Error al generar el documento de exportación. Inténtelo de nuevo.');
         },
       });

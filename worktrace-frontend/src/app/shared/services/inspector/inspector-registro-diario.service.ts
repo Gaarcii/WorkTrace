@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../../core/api/api.config';
 import { InspectorDailyClosureDto } from '../../models/inspector.model';
 import { IncidenceTypeProjection } from '../../models/incidence-type.model';
@@ -38,8 +38,8 @@ export class InspectorRegistroDiarioService {
    * @returns Un `Observable` que emite una respuesta paginada `SpringPageResponse<InspectorDailyClosureDto>`.
    */
   getRegistrosDiarios(
-    page: number = 0,
-    size: number = 10,
+    page = 0,
+    size = 10,
     startDate?: string | Date,
     endDate?: string | Date,
   ): Observable<SpringPageResponse<InspectorDailyClosureDto>> {

@@ -1,7 +1,15 @@
 <div class="dias-section">
   <div class="section-title">Detalle de la semana</div>
   @for (dia of resumenDias(); track $index) {
-    <div class="dia-card card-surface" (click)="onVerDetalle(dia)" matRipple>
+    <div
+      class="dia-card card-surface"
+      (click)="onVerDetalle(dia)"
+      (keydown.enter)="onVerDetalle(dia)"
+      (keydown.space)="onVerDetalle(dia)"
+      role="button"
+      tabindex="0"
+      matRipple
+    >
       <div class="dia-header">
         <div class="dia-fecha"><mat-icon class="mr-2">calendar_today</mat-icon>{{ dia.fecha }}</div>
         <span class="estado-chip" [ngClass]="'chip-' + dia.estadoColor">{{ dia.estado }}</span>
