@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "compodoc": "compodoc -p tsconfig.app.json -s -r 8085 -o",
     "lint": "ng lint"
