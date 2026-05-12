@@ -73,8 +73,8 @@ export class InspectorAuditComponent implements OnInit {
     if (!detail || !detail.previousData) return null;
     try {
       return JSON.parse(detail.previousData) as Record<string, unknown>;
-    } catch (e) {
-      return e;
+    } catch {
+      return null;
     }
   });
 

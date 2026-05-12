@@ -5,7 +5,7 @@
       <span><strong>Error de conexión:</strong> {{ error() }}</span>
     </div>
     <div class="alert-actions">
-      <button mat-button color="warn" (click)="retry()">
+      <button mat-button color="warn" (click)="onRetry()">
         <mat-icon>refresh</mat-icon> REINTENTAR
       </button>
       <button mat-icon-button (click)="clearError()" aria-label="Cerrar alerta">
