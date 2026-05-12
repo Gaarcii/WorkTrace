@@ -1,10 +1,7 @@
-.card-surface {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-}
+@use 'tokens' as *;
+@use 'component-patterns' as patterns;
+
+@include patterns.worker-card-surface;
 
 .grafico-title-row {
   display: flex;
@@ -16,18 +13,18 @@
 .grafico-title {
   font-size: 16px;
   font-weight: 600;
-  color: #000026;
+  color: $color-primary;
 }
 
 .semana-navigation-bar {
   display: flex;
   align-items: center;
-  background-color: #f0f2f5;
-  border-radius: 24px;
+  background-color: $color-surface-soft;
+  border-radius: $radius-pill;
   padding: 2px 4px;
 
   ::ng-deep .mat-mdc-icon-button {
-    color: #000026;
+    color: $color-primary;
     width: 36px;
     height: 36px;
     padding: 6px;
@@ -43,7 +40,7 @@
 .semana-label {
   font-size: 14px;
   font-weight: 700;
-  color: #000026;
+  color: $color-primary;
   margin: 0 4px;
   min-width: 150px;
   text-align: center;
@@ -74,7 +71,7 @@
   position: relative;
 
   &:hover .barra {
-    background-color: #1976d2;
+    background-color: $color-info-dark;
     opacity: 0.8;
   }
 }
@@ -94,7 +91,7 @@
   text-align: center;
   font-size: 10px;
   font-weight: 700;
-  color: #000026;
+  color: $color-primary;
   margin-bottom: 4px;
   pointer-events: none;
   white-space: nowrap;
@@ -102,8 +99,8 @@
 
 .barra {
   width: 100%;
-  background-color: #2196f3;
-  border-radius: 4px 4px 0 0;
+  background-color: $color-info;
+  border-radius: $radius-xs $radius-xs 0 0;
   min-height: 4px;
   transition: height 0.3s ease;
 }
@@ -118,9 +115,9 @@
 .barra-dia {
   font-size: 11px;
   font-weight: 600;
-  color: #000026;
+  color: $color-primary;
 }
 .barra-fecha {
   font-size: 10px;
-  color: #666;
+  color: $color-text-muted-legacy;
 }

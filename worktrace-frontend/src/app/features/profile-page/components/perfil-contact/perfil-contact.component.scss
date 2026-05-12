@@ -1,27 +1,9 @@
-.card-surface {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-}
-.card-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #000026;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #f0f0f0;
-  padding-bottom: 16px;
-}
+@use 'tokens' as *;
+@use 'component-patterns' as patterns;
 
-.text-primary {
-  color: #000026 !important;
-}
-.mr-2 {
-  margin-right: 8px;
-}
+@include patterns.profile-card-surface;
+@include patterns.profile-card-title;
+
 .mt-3 {
   margin-top: 16px;
 }
@@ -45,11 +27,8 @@
 .save-btn {
   padding: 0 32px;
   height: 48px;
-  border-radius: 8px;
+  border-radius: $radius-md;
   font-size: 15px;
 }
 
-::ng-deep .mat-mdc-form-field {
-  --mdc-outlined-text-field-focus-outline-color: #000026;
-  --mdc-outlined-text-field-focus-label-text-color: #000026;
-}
+@include patterns.primary-form-field-focus;

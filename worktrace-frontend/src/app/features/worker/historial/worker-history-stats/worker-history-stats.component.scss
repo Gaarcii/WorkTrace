@@ -1,33 +1,22 @@
+@use 'tokens' as *;
+@use 'component-patterns' as patterns;
+
 .resumen-title {
   font-size: 16px;
   font-weight: 600;
-  color: #000026;
+  color: $color-primary;
   margin-bottom: 12px;
 }
 
-.resumen-stats {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.stat-card {
-  flex: 1;
-  background-color: white;
-  border-radius: 16px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+@include patterns.worker-stat-cards;
 
 .semana-card {
   border: 1px solid #cccccc;
-  background-color: #424242 !important;
+  background-color: $color-grey-darker !important;
 
   .stat-label,
   .stat-value {
-    color: white;
+    color: $color-surface;
   }
 
   .stat-value {
@@ -38,36 +27,4 @@
     color: #81c784;
     font-size: 22px;
   }
-}
-
-.stat-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.stat-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #000026;
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 18px;
-  font-weight: 600;
-  color: #000026;
-  text-align: center;
-}
-
-.stat-extra {
-  font-size: 18px;
-  font-weight: 600;
-  color: #4caf50;
-  text-align: center;
-}
-
-.stat-negative {
-  color: #f44336 !important;
 }

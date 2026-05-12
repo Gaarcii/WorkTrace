@@ -1,18 +1,7 @@
-.card-surface {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-}
+@use 'tokens' as *;
+@use 'component-patterns' as patterns;
 
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #000026;
-  margin-bottom: 12px;
-  margin-top: 24px;
-}
+@include patterns.worker-card-surface;
 
 .dia-card {
   cursor: pointer;
@@ -50,7 +39,7 @@
 
     .dia-stat-label {
       font-size: 12px;
-      color: #666;
+      color: $color-text-muted-legacy;
     }
     .dia-stat-value {
       font-size: 14px;
@@ -59,25 +48,11 @@
   }
 }
 
-.estado-chip {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-
-  &.chip-success {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-  }
-  &.chip-warning {
-    background-color: #fff3e0;
-    color: #ef6c00;
-  }
-}
+@include patterns.status-chip;
 
 .balance-positivo {
-  color: #4caf50 !important;
+  color: $color-success !important;
 }
 .balance-negativo {
-  color: #f44336 !important;
+  color: $color-error-material !important;
 }

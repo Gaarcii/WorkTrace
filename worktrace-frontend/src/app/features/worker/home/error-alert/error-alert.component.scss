@@ -1,11 +1,13 @@
+@use 'tokens' as *;
+
 .error-alert {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: $color-error-bg-soft;
+  color: $color-error-text;
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: $radius-md;
   margin-bottom: 16px;
   font-size: 14px;
   font-weight: 500;
@@ -13,7 +15,7 @@
   .close-btn {
     background: none;
     border: none;
-    color: #c62828;
+    color: $color-error-text;
     cursor: pointer;
     display: flex;
     align-items: center;

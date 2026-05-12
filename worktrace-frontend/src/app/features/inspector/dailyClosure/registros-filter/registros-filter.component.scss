@@ -1,15 +1,7 @@
-.filter-card {
-  padding: 16px 24px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
+@use 'tokens' as *;
+@use 'component-patterns' as patterns;
 
-.filters-grid {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 20px;
-}
+@include patterns.filter-card;
 
 .native-filter {
   display: flex;
@@ -18,7 +10,7 @@
 
   label {
     font-size: 12px;
-    color: #666;
+    color: $color-text-muted-legacy;
     margin-bottom: 6px;
     margin-left: 2px;
   }
@@ -27,8 +19,8 @@
     height: 48px;
     padding: 0 12px;
     border: 1px solid rgba(0, 0, 0, 0.38);
-    border-radius: 4px;
-    background-color: #fff;
+    border-radius: $radius-xs;
+    background-color: $color-surface;
     font-family: inherit;
     font-size: 15px;
     color: #333;
@@ -36,7 +28,7 @@
     transition: border-color 0.2s;
 
     &:focus {
-      border-color: #000026;
+      border-color: $color-primary;
       border-width: 2px;
       padding: 0 11px;
     }
@@ -54,11 +46,11 @@
     gap: 4px;
     background: transparent;
     border: none;
-    color: #666;
+    color: $color-text-muted-legacy;
     cursor: pointer;
     font-size: 14px;
     padding: 8px 12px;
-    border-radius: 4px;
+    border-radius: $radius-xs;
     transition: background 0.2s;
 
     &:hover {
@@ -71,8 +63,4 @@
       height: 18px;
     }
   }
-}
-
-.mb-4 {
-  margin-bottom: 16px;
 }

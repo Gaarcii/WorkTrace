@@ -1,7 +1,9 @@
+@use 'tokens' as *;
+
 .white-card {
   height: 150px;
-  background-color: white;
-  border-radius: 16px;
+  background-color: $color-surface;
+  border-radius: $radius-xl;
   margin-bottom: 16px;
   padding: 16px;
   display: flex;
@@ -18,53 +20,53 @@
 .estado-label {
   font-size: 14px;
   font-weight: 400;
-  color: #666;
+  color: $color-text-muted-legacy;
 }
 
 .estado-badge {
   display: flex;
   align-items: center;
   gap: 6px;
-  background-color: #f0f0f0;
+  background-color: $color-border-soft;
   padding: 4px 12px;
-  border-radius: 12px;
+  border-radius: $radius-lg;
   font-size: 12px;
   font-weight: 500;
-  color: #000026;
+  color: $color-primary;
 }
 
 .estado-dot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
-  background-color: #4caf50;
+  border-radius: $radius-circle;
+  background-color: $color-success;
 }
 
 .estado-working {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: $color-success-bg;
+  color: $color-success-dark;
 }
 
 .estado-inactive {
-  background-color: #f0f0f0;
-  color: #666;
+  background-color: $color-border-soft;
+  color: $color-text-muted-legacy;
 }
 
 .hora-actual {
   font-size: 48px;
   font-weight: 600;
-  color: #000026;
+  color: $color-primary;
   line-height: 1;
   text-align: center;
 }
 
 .dot-working {
-  background-color: #4caf50;
+  background-color: $color-success;
   animation: pulse 2s infinite;
 }
 
 .dot-inactive {
-  background-color: #9e9e9e;
+  background-color: $color-grey;
 }
 
 @keyframes pulse {
@@ -80,7 +82,7 @@
 .fecha-actual {
   font-size: 14px;
   font-weight: 400;
-  color: #666;
+  color: $color-text-muted-legacy;
   text-transform: capitalize;
   text-align: center;
 }

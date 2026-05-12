@@ -1,3 +1,5 @@
+@use 'tokens' as *;
+
 ::ng-deep .mat-button-toggle-group.periodo-selector .mat-pseudo-checkbox {
   display: none !important;
 }
@@ -16,14 +18,14 @@
 .estadisticas-title {
   font-size: 24px;
   font-weight: 600;
-  color: #000026;
+  color: $color-primary;
 }
 
 .filter-btn {
-  color: #666;
+  color: $color-text-muted-legacy;
   &.filter-active {
-    background-color: #e3f2fd;
-    color: #2196f3;
+    background-color: $color-info-bg;
+    color: $color-info;
   }
 }
 
@@ -35,10 +37,10 @@
 .periodo-selector {
   width: 100%;
   display: flex;
-  background: #fff;
-  border: 2px solid #000026;
-  border-radius: 32px;
-  box-shadow: 0 2px 8px rgba(0, 0, 38, 0.06);
+  background: $color-surface;
+  border: 2px solid $color-primary;
+  border-radius: $radius-pill;
+  box-shadow: $shadow-primary-xs;
   overflow: hidden;
   min-height: 48px;
   position: relative;
@@ -54,7 +56,7 @@
     color 0.2s;
   font-size: 17px;
   font-weight: 500;
-  color: #000026;
+  color: $color-primary;
   min-height: 48px;
   display: flex;
   align-items: center;
@@ -62,18 +64,18 @@
 }
 
 ::ng-deep .mat-button-toggle-group.periodo-selector .mat-button-toggle-checked {
-  background: #000026 !important;
-  color: #fff !important;
+  background: $color-primary !important;
+  color: $color-surface !important;
   box-shadow: none;
   position: relative;
 }
 
 ::ng-deep .mat-button-toggle-group.periodo-selector .mat-button-toggle:not(:last-child) {
-  border-right: 1px solid #000026 !important;
+  border-right: 1px solid $color-primary !important;
 }
 
 ::ng-deep .mat-button-toggle-group.periodo-selector .mat-button-toggle-checked:not(:last-child) {
-  border-right: 1px solid #000026 !important;
+  border-right: 1px solid $color-primary !important;
 }
 
 ::ng-deep .mat-button-toggle-group.periodo-selector .mat-button-toggle-checked::before {

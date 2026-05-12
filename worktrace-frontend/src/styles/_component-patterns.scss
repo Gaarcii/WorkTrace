@@ -1,0 +1,378 @@
+@use 'tokens' as *;
+
+@mixin bottom-nav($tap-highlight: true) {
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: $color-surface;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: $shadow-bottom-nav;
+  }
+
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: $color-primary;
+    text-decoration: none;
+    opacity: 0.2;
+    transition: opacity 0.2s ease-in-out;
+    cursor: pointer;
+    outline: none;
+
+    @if $tap-highlight {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    &.active {
+      opacity: 1;
+    }
+  }
+}
+
+@mixin feedback-box($background, $color, $padding: 12px 16px, $margin-bottom: 24px) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: $background;
+  color: $color;
+  padding: $padding;
+  border-radius: $radius-md;
+  margin-bottom: $margin-bottom;
+  font-size: 14px;
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
+@mixin centered-material-button-label {
+  ::ng-deep .mdc-button__label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+@mixin profile-modal-shell(
+  $card-radius: $radius-xl,
+  $card-shadow: 0 20px 40px rgba(0, 0, 0, 0.2),
+  $header-border: true,
+  $body-padding: 24px,
+  $footer-padding: 16px 24px,
+  $footer-background: $color-surface-quiet,
+  $footer-justify: flex-end,
+  $footer-align: null,
+  $footer-gap: 12px
+) {
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba($color-primary, 0.6);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 16px;
+  }
+
+  .modal-card {
+    background: $color-surface;
+    width: 100%;
+    max-width: 480px;
+    border-radius: $card-radius;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: $card-shadow;
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    @if $header-border {
+      border-bottom: 1px solid $color-border-soft;
+    }
+  }
+
+  .modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: $color-primary;
+    display: flex;
+    align-items: center;
+  }
+
+  .modal-body {
+    padding: $body-padding;
+  }
+
+  .modal-footer {
+    padding: $footer-padding;
+    display: flex;
+    justify-content: $footer-justify;
+    gap: $footer-gap;
+    background-color: $footer-background;
+
+    @if $footer-align != null {
+      align-items: $footer-align;
+    }
+
+    @if $header-border {
+      border-top: 1px solid $color-border-soft;
+    }
+  }
+
+  .close-icon {
+    cursor: pointer;
+    color: $color-text-subtle;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+}
+
+@mixin profile-card-surface {
+  .card-surface {
+    background-color: $color-surface;
+    border-radius: $radius-xl;
+    padding: 32px;
+    box-shadow: $shadow-profile-card;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+  }
+}
+
+@mixin profile-card-title {
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: $color-primary;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid $color-border-soft;
+    padding-bottom: 16px;
+  }
+
+  .text-primary {
+    color: $color-primary !important;
+  }
+
+  .mr-2 {
+    margin-right: 8px;
+  }
+}
+
+@mixin primary-form-field-focus {
+  ::ng-deep .mat-mdc-form-field {
+    --mdc-outlined-text-field-focus-outline-color: #{$color-primary};
+    --mdc-outlined-text-field-focus-label-text-color: #{$color-primary};
+  }
+}
+
+@mixin worker-stat-cards {
+  .resumen-stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    flex: 1;
+    background-color: $color-surface;
+    border-radius: $radius-xl;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: $color-primary;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: $color-primary;
+    text-align: center;
+  }
+
+  .stat-extra {
+    font-size: 18px;
+    font-weight: 600;
+    color: $color-success;
+    text-align: center;
+  }
+
+  .stat-negative {
+    color: $color-error-material !important;
+  }
+}
+
+@mixin worker-record-cards {
+  .no-registros {
+    text-align: center;
+    color: $color-text-muted-legacy;
+    padding: 24px;
+    font-size: 14px;
+    background-color: $color-surface;
+    border-radius: $radius-xl;
+  }
+
+  .resumen-card {
+    background-color: $color-surface;
+    border-radius: $radius-xl;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .resumen-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .icon-container {
+    width: 48px;
+    height: 48px;
+    background-color: $color-page-bg;
+    border-radius: $radius-circle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .resumen-icon {
+    margin: 0;
+  }
+
+  .resumen-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .resumen-tipo {
+    font-size: 14px;
+    font-weight: 600;
+    color: $color-primary;
+  }
+
+  .resumen-fecha {
+    font-size: 12px;
+    font-weight: 400;
+    color: $color-text-muted-legacy;
+    text-transform: capitalize;
+  }
+
+  .resumen-hora {
+    font-size: 24px;
+    font-weight: 600;
+    color: $color-primary;
+  }
+}
+
+@mixin worker-card-surface {
+  .card-surface {
+    background-color: $color-surface;
+    border-radius: $radius-xl;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: $shadow-xs;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: $color-primary;
+    margin-bottom: 12px;
+    margin-top: 24px;
+  }
+}
+
+@mixin status-chip {
+  .estado-chip {
+    padding: 4px 8px;
+    border-radius: $radius-lg;
+    font-size: 12px;
+    font-weight: 500;
+
+    &.chip-success {
+      background-color: $color-success-bg;
+      color: $color-success-dark;
+    }
+
+    &.chip-warning {
+      background-color: $color-warning-bg-soft;
+      color: $color-warning-strong;
+    }
+
+    &.chip-error {
+      background-color: $color-error-bg-soft;
+      color: $color-error-text;
+    }
+  }
+}
+
+@mixin filter-card($background: null) {
+  .filter-card {
+    padding: 16px 24px;
+    border-radius: $radius-md;
+    box-shadow: $shadow-sm;
+
+    @if $background != null {
+      background: $background;
+    }
+  }
+
+  .filters-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 20px;
+  }
+
+  .mb-4 {
+    margin-bottom: 16px;
+  }
+}

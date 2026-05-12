@@ -1,13 +1,5 @@
 @use 'sass:color';
-
-$primary-color: #000026;
-$text-main: #111827;
-$text-muted: #6b7280;
-$border-color: #e5e7eb;
-$bg-input: #f9fafb;
-$error-color: #dc2626;
-$error-bg: #fef2f2;
-$transition-base: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+@use 'tokens' as *;
 
 .sedes-settings {
   min-height: 400px;

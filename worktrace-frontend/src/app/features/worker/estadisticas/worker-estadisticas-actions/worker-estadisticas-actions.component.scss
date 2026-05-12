@@ -1,3 +1,5 @@
+@use 'tokens' as *;
+
 .acciones-section {
   margin-top: 32px;
   padding-bottom: 24px;
@@ -5,7 +7,7 @@
   .full-width-btn {
     width: 100%;
     height: 52px;
-    border-radius: 26px !important;
+    border-radius: $radius-pill !important;
     font-size: 15px;
     font-weight: 600;
     letter-spacing: 0.3px;
@@ -28,28 +30,28 @@
   }
 
   .btn-filled {
-    background-color: #000026 !important;
-    color: #ffffff !important;
+    background-color: $color-primary !important;
+    color: $color-surface !important;
 
     ::ng-deep .mat-icon {
-      color: #ffffff !important;
+      color: $color-surface !important;
     }
   }
 
   .btn-outlined {
     --mdc-outlined-button-outline-width: 2px;
-    border-color: #000026 !important;
+    border-color: $color-primary !important;
 
-    color: #000026 !important;
+    color: $color-primary !important;
     background-color: transparent !important;
 
     ::ng-deep .mat-icon {
-      color: #000026 !important;
+      color: $color-primary !important;
     }
 
     ::ng-deep .mat-mdc-button-ripple::before,
     ::ng-deep .mat-mdc-button-ripple::after {
-      background-color: rgba(0, 0, 38, 0.1) !important;
+      background-color: rgba($color-primary, 0.1) !important;
     }
   }
 

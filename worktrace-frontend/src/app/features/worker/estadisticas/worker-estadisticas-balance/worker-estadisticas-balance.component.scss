@@ -1,10 +1,7 @@
-.card-surface {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-}
+@use 'tokens' as *;
+@use 'component-patterns' as patterns;
+
+@include patterns.worker-card-surface;
 
 .balance-header {
   display: flex;
@@ -20,18 +17,18 @@
   .balance-indicador {
     width: 32px;
     height: 32px;
-    border-radius: 50%;
+    border-radius: $radius-circle;
     display: flex;
     align-items: center;
     justify-content: center;
 
     &.balance-favor {
-      background-color: #e8f5e9;
-      color: #4caf50;
+      background-color: $color-success-bg;
+      color: $color-success;
     }
     &.balance-contra {
-      background-color: #ffebee;
-      color: #f44336;
+      background-color: $color-error-bg-soft;
+      color: $color-error-material;
     }
   }
 }
@@ -44,12 +41,12 @@
 
 .balance-desc {
   font-size: 12px;
-  color: #666;
+  color: $color-text-muted-legacy;
 }
 
 .balance-positivo {
-  color: #4caf50 !important;
+  color: $color-success !important;
 }
 .balance-negativo {
-  color: #f44336 !important;
+  color: $color-error-material !important;
 }

@@ -1,3 +1,6 @@
+@use 'tokens' as *;
+@use 'component-patterns' as patterns;
+
 .split-layout {
   display: flex;
   height: 100vh;
@@ -10,7 +13,7 @@
 /* El panel del formulario ajustado para acomodar las dos columnas sin scroll */
 .form-panel {
   flex: 1;
-  background-color: #ffffff;
+  background-color: $color-surface;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -28,13 +31,13 @@
 
   h2 {
     font-size: 28px; /* Ligeramente más pequeño para optimizar espacio */
-    color: #000026;
+    color: $color-primary;
     margin-bottom: 4px;
     font-weight: 700;
   }
 
   p {
-    color: #666;
+    color: $color-text-muted-legacy;
     font-size: 15px;
     margin-top: 0;
   }
@@ -51,7 +54,7 @@
   .section-title {
     font-size: 16px; /* Ligeramente reducido */
     font-weight: 600;
-    color: #000026;
+    color: $color-primary;
     margin-bottom: 12px;
     padding-bottom: 8px;
     border-bottom: 2px solid #f0f0f0;
@@ -78,48 +81,33 @@
   margin-top: 8px;
 }
 
-.error-box,
-.success-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  font-size: 14px;
-  font-weight: 500;
-
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
-}
-
 .error-box {
-  background-color: #ffebee;
-  color: #c62828;
+  @include patterns.feedback-box(
+    $color-error-bg-soft,
+    $color-error-text,
+    $padding: 10px 16px,
+    $margin-bottom: 16px
+  );
 }
 
 .success-box {
-  background-color: #e8f5e9;
-  color: #1b5e20;
+  @include patterns.feedback-box(
+    $color-success-bg,
+    $color-success-text,
+    $padding: 10px 16px,
+    $margin-bottom: 16px
+  );
 }
 
 .submit-btn {
   height: 48px; /* Ligeramente más compacto */
   font-size: 16px;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: $radius-md;
   letter-spacing: 0.5px;
   margin-top: 8px;
 
-  ::ng-deep .mdc-button__label {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  @include patterns.centered-material-button-label;
 }
 
 .helper-link {
@@ -127,7 +115,7 @@
   align-self: center;
   font-size: 14px;
   font-weight: 600;
-  color: #00004d;
+  color: $color-primary-alt;
 }
 
 .logo-grid {
@@ -141,8 +129,8 @@
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #e0e0e0;
-  background: white;
+  border: 1px solid $color-border-legacy;
+  background: $color-surface;
 
   .logo-checker-bg {
     width: 100%;
@@ -174,8 +162,8 @@
     position: absolute;
     top: 8px;
     right: 8px;
-    background-color: #c62828;
-    color: white;
+    background-color: $color-error-text;
+    color: $color-surface;
     border: none;
     border-radius: 50%;
     width: 36px;
@@ -188,7 +176,7 @@
     transition: background-color 0.3s ease;
 
     mat-icon {
-      color: white;
+      color: $color-surface;
       font-size: 20px;
       width: 20px;
       height: 20px;
@@ -214,7 +202,7 @@
   cursor: pointer;
 
   &:hover:not(.is-disabled) {
-    border-color: #00004d;
+    border-color: $color-primary-alt;
     background-color: #f5f5ff;
   }
 
@@ -266,8 +254,8 @@
 
 .brand-panel {
   flex: 1;
-  background: linear-gradient(135deg, #000026 0%, #00004d 100%);
-  color: white;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-alt 100%);
+  color: $color-surface;
   display: flex;
   flex-direction: column;
   justify-content: center;

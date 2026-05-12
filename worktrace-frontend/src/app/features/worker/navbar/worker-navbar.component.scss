@@ -1,38 +1,7 @@
+@use 'component-patterns' as patterns;
+
+@include patterns.bottom-nav($tap-highlight: false);
+
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background-color: white;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 1000;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   margin-top: 500px;
-}
-
-.nav-btn {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  color: #000026;
-  text-decoration: none;
-  opacity: 0.2;
-  transition: opacity 0.2s ease-in-out;
-  cursor: pointer;
-
-  outline: none;
-
-  mat-icon {
-    font-size: 28px;
-    width: 28px;
-    height: 28px;
-  }
-  &.active {
-    opacity: 1;
-  }
 }

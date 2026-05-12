@@ -1,56 +1,17 @@
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 38, 0.6);
-  backdrop-filter: blur(2px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  padding: 16px;
-}
-.modal-card {
-  background: white;
-  width: 100%;
-  max-width: 480px;
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-.modal-header {
-  padding: 20px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.modal-title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #000026;
-  display: flex;
-  align-items: center;
-}
-.modal-body {
-  padding: 20px 24px;
-}
-.modal-footer {
-  padding: 16px 24px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #ffffff;
-}
-.close-icon {
-  cursor: pointer;
-  color: #888;
-  transition: color 0.2s;
-  &:hover {
-    color: #000026;
-  }
-}
+@use 'tokens' as *;
+@use 'component-patterns' as patterns;
+
+@include patterns.profile-modal-shell(
+  $card-radius: $radius-lg,
+  $card-shadow: 0 10px 30px rgba(0, 0, 0, 0.2),
+  $header-border: false,
+  $body-padding: 20px 24px,
+  $footer-padding: 16px 24px 24px,
+  $footer-background: $color-surface,
+  $footer-justify: space-between,
+  $footer-align: center,
+  $footer-gap: 0
+);
 
 .text-center {
   text-align: center;
@@ -98,7 +59,7 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid #e0e0e0;
+  border: 1px solid $color-border-legacy;
   box-sizing: border-box;
 }
 
@@ -127,7 +88,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  border: 2px solid white;
+  border: 2px solid $color-surface;
   z-index: 5;
   transition: background-color 0.2s;
 
@@ -135,7 +96,7 @@
     font-size: 20px;
     width: 20px;
     height: 20px;
-    color: #000026;
+    color: $color-primary;
   }
 }
 
@@ -147,7 +108,7 @@
 }
 
 .btn-delete {
-  color: #d32f2f !important;
+  color: $color-error-strong !important;
   background-color: #fce4e4 !important;
   border-radius: 24px !important;
   padding: 0 16px !important;
@@ -157,13 +118,13 @@
   border-radius: 24px !important;
 }
 .btn-submit {
-  background-color: #000026 !important;
-  color: white !important;
+  background-color: $color-primary !important;
+  color: $color-surface !important;
   border-radius: 24px !important;
   padding: 0 24px !important;
 
   &:disabled {
-    background-color: #e0e0e0 !important;
-    color: #9e9e9e !important;
+    background-color: $color-border-legacy !important;
+    color: $color-grey !important;
   }
 }
