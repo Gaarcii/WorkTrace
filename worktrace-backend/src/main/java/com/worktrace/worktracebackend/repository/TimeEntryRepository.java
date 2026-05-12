@@ -61,15 +61,18 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
     );
 
     @Query(value = """
+            
             SELECT
-                t.work_date AS date,
-                COALESCE(SUM(
-                    CASE
-                        WHEN t.status = 'CLOSED' THEN EXTRACT(EPOCH FROM (t.end_at - t.start_at)) / 60
-                        WHEN t.status = 'OPEN' THEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.start_at)) / 60
-                        ELSE 0
-                    END
-                ), 0) AS workedMinutes
+               t.work_date AS fecha,
+               CAST(
+                   COALESCE(SUM(
+                       CASE
+                           WHEN t.status = 'CLOSED' THEN EXTRACT(EPOCH FROM (t.end_at - t.start_at)) / 60
+                           WHEN t.status = 'OPEN' THEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.start_at)) / 60
+                           ELSE 0
+                       END
+                   ), 0) AS BIGINT
+               ) AS minutosTrabajados
             FROM time_entries t
             WHERE t.employee_id = :userId
               AND t.work_date BETWEEN :startDate AND :endDate
@@ -130,7 +133,7 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
             UUID companyId, LocalDate startDate, LocalDate endDate);
 
     @Query(value = """
-            SELECT t.work_date AS date, COUNT(t.id) AS timeEntryCount
+            SELECT t.work_date AS fecha, COUNT(t.id) AS numFichajes
             FROM time_entries t
             WHERE t.company_id = :companyId
               AND t.work_date BETWEEN :startDate AND :endDate
