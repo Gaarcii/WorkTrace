@@ -1,59 +1,77 @@
-# WorktraceFrontend
+# WorkTrace Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.1.
+WorkTrace Frontend es el cliente web SPA de WorkTrace, desarrollado con Angular para la gestión de fichajes, incidencias, perfiles y paneles operativos por rol. La aplicación actúa como capa de presentación y consume la API REST del backend de WorkTrace para autenticar usuarios, cargar datos de negocio y ejecutar operaciones sobre trabajadores, administradores e inspectores.
 
-## Development server
+## Requisitos previos
 
-To start a local development server, run:
+- Node.js compatible con Angular CLI 21: `^20.19.0 || ^22.12.0 || >=24.0.0`.
+- npm 11.x. El proyecto declara `npm@11.10.0` como gestor de paquetes en `package.json`.
 
-```bash
-ng serve
-```
+Se recomienda trabajar con Node.js 22 LTS y npm 11 para mantener coherencia con el entorno usado en el proyecto.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Instalación
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Instalar las dependencias del frontend desde la raíz del módulo:
 
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Servidor de desarrollo
+
+Levantar la aplicación en local:
 
 ```bash
-ng generate --help
+npm run start
 ```
 
-## Building
+El script ejecuta `ng serve`. Por defecto, Angular expone la aplicación en:
 
-To build the project run:
+```text
+http://localhost:4200
+```
+
+## Documentación interna con Compodoc
+
+El proyecto incluye Compodoc para generar y consultar la documentación técnica de componentes, servicios, modelos y rutas Angular.
+
+Generar y servir la documentación:
 
 ```bash
-ng build
+npm run compodoc
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+El comando configurado utiliza `tsconfig.app.json`, levanta el servidor de documentación y lo publica en el puerto `8085`:
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
+```text
+http://localhost:8085
 ```
 
-## Running end-to-end tests
+## Estructura y arquitectura
 
-For end-to-end (e2e) testing, run:
+La aplicación sigue una organización modular por capas funcionales:
 
-```bash
-ng e2e
+```text
+src/
+`-- app/
+    |-- core/
+    |-- features/
+    `-- shared/
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+- `core/`: contiene configuración transversal de la aplicación, como `API_CONFIG`, autenticación, guards de ruta e interceptores HTTP. El interceptor de autenticación añade el token JWT a las peticiones salientes mediante la cabecera `Authorization`.
+- `features/`: agrupa las vistas de negocio por dominio y rol. Incluye módulos funcionales para autenticación, trabajador, administrador, inspector y perfil. Las rutas usan componentes standalone cargados de forma diferida mediante `loadComponent`.
+- `shared/`: centraliza elementos reutilizables, como modelos TypeScript, servicios de acceso a datos y componentes compartidos. Los servicios encapsulan la comunicación con la API REST y exponen datos a las vistas mediante `Observable` y señales de Angular cuando aplica.
 
-## Additional Resources
+El frontend aplica una separación de responsabilidades basada en componentes Smart/Dumb:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Los componentes Smart se encargan de orquestar la vista, inyectar servicios, gestionar estado local, transformar datos y reaccionar a eventos de usuario.
+- Los componentes Dumb o presentacionales reciben datos por entrada, emiten eventos y mantienen una responsabilidad visual acotada, lo que facilita su reutilización y testeo.
+
+La comunicación con backend se realiza mediante `HttpClient` contra la API REST configurada en:
+
+```text
+http://localhost:8080/api/
+```
+
+Esta separación permite mantener las pantallas desacopladas de los detalles de transporte, concentrando las llamadas HTTP en servicios reutilizables y tipados.
