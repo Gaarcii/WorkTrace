@@ -109,7 +109,6 @@ export class AdminEmployeeDetailComponent implements OnInit {
           this.puestosTrabajo.set(data.puestosTrabajo);
         },
         error: (err: unknown) => {
-          console.error('Error al cargar datos:', err);
           this.mostrarSnackbar('Error al cargar los datos del empleado', 'error');
         },
       });
@@ -165,7 +164,6 @@ export class AdminEmployeeDetailComponent implements OnInit {
           this.cargarDatos(this.employeeId());
         },
         error: (err: unknown) => {
-          console.error('Error al anular fichaje:', err);
           this.mostrarSnackbar('Error al anular el fichaje', 'error');
         },
       });

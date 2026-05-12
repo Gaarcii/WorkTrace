@@ -74,7 +74,6 @@ export class InspectorEmployeesComponent implements OnInit {
         next: (response) => {
           this._employees.set(response.content || []);
         },
-        error: (err: unknown) => console.error('Error al cargar empleados:', err),
       });
   }
 
@@ -111,7 +110,6 @@ export class InspectorEmployeesComponent implements OnInit {
         next: (detail: EmployeeDetailDto) => {
           this._selectedEmployeeDetail.set(detail);
         },
-        error: (err: unknown) => console.error('Error al cargar detalle:', err),
       });
   }
 }

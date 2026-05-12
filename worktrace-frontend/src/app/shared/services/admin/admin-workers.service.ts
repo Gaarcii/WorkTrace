@@ -143,13 +143,9 @@ export class AdminWorkersService {
    */
   crearPuestoTrabajo(name: string): Observable<JobPositionRequestDto> {
     const url = `${this.BASE_URL}job-positions`;
-
-    return this.http.post<JobPositionResponseDto>(url, { name }).pipe(
-      tap({
-        error: (err) => console.error('[AdminWorkersService] Error crearPuestoTrabajo', err),
-      }),
-      map((puesto) => ({ id: puesto.id, title: puesto.name })),
-    );
+    return this.http
+      .post<JobPositionResponseDto>(url, { name })
+      .pipe(map((puesto) => ({ id: puesto.id, title: puesto.name })));
   }
 
   /**

@@ -54,10 +54,10 @@ export interface InspectorAuditDto {
 }
 export interface InspectorAuditDetailDto {
   id: string;
-  fechaEliminacion: string;
-  motivo: string;
-  ejecutador: string;
-  datosAntesModificacion: string;
+  timestamp: string;
+  reason: string;
+  actorName: string;
+  previousData: string;
 }
 
 export interface InspectorRequestDto {

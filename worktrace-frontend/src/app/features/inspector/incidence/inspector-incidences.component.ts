@@ -80,16 +80,10 @@ export class InspectorIncidencesComponent implements OnInit {
         next: (response) => {
           this._incidents.set(response.content || []);
         },
-        error: (err: unknown) => console.error('Error al cargar incidencias:', err),
       });
   }
 
   private loadTipos(): void {
-    this.incidenceTypesService
-      .obtenerTipos()
-      .pipe(take(1))
-      .subscribe({
-        error: (err: unknown) => console.error('Error al cargar tipos de incidencia:', err),
-      });
+    this.incidenceTypesService.obtenerTipos().pipe(take(1)).subscribe();
   }
 }

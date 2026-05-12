@@ -68,7 +68,6 @@ export class InspectorRegistrosComponent implements OnInit {
           this._registros.set(response.content || []);
         },
         error: (err: unknown) => {
-          console.error('Error al cargar registros:', err);
           this._error.set('Error al cargar los registros diarios de la base de datos.');
           this._registros.set([]);
         },
@@ -88,7 +87,6 @@ export class InspectorRegistrosComponent implements OnInit {
     try {
       await navigator.clipboard.writeText(text);
     } catch (err) {
-      console.error('Error al copiar al portapapeles:', err);
     }
   }
 }

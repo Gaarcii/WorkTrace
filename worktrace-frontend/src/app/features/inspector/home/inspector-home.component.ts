@@ -100,7 +100,6 @@ export class InspectorHomeComponent implements OnInit {
           this.downloadBlob(blob, event.format, startDate, endDate);
         },
         error: (err: unknown) => {
-          console.error('Error al exportar:', err);
           this._error.set('Error al generar el documento de exportación. Inténtelo de nuevo.');
         },
       });
@@ -123,21 +122,20 @@ export class InspectorHomeComponent implements OnInit {
 
   private calculateDatesForPeriod(period: string): { startDate: Date; endDate: Date } {
     const today = new Date();
-    const endDate = new Date(today); // Hasta el momento actual
+    const endDate = new Date(today);
     let startDate = new Date();
 
     switch (period) {
       case 'TODAY':
-        startDate.setHours(0, 0, 0, 0); // Desde las 00:00 de hoy
+        startDate.setHours(0, 0, 0, 0);
         break;
       case 'MONTH':
-        startDate = new Date(today.getFullYear(), today.getMonth(), 1); // Día 1 del mes actual
+        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
         break;
       case 'YEAR':
-        startDate = new Date(today.getFullYear(), 0, 1); // 1 de enero del año actual
+        startDate = new Date(today.getFullYear(), 0, 1);
         break;
       case 'ALL':
-        // Histórico de 4 años atrás según normativa
         startDate = new Date(today.getFullYear() - 4, today.getMonth(), today.getDate());
         break;
     }

@@ -42,7 +42,7 @@
             <div>
               <div class="label">Fecha de eliminación/cambio:</div>
               <div class="value">
-                {{ formatFullDateTime(recordDetail()?.fechaEliminacion) }}
+                {{ formatFullDateTime(recordDetail()?.timestamp) }}
               </div>
             </div>
           </div>
@@ -50,7 +50,7 @@
             <mat-icon class="icon-small text-grey mr-2">person_off</mat-icon>
             <div>
               <div class="label">Ejecutado por:</div>
-              <div class="value">{{ recordDetail()?.ejecutador || 'Desconocido' }}</div>
+              <div class="value">{{ recordDetail()?.actorName || 'Desconocido' }}</div>
             </div>
           </div>
           <div class="detail-row">
@@ -58,7 +58,7 @@
             <div>
               <div class="label">Motivo interno:</div>
               <div class="value">
-                {{ recordDetail()?.motivo || 'Sin motivo adicional' }}
+                {{ recordDetail()?.reason || 'Sin motivo adicional' }}
               </div>
             </div>
           </div>

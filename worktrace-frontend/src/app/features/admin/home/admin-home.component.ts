@@ -287,7 +287,6 @@ export class AdminHomeComponent implements OnInit {
       this.descargarBlob(blob, fileName);
       this.dialogoExportar.set(false);
     } catch (error) {
-      console.error('Error crítico exportando:', error);
       alert('Error al generar el informe legal de inspección.');
     } finally {
       this.cargandoExportacion.set(false);
@@ -311,7 +310,6 @@ export class AdminHomeComponent implements OnInit {
           this.dialogoInspector.set(false);
         },
         error: (err) => {
-          console.error('Error al procesar el inspector:', err);
           alert('Hubo un error al crear o notificar al inspector.');
         },
       });
@@ -329,7 +327,6 @@ export class AdminHomeComponent implements OnInit {
       await this.cargarFichajesHoyPorDefecto();
       await this.cargarDepartamentos();
     } catch (error) {
-      console.error('Error inesperado al cargar dashboard:', error);
     } finally {
       this.loading.set(false);
     }

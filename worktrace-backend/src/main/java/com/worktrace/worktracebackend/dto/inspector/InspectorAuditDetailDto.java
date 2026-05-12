@@ -14,8 +14,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class InspectorAuditDetailDto {
     private UUID id;
-    private OffsetDateTime fechaEliminacion;
-    private String motivo;
-    private String ejecutador;
-    private String datosAntesModificacion;
+    private OffsetDateTime timestamp;
+    private String reason;
+    private String actorName;
+    private String previousData;
 }

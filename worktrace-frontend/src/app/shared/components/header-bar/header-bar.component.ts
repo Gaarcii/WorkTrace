@@ -28,7 +28,6 @@ export class HeaderBarComponent implements OnInit {
     if (!this.userSignal()) {
       this.profileService.fetchMyProfile().subscribe();
     }
-    console.log(this.userSignal)
   }
 
   handleLogout(): void {

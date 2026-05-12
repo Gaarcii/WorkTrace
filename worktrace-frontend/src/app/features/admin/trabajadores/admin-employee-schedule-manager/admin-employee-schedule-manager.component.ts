@@ -219,7 +219,6 @@ export class AdminEmployeeScheduleManagerComponent implements OnInit {
           this.showNotification('Horarios guardados correctamente', 'success');
         },
         error: (err: unknown) => {
-          console.error('Error al guardar horarios:', err);
           this.showNotification('No se pudieron guardar los horarios', 'error');
         },
       });
@@ -253,7 +252,6 @@ export class AdminEmployeeScheduleManagerComponent implements OnInit {
           this.initialSchedules.set(this.cloneSchedules(mappedSchedules));
         },
         error: (err: unknown) => {
-          console.error('Error al cargar horarios:', err);
           this.error.set('No se pudieron cargar los datos del empleado');
           this.showNotification('Error al cargar la informacion de horarios', 'error');
         },

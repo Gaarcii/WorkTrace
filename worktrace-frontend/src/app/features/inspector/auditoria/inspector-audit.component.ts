@@ -70,11 +70,10 @@ export class InspectorAuditComponent implements OnInit {
 
   readonly parsedOldData = computed(() => {
     const detail = this._selectedRecordDetail();
-    if (!detail || !detail.datosAntesModificacion) return null;
+    if (!detail || !detail.previousData) return null;
     try {
-      return JSON.parse(detail.datosAntesModificacion) as Record<string, unknown>;
+      return JSON.parse(detail.previousData) as Record<string, unknown>;
     } catch (e) {
-      console.error('Error parseando datosAntesModificacion:', e);
       return null;
     }
   });
@@ -106,7 +105,6 @@ export class InspectorAuditComponent implements OnInit {
         next: (response) => {
           this._records.set(response.content || []);
         },
-        error: (err: unknown) => console.error('Error cargando auditoría:', err),
       });
   }
 
@@ -131,7 +129,6 @@ export class InspectorAuditComponent implements OnInit {
       )
       .subscribe({
         next: (detail) => this._selectedRecordDetail.set(detail),
-        error: (err: unknown) => console.error('Error cargando detalles:', err),
       });
   }
 

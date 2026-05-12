@@ -152,8 +152,6 @@ export class AdminTrabajadoresComponent implements OnInit {
       payload.schedules = form.schedules;
     }
 
-    console.log('[AdminTrabajadores] Crear empleado payload:', payload);
-
     this.loading.set(true);
     this.workersService
       .crearEmpleado(payload)
@@ -163,7 +161,6 @@ export class AdminTrabajadoresComponent implements OnInit {
           await this.onCrearEmpleadoExito();
         },
         error: async (err: unknown) => {
-          // Some backends return 2xx with non-JSON bodies, which Angular can surface as HttpErrorResponse.
           if (err instanceof HttpErrorResponse && err.status >= 200 && err.status < 300) {
             await this.onCrearEmpleadoExito();
             return;
@@ -207,7 +204,6 @@ export class AdminTrabajadoresComponent implements OnInit {
             (err as { message?: string })?.message ??
             'No se pudo crear el puesto';
 
-          console.error('[AdminTrabajadores] Error creando puesto:', err);
           this.loading.set(false);
           this.mostrarSnackbar(backendMessage, 'error');
         },
