@@ -16,29 +16,32 @@
   background-color: $color-surface;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  overflow: hidden;
   overflow-y: auto;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .form-wrapper {
   width: 100%;
   max-width: 650px; /* Aumentado para dar espacio a las 2 columnas */
-  padding: 24px 40px; /* Padding vertical reducido */
+  padding: 20px 40px; /* Padding ajustado */
 }
 
 .form-header {
-  margin-bottom: 24px; /* Margen reducido */
+  margin-bottom: 16px;
 
   h2 {
-    font-size: 28px; /* Ligeramente más pequeño para optimizar espacio */
+    font-size: 26px;
     color: $color-primary;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     font-weight: 700;
   }
 
   p {
     color: $color-text-muted-legacy;
-    font-size: 15px;
+    font-size: 14px;
     margin-top: 0;
   }
 }
@@ -49,14 +52,14 @@
 }
 
 .form-section {
-  margin-bottom: 16px; /* Reducido para evitar el scroll */
+  margin-bottom: 12px;
 
   .section-title {
-    font-size: 16px; /* Ligeramente reducido */
+    font-size: 15px;
     font-weight: 600;
     color: $color-primary;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
     border-bottom: 2px solid #f0f0f0;
   }
 }
@@ -65,7 +68,7 @@
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0 16px; /* 0 vertical (mat-form-field ya tiene margen), 16px horizontal */
+  gap: 0 12px;
 
   mat-form-field {
     width: 100%;
@@ -85,8 +88,8 @@
   @include patterns.feedback-box(
     $color-error-bg-soft,
     $color-error-text,
-    $padding: 10px 16px,
-    $margin-bottom: 16px
+    $padding: 8px 12px,
+    $margin-bottom: 12px
   );
 }
 
@@ -94,26 +97,26 @@
   @include patterns.feedback-box(
     $color-success-bg,
     $color-success-text,
-    $padding: 10px 16px,
-    $margin-bottom: 16px
+    $padding: 8px 12px,
+    $margin-bottom: 12px
   );
 }
 
 .submit-btn {
-  height: 48px; /* Ligeramente más compacto */
-  font-size: 16px;
+  height: 44px;
+  font-size: 15px;
   font-weight: 600;
   border-radius: $radius-md;
   letter-spacing: 0.5px;
-  margin-top: 8px;
+  margin-top: 4px;
 
   @include patterns.centered-material-button-label;
 }
 
 .helper-link {
-  margin-top: 8px;
+  margin-top: 4px;
   align-self: center;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: $color-primary-alt;
 }
@@ -121,8 +124,8 @@
 .logo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .logo-preview-card {
@@ -221,7 +224,7 @@
 
   .file-dropzone {
     display: block;
-    padding: 24px 16px;
+    padding: 16px 12px;
     cursor: pointer;
     text-align: center;
   }
