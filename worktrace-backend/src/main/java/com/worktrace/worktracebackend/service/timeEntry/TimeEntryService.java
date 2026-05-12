@@ -696,10 +696,10 @@ public class TimeEntryService {
     private TimeEntry findAndValidateTimeEntry(UUID id, Company company) {
         Optional<TimeEntry> timeEntryOpt = timeEntryRepository.findById(id);
         if (timeEntryOpt.isEmpty()) {
-            throw new NotFoundException("No se encontró el fichajeOp");
+            throw new NotFoundException("No se encontró el fichaje");
         }
         if (!timeEntryOpt.get().getCompany().getId().equals(company.getId())) {
-            throw new IllegalStateException("El fichajeOp no pertenece a tu empresa");
+            throw new IllegalStateException("El fichaje no pertenece a tu empresa");
         }
         return timeEntryOpt.get();
     }

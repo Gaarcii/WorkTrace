@@ -34,7 +34,6 @@ public class AuditTimeEntryServiceTest {
 
     private User testUser;
     private Company testCompany;
-    private Profile testProfile;
     private UserAndCompanyInfo testUserAndCompanyInfo;
     private UUID timeEntryId;
 
@@ -49,7 +48,7 @@ public class AuditTimeEntryServiceTest {
         testUser.setEmail("usuario@prueba.com");
         testUser.setCompany(testCompany);
 
-        testProfile = new Profile();
+        Profile testProfile = new Profile();
         testProfile.setUserId(testUser.getId());
         testProfile.setFullName("Usuario de Prueba");
         testProfile.setUser(testUser);
@@ -91,13 +90,11 @@ public class AuditTimeEntryServiceTest {
         String action = "VOID";
         String reason = "Fichaje creado por error";
         String oldDataJson = "{\"startTime\":\"09:00\"}";
-        String newDataJson = null;
+        String newDataJson = "{\"startTime\":\"08:00\"}";
 
         when(userService.getAuthenticatedUserAndCompanyInfo()).thenThrow(new RuntimeException("Usuario no autenticado"));
 
-        assertThrows(RuntimeException.class, () -> {
-            auditTimeEntryService.logTimeEntryChange(action, reason, oldDataJson, newDataJson, timeEntryId);
-        }, "Se esperaba que se lanzara una RuntimeException.");
+        assertThrows(RuntimeException.class, () -> auditTimeEntryService.logTimeEntryChange(action, reason, oldDataJson, newDataJson, timeEntryId), "Se esperaba que se lanzara una RuntimeException.");
 
         verify(auditRepository, never()).save(any(AuditTimeEntry.class));
     }
