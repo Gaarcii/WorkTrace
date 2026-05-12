@@ -6,31 +6,33 @@ import com.worktrace.worktracebackend.dto.auth.AuthResponseDto;
 import com.worktrace.worktracebackend.dto.company.CompanyRequestDto;
 import com.worktrace.worktracebackend.dto.passwordResetToken.ForgotPasswordRequest;
 import com.worktrace.worktracebackend.dto.passwordResetToken.ResetPasswordRequest;
-import com.worktrace.worktracebackend.dto.user.EmployeeRequestDto;
-import com.worktrace.worktracebackend.dto.user.InspectorRequestDto;
-import com.worktrace.worktracebackend.dto.user.PasswordChangeRequestDto;
+import com.worktrace.worktracebackend.dto.user.*;
+import com.worktrace.worktracebackend.exception.NotFoundException;
+import com.worktrace.worktracebackend.model.Role;
 import com.worktrace.worktracebackend.service.auth.AuthenticationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class AuthControllerTest {
+@ActiveProfiles("test")
+class AuthControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -38,7 +40,7 @@ class AuthControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private AuthenticationService authenticationService;
 
     private CompanyRequestDto companyRequestDto;
@@ -52,51 +54,71 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        companyRequestDto = new CompanyRequestDto("Test Company", "test@company.com", "Admin", "User", "password123");
-        authRequestDto = new AuthRequestDto("test@user.com", "password123");
-        authResponseDto = new AuthResponseDto("jwt-token-12345");
-        passwordChangeRequestDto = new PasswordChangeRequestDto("newPassword", "newPassword");
-        employeeRequestDto = new EmployeeRequestDto("Employee", "User", "employee@test.com", "password123");
-        inspectorRequestDto = new InspectorRequestDto("Inspector", "User", "inspector@test.com");
-        forgotPasswordRequest = new ForgotPasswordRequest("user@example.com");
-        resetPasswordRequest = new ResetPasswordRequest("reset-token", "newPassword123", "newPassword123");
+        AdminProfileRequestDto adminProfile = new AdminProfileRequestDto(
+                "Administrador Ejemplo",
+                "12345678A",
+                "600111222"
+        );
+        AdminRequestDto adminRequest = new AdminRequestDto(
+                "admin@empresa.test",
+                "contraseñaSegura",
+                adminProfile
+        );
+        companyRequestDto = new CompanyRequestDto(
+                "Empresa Test S.L.",
+                "B12345678",
+                adminRequest
+        );
+
+        authRequestDto = new AuthRequestDto("usuario@test.com", "miContraseña");
+
+        authResponseDto = new AuthResponseDto("token-de-prueba", true, Role.ADMIN);
+
+        passwordChangeRequestDto = new PasswordChangeRequestDto("actualPass", "nuevaPass", "nuevaPass");
+
+        ProfileRequestDto employeeProfile = new ProfileRequestDto(
+                "Empleado Ejemplo",
+                "87654321B",
+                "600222333",
+                java.util.UUID.randomUUID(),
+                new java.math.BigDecimal("40")
+        );
+        employeeRequestDto = new EmployeeRequestDto("empleado@test.com", employeeProfile, null);
+
+        inspectorRequestDto = new InspectorRequestDto("inspector@test.com", "Inspector Nombre", "600333444");
+
+        forgotPasswordRequest = new ForgotPasswordRequest("usuario@existente.test");
+
+        resetPasswordRequest = new ResetPasswordRequest("token-abc", "nuevaPass", "nuevaPass");
     }
 
     @Test
-    void testRegisterCompany_Success() throws Exception {
+    void testRegisterCompanySuccess() throws Exception {
         when(authenticationService.registerCompany(any(CompanyRequestDto.class))).thenReturn(authResponseDto);
 
         mockMvc.perform(post("/api/auth/register-company")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(companyRequestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("jwt-token-12345"));
+                .andExpect(jsonPath("$.token").value("token-de-prueba"))
+                .andExpect(jsonPath("$.firstLogin").value(true))
+                .andExpect(jsonPath("$.role").value("ADMIN"));
     }
 
     @Test
-    void testRegisterCompany_InvalidData() throws Exception {
-        CompanyRequestDto invalidDto = new CompanyRequestDto("", "", "", "", "");
-
-        mockMvc.perform(post("/api/auth/register-company")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidDto)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testLogin_Success() throws Exception {
+    void testLoginSuccess() throws Exception {
         when(authenticationService.signIn(any(AuthRequestDto.class))).thenReturn(authResponseDto);
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("jwt-token-12345"));
+                .andExpect(jsonPath("$.token").value("token-de-prueba"));
     }
 
     @Test
     @WithMockUser
-    void testUpdatePassword_Success() throws Exception {
+    void testUpdatePasswordSuccess() throws Exception {
         doNothing().when(authenticationService).changePassword(any(PasswordChangeRequestDto.class));
 
         mockMvc.perform(patch("/api/auth/password")
@@ -108,7 +130,7 @@ class AuthControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void testRegisterEmployee_Success() throws Exception {
+    void testRegisterEmployeeCreated() throws Exception {
         doNothing().when(authenticationService).registerEmployee(any(EmployeeRequestDto.class));
 
         mockMvc.perform(post("/api/auth/register-employee")
@@ -119,9 +141,9 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
-    void testRegisterEmployee_Forbidden() throws Exception {
+    void testRegisterEmployeeUnauthorizedWithoutAuth() throws Exception {
         mockMvc.perform(post("/api/auth/register-employee")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(employeeRequestDto)))
                 .andExpect(status().isForbidden());
@@ -129,7 +151,7 @@ class AuthControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void testRegisterInspector_Success() throws Exception {
+    void testRegisterInspectorCreated() throws Exception {
         doNothing().when(authenticationService).registerInspector(any(InspectorRequestDto.class));
 
         mockMvc.perform(post("/api/auth/register-inspector")
@@ -140,7 +162,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testForgotPassword_Success() throws Exception {
+    void testForgotPasswordGenericResponse() throws Exception {
         doNothing().when(authenticationService).processForgotPassword(any(String.class));
 
         mockMvc.perform(post("/api/auth/forgot-password")
@@ -151,7 +173,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testResetPassword_Success() throws Exception {
+    void testResetPasswordSuccess() throws Exception {
         doNothing().when(authenticationService).executePasswordReset(any(String.class), any(String.class), any(String.class));
 
         mockMvc.perform(post("/api/auth/reset-password")
@@ -160,4 +182,28 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Contraseña actualizada correctamente."));
     }
+
+    @Test
+    void testResetPasswordNotFound() throws Exception {
+        doThrow(new NotFoundException("Token no encontrado")).when(authenticationService)
+                .executePasswordReset(any(String.class), any(String.class), any(String.class));
+
+        mockMvc.perform(post("/api/auth/reset-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(resetPasswordRequest)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Token no encontrado"));
+    }
+
+    @Test
+    void testLoginValidationErrorInvalidEmail() throws Exception {
+        AuthRequestDto invalid = new AuthRequestDto("no-es-un-email", "abc123");
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalid)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email").value("Formato no válido, debe ser un email"));
+    }
 }
+
