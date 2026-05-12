@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $primary-dark: #000026;
 $bg-color: #f5f5f5;
 $error: #d32f2f;
@@ -157,7 +159,7 @@ $info: #1976d2;
     color: white;
   }
   &-error:hover:not(:disabled) {
-    background-color: darken($error, 10%);
+    background-color: color.adjust($error, $lightness: -10%);
   }
 }
 
@@ -264,7 +266,7 @@ $info: #1976d2;
   font-size: 0.875rem;
   &-warning {
     background-color: $warning-bg;
-    color: darken($warning, 20%);
+    color: color.adjust($warning, $lightness: -20%);
     border: 1px solid rgba($warning, 0.3);
   }
 }
@@ -318,7 +320,7 @@ $info: #1976d2;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
 
   &:hover:not(:disabled) {
-    background-color: darken($error, 8%);
+    background-color: color.adjust($error, $lightness: -8%);
   }
 }
 

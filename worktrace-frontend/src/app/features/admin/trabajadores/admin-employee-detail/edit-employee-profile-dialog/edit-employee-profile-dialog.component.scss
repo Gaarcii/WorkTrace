@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $primary-dark: #000026;
 $grey: #9e9e9e;
 $grey-dark: #616161;
@@ -158,7 +160,7 @@ $error-bg: #ffebee;
     color: white;
 
     &:hover:not(:disabled) {
-      background-color: lighten($primary-dark, 10%);
+      background-color: color.adjust($primary-dark, $lightness: 10%);
     }
   }
 

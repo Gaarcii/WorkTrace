@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $primary-dark: #000026;
 
 *,
@@ -169,7 +171,7 @@ $primary-dark: #000026;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: lighten($primary-dark, 10%);
+  background-color: color.adjust($primary-dark, $lightness: 10%);
 }
 
 .btn-outlined {
