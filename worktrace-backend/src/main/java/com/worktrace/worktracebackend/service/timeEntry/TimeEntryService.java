@@ -72,7 +72,7 @@ public class TimeEntryService {
                 findByEmployee_UserIdAndEndAtIsNullAndTimeEntryStatus(profile.getUserId(), TimeEntryStatus.OPEN);
 
         IpDetectionService.IpAnalysisResult ipResult = ipDetectionService.
-                analyzeIpWithDetails(realIp);
+                analyzeIpWithDetails(realIp, company.getId());
 
         List<String> flags = new ArrayList<>();
         if (requestDto.getAccuracyMeters() != null && requestDto.getAccuracyMeters() > 200) {

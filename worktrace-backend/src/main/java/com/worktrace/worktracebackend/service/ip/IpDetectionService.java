@@ -1,7 +1,9 @@
 package com.worktrace.worktracebackend.service.ip;
 
 import com.worktrace.worktracebackend.dto.ip.IpResponseDto;
+import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.KnownIp;
+import com.worktrace.worktracebackend.repository.CompanyRepository;
 import com.worktrace.worktracebackend.repository.KnownIpRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Servicio encargado de analizar direcciones IP para detectar posibles riesgos de seguridad y obtener datos de geolocalización.
@@ -31,6 +34,7 @@ public class IpDetectionService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final KnownIpRepository knownIpRepository;
+    private final CompanyRepository companyRepository;
 
     /**
      * Contenedor de datos para el resultado del análisis de una dirección IP.
@@ -49,9 +53,10 @@ public class IpDetectionService {
      * 4. Procesa la respuesta, extrae las banderas de seguridad (VPN, Tor, etc.) y almacena el resultado en la caché para futuras consultas.
      *
      * @param ipAddress La dirección IP que se va a analizar.
+     * @param companyId El ID de la compañía asociada a la IP.
      * @return Un objeto {@link IpAnalysisResult} que contiene las banderas de seguridad y los datos de geolocalización.
      */
-    public IpAnalysisResult analyzeIpWithDetails(String ipAddress) {
+    public IpAnalysisResult analyzeIpWithDetails(String ipAddress, UUID companyId) {
         if (ipAddress.equals("127.0.0.1") ||
                 ipAddress.equals("0:0:0:0:0:0:0:1") ||
                 ipAddress.equals("::1")) {
@@ -88,13 +93,17 @@ public class IpDetectionService {
             geoIpMap = mapper.convertValue(ipInfo, new TypeReference<>() {
             });
 
+            Company company = companyRepository.findById(companyId)
+                    .orElseThrow(() -> new RuntimeException("Company not found with id: " + companyId));
+
             KnownIp newIp = new KnownIp();
             newIp.setIp(ipAddress);
             newIp.setGeoIpData(geoIpMap);
+            newIp.setCompany(company);
             try {
                 String jsonString = mapper.writeValueAsString(geoIpMap);
 
-                knownIpRepository.saveNativeIp(ipAddress, jsonString, OffsetDateTime.now());
+                knownIpRepository.saveNativeIp(ipAddress, jsonString, OffsetDateTime.now(), companyId);
             } catch (Exception e) {
                 System.err.println("No se pudo guardar la IP en caché: " + e.getMessage());
             }

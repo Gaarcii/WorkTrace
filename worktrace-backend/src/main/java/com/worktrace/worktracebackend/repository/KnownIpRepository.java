@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface KnownIpRepository extends JpaRepository<KnownIp, String> {
@@ -18,7 +19,6 @@ public interface KnownIpRepository extends JpaRepository<KnownIp, String> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO known_ips (ip, geo_ip_data, created_at) VALUES (CAST(:ip AS inet), CAST(:geoipData AS jsonb), :createdAt)", nativeQuery = true)
-    void saveNativeIp(@Param("ip") String ip, @Param("geoipData") String geoipData, @Param("createdAt") OffsetDateTime createdAt);
+    @Query(value = "INSERT INTO known_ips (ip, geo_ip_data, created_at, company_id) VALUES (CAST(:ip AS inet), CAST(:geoipData AS jsonb), :createdAt, :companyId)", nativeQuery = true)
+    void saveNativeIp(@Param("ip") String ip, @Param("geoipData") String geoipData, @Param("createdAt") OffsetDateTime createdAt, @Param("companyId") UUID companyId);
 }
-

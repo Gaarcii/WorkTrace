@@ -542,41 +542,53 @@ VALUES (
 -- sistema de antifraude la tenga catalogada con risk=medium.
 -- -----------------------------------------------------------------------------
 INSERT INTO
-    known_ips (ip, geo_ip_data, created_at)
+    known_ips (
+        ip,
+        geo_ip_data,
+        created_at,
+        company_id
+    )
 VALUES (
         '192.168.1.10',
         '{"city":"Madrid", "region":"MD","country":"ES","isp":"Movistar","org":"Fibra Optica Casa","type":"residential"}'::jsonb,
-        now()
+        now(),
+        'a0000000-0000-0000-0000-000000000001'
     ),
     (
         '192.168.1.11',
         '{"city":"Madrid", "region":"MD","country":"ES","isp":"Movistar","org":"Fibra Optica Casa","type":"residential"}'::jsonb,
-        now()
+        now(),
+        'a0000000-0000-0000-0000-000000000001'
     ),
     (
         '80.12.34.56',
         '{"city":"Pozuelo","region":"MD","country":"ES","isp":"Vodafone","connection":"Cellular","type":"mobile"}'::jsonb,
-        now()
+        now(),
+        'a0000000-0000-0000-0000-000000000001'
     ),
     (
         '10.10.10.10',
         '{"city":"Pozuelo","region":"MD","country":"ES","isp":"Vodafone","connection":"Cellular","type":"mobile"}'::jsonb,
-        now()
+        now(),
+        'a0000000-0000-0000-0000-000000000001'
     ),
     (
         '10.10.10.20',
         '{"city":"Pozuelo","region":"MD","country":"ES","isp":"Vodafone","connection":"Cellular","type":"mobile"}'::jsonb,
-        now()
+        now(),
+        'a0000000-0000-0000-0000-000000000001'
     ),
     (
         '77.231.105.42',
         '{"city":"Madrid", "region":"MD","country":"ES","isp":"Orange","org":"Orange Espana","type":"residential","risk":"medium"}'::jsonb,
-        now()
+        now(),
+        'a0000000-0000-0000-0000-000000000001'
     ),
     (
         '1.1.1.1',
         '{"city":"Unknown","region":"XX","country":"XX","isp":"Cloudflare","org":"APNIC Research","type":"hosting"}'::jsonb,
-        now()
+        now(),
+        'a0000000-0000-0000-0000-000000000001'
     );
 
 -- -----------------------------------------------------------------------------

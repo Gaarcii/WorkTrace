@@ -50,13 +50,14 @@ class TimeEntryServiceTest {
     private User user;
     private TimeEntry openTimeEntry;
     private UserAndCompanyInfo userAndCompanyInfo;
+    private Company company;
 
     @BeforeEach
     void setUp() {
         UUID userId = UUID.randomUUID();
         UUID companyId = UUID.randomUUID();
 
-        Company company = new Company();
+        company = new Company();
         company.setId(companyId);
         company.setCompanyName("Test Company");
 
@@ -89,7 +90,7 @@ class TimeEntryServiceTest {
 
         when(userService.getAuthenticatedUserAndCompanyInfo()).thenReturn(userAndCompanyInfo);
         when(timeEntryRepository.findByEmployee_UserIdAndEndAtIsNullAndTimeEntryStatus(user.getId(), TimeEntryStatus.OPEN)).thenReturn(Optional.empty());
-        when(ipDetectionService.analyzeIpWithDetails(realIp)).thenReturn(new IpDetectionService.IpAnalysisResult(Collections.emptyList(), Collections.emptyMap()));
+        when(ipDetectionService.analyzeIpWithDetails(realIp, company.getId())).thenReturn(new IpDetectionService.IpAnalysisResult(Collections.emptyList(), Collections.emptyMap()));
         when(timeEntryRepository.save(any(TimeEntry.class))).thenAnswer(invocation -> {
             TimeEntry entry = invocation.getArgument(0);
             if (entry.getId() == null) {
@@ -119,7 +120,7 @@ class TimeEntryServiceTest {
 
         when(userService.getAuthenticatedUserAndCompanyInfo()).thenReturn(userAndCompanyInfo);
         when(timeEntryRepository.findByEmployee_UserIdAndEndAtIsNullAndTimeEntryStatus(user.getId(), TimeEntryStatus.OPEN)).thenReturn(Optional.of(openTimeEntry));
-        when(ipDetectionService.analyzeIpWithDetails(realIp)).thenReturn(new IpDetectionService.IpAnalysisResult(Collections.emptyList(), Collections.emptyMap()));
+        when(ipDetectionService.analyzeIpWithDetails(realIp, company.getId())).thenReturn(new IpDetectionService.IpAnalysisResult(Collections.emptyList(), Collections.emptyMap()));
         when(timeEntryRepository.save(any(TimeEntry.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         TimeEntryResponseDto response = timeEntryService.processTimeEntry(requestDto, realIp, userAgent);

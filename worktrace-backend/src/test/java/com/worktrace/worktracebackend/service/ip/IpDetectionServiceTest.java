@@ -1,7 +1,9 @@
 package com.worktrace.worktracebackend.service.ip;
 
 import com.worktrace.worktracebackend.dto.ip.IpResponseDto;
+import com.worktrace.worktracebackend.model.Company;
 import com.worktrace.worktracebackend.model.KnownIp;
+import com.worktrace.worktracebackend.repository.CompanyRepository;
 import com.worktrace.worktracebackend.repository.KnownIpRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,10 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,10 +28,15 @@ class IpDetectionServiceTest {
     private KnownIpRepository knownIpRepository;
 
     @Mock
+    private CompanyRepository companyRepository;
+
+    @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
     private IpDetectionService ipDetectionService;
+
+    private final UUID companyId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
@@ -42,7 +46,7 @@ class IpDetectionServiceTest {
 
     @Test
     void testAnalyzeIpWithDetailsForLocalhost() {
-        IpDetectionService.IpAnalysisResult result = ipDetectionService.analyzeIpWithDetails("127.0.0.1");
+        IpDetectionService.IpAnalysisResult result = ipDetectionService.analyzeIpWithDetails("127.0.0.1", companyId);
 
         assertTrue(result.flags().isEmpty(), "No deben generarse flags para localhost");
         assertNull(result.geoIpMap(), "No debe haber mapa de GeoIP para localhost");
@@ -64,13 +68,13 @@ class IpDetectionServiceTest {
 
         when(knownIpRepository.findByIp(ipAddress)).thenReturn(Optional.of(cachedIp));
 
-        IpDetectionService.IpAnalysisResult result = ipDetectionService.analyzeIpWithDetails(ipAddress);
+        IpDetectionService.IpAnalysisResult result = ipDetectionService.analyzeIpWithDetails(ipAddress, companyId);
 
         assertFalse(result.flags().isEmpty(), "Debe haber flags recuperados de la caché");
         assertTrue(result.flags().contains("VPN_DETECTED"), "El flag de VPN debe estar presente");
         assertEquals(cachedData, result.geoIpMap(), "El mapa de GeoIP debe ser el de la caché");
         verify(restTemplate, never()).getForObject(anyString(), any());
-        verify(knownIpRepository, never()).saveNativeIp(anyString(), anyString(), any());
+        verify(knownIpRepository, never()).saveNativeIp(anyString(), anyString(), any(), any(UUID.class));
     }
 
     @Test
@@ -84,14 +88,16 @@ class IpDetectionServiceTest {
 
         when(knownIpRepository.findByIp(ipAddress)).thenReturn(Optional.empty());
         when(restTemplate.getForObject(anyString(), eq(IpResponseDto.class))).thenReturn(apiResponse);
+        when(companyRepository.findById(companyId)).thenReturn(Optional.of(new Company()));
 
-        IpDetectionService.IpAnalysisResult result = ipDetectionService.analyzeIpWithDetails(ipAddress);
+
+        IpDetectionService.IpAnalysisResult result = ipDetectionService.analyzeIpWithDetails(ipAddress, companyId);
 
         assertFalse(result.flags().isEmpty(), "Debe haber flags generados desde la API");
         assertTrue(result.flags().contains("PROXY_DETECTED"), "El flag de Proxy debe estar presente");
         assertFalse(result.flags().contains("VPN_DETECTED"), "El flag de VPN no debe estar presente");
         assertNotNull(result.geoIpMap(), "El mapa de GeoIP no debe ser nulo");
-        verify(knownIpRepository, times(1)).saveNativeIp(eq(ipAddress), anyString(), any());
+        verify(knownIpRepository, times(1)).saveNativeIp(eq(ipAddress), anyString(), any(), eq(companyId));
     }
 
     @Test
@@ -100,11 +106,11 @@ class IpDetectionServiceTest {
         when(knownIpRepository.findByIp(ipAddress)).thenReturn(Optional.empty());
         when(restTemplate.getForObject(anyString(), eq(IpResponseDto.class))).thenThrow(new RuntimeException("Error de API"));
 
-        IpDetectionService.IpAnalysisResult result = ipDetectionService.analyzeIpWithDetails(ipAddress);
+        IpDetectionService.IpAnalysisResult result = ipDetectionService.analyzeIpWithDetails(ipAddress, companyId);
 
         assertTrue(result.flags().isEmpty(), "No debe haber flags si la llamada a la API falla");
         assertNull(result.geoIpMap(), "El mapa de GeoIP debe ser nulo si la llamada a la API falla");
-        verify(knownIpRepository, never()).saveNativeIp(anyString(), anyString(), any());
+        verify(knownIpRepository, never()).saveNativeIp(anyString(), anyString(), any(), any(UUID.class));
     }
 
     @Test

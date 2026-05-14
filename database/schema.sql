@@ -52,7 +52,7 @@ create table if not exists job_positions (
     title text not null,
     created_at timestamp with time zone not null default now(),
     company_id uuid not null,
-    unique (title, company_id) -- Único por empresa
+    unique (title, company_id)
 );
 
 create table if not exists work_sites (
@@ -190,7 +190,8 @@ create table if not exists incidence_types (
 create table if not exists known_ips (
     ip inet primary key,
     geo_ip_data jsonb not null,
-    created_at timestamp with time zone not null default now()
+    created_at timestamp with time zone not null default now(),
+    company_id uuid not null
 );
 
 alter table users
@@ -255,3 +256,6 @@ add constraint fk_incidences_profile foreign key (user_id) references profiles (
 
 alter table incidences
 add constraint fk_incidences_resolved_by foreign key (resolved_by) references users (id);
+
+alter table known_ips
+add constraint fk_known_ips_company foreign key (company_id) references companies (id);
