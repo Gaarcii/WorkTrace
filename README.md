@@ -1,72 +1,66 @@
 # WorkTrace
 
-**WorkTrace** es un proyecto SaaS orientado a la gestión laboral, el control de presencia y la trazabilidad operativa en entornos empresariales. Su objetivo es centralizar procesos como fichajes, incidencias, horarios, centros de trabajo, perfiles de usuario y auditorías, ofreciendo una plataforma clara para trabajadores, administradores e inspectores.
+**WorkTrace** es una plataforma web concebida bajo un modelo de ***Software as a Service*** (**SaaS**) con arquitectura multi-inquilino (***Multi-Tenant***). Su propósito principal es gestionar el registro horario y el fichaje geolocalizado, orientándose de forma específica a empresas del sector servicios para garantizar el pleno cumplimiento de la legislación laboral vigente.
 
-El valor añadido del sistema reside en combinar una experiencia web accesible con una API robusta, segura y preparada para operar sobre datos laborales sensibles. WorkTrace busca facilitar el seguimiento de la actividad laboral, mejorar la transparencia de los registros y proporcionar una base técnica sólida para la explotación futura de información operativa.
+El valor añadido del sistema reside en ir más allá del simple registro: WorkTrace asegura la inalterabilidad de los datos mediante auditorías inmutables y previene el fraude cruzando coordenadas GPS con telemetría de red e IPs. Todo ello operando sobre una infraestructura segura y contenerizada que proporciona una base técnica sólida para la explotación forense por parte de la Inspección de Trabajo.
 
 ## Arquitectura General del Sistema
 
-WorkTrace sigue un modelo **cliente-servidor** dividido en dos aplicaciones principales:
+WorkTrace sigue un modelo **cliente-servidor** desacoplado, orquestado mediante contenedores y protegido perimetralmente por un ***proxy*** inverso:
 
 ```mermaid
 flowchart LR
-    Usuario[Usuario final] --> Frontend[Frontend Angular]
-    Frontend --> API[Backend Spring Boot]
+    Usuario[Usuario / Internet] --> Proxy[Nginx Proxy]
+    Proxy --> Frontend[Frontend Angular]
+    Proxy --> API[Backend Spring Boot]
     API --> DB[(PostgreSQL)]
+    API -.-> S3[Cloudflare R2 / AWS SDK]
+
 ```
 
 ### Backend - Spring Boot
 
-El backend actúa como núcleo del sistema. Expone una **API REST** responsable de la lógica de negocio, autenticación, autorización, persistencia y generación de información operativa. Centraliza el acceso a datos y define los contratos consumidos por el cliente web.
+El ***backend*** actúa como núcleo del sistema, desarrollado en **Java 21**. Expone una **API REST** responsable de la lógica de negocio, aplicando reglas estrictas de cumplimiento normativo y aislamiento de datos.
 
 Responsabilidades principales:
 
-- Gestión de usuarios, empresas, roles y perfiles.
-- Control de fichajes, incidencias, horarios y centros de trabajo.
-- Seguridad basada en autenticación JWT y control de acceso por roles.
-- Persistencia de datos en PostgreSQL mediante JPA.
-- Exposición de documentación técnica de API mediante OpenAPI/Swagger.
+* **Gestión Multi-inquilino:** Aislamiento lógico de los datos de cada empresa cliente en una infraestructura compartida.
+* **Precisión Temporal Absoluta:** Uso de `OffsetDateTime` para registrar el instante exacto respecto al estándar UTC, evitando discrepancias por zonas horarias.
+* **Motor de Auditoría Inmutable:** Registro forense de modificaciones mediante formato `JSONB`, almacenando la carga útil previa y posterior junto al autor del cambio.
+* **Sellado de Jornada:** Generación de cierres diarios mediante una cadena de funciones *hash* criptográficas para evitar la inyección de registros en fechas pasadas.
+* **Almacenamiento S3:** Integración con **Cloudflare R2** mediante el oficial **AWS SDK** para el manejo de activos estáticos pesados.
 
 ### Frontend - Angular
 
-El frontend es la capa de presentación de WorkTrace. Proporciona una **SPA web** orientada a los distintos perfiles de usuario y consume la API REST del backend para mostrar datos, ejecutar operaciones y mantener una experiencia interactiva.
+El ***frontend*** es una ***Single Page Application*** (**SPA**) modular y reactiva desarrollada con **Angular 21** y **TypeScript 5.9**.
 
 Responsabilidades principales:
 
-- Interfaz de usuario para trabajadores, administradores e inspectores.
-- Gestión de navegación, formularios, validaciones y estados de vista.
-- Consumo tipado de la API REST mediante servicios Angular.
-- Separación entre componentes funcionales, compartidos y transversales.
-- Presentación clara de paneles, fichajes, incidencias y datos operativos.
+* **Perfiles de Acceso Diferenciados:** Interfaces dedicadas para Empleados, Administradores y un perfil de "solo lectura" para Auditores/Inspectores de Trabajo.
+* **Fichaje Geolocalizado:** Captura pasiva de coordenadas y representación espacial (Geofencing) mediante la integración de **Leaflet**.
+* **Estado Reactivo:** Manejo de flujos de datos asíncronos apoyándose en la librería **RxJS**.
+* **UI Estándar y Accesible:** Implementación estricta de directrices **Material Design** a través de componentes modulares.
 
 ## Mapa del Monorepo
 
 | Ruta | Descripción | Documentación |
 | --- | --- | --- |
-| 📁 `/worktrace-backend` | API REST desarrollada en Java con Spring Boot. | [Ver documentación específica](./worktrace-backend/README.md) |
-| 📁 `/worktrace-frontend` | Cliente web SPA desarrollado con Angular y TypeScript. | [Ver documentación específica](./worktrace-frontend/README.md) |
+| 📁 `/worktrace-backend` | **API REST** desarrollada en Java con Spring Boot. | [Ver documentación específica](./worktrace-backend/README.md) |
+| 📁 `/worktrace-frontend` | Cliente web **SPA** desarrollado con Angular y TypeScript. | [Ver documentación específica](./worktrace-frontend/README.md) |
 | 📁 `/database` | Scripts SQL de esquema y datos iniciales para la base de datos. | Soporte de infraestructura de datos |
-| 📄 `/docker-compose.yml` | Orquestación local de PostgreSQL/PostGIS para el entorno de desarrollo. | Configuración de infraestructura |
+| 📄 `/docker-compose.yml` | Orquestación en producción/desarrollo (Nginx, Spring Boot, PostgreSQL). | Configuración de infraestructura |
 
 ## Pila Tecnológica Global
-
-![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-![Java](https://img.shields.io/badge/Java%2021-007396?style=for-the-badge&logo=openjdk&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 ### Visión por capas
 
 | Capa | Tecnología | Rol en el sistema |
 | --- | --- | --- |
-| Cliente web | Angular, TypeScript | Interfaz de usuario y experiencia de navegación |
-| API de negocio | Spring Boot, Java | Lógica de dominio, seguridad y exposición REST |
-| Persistencia | PostgreSQL | Almacenamiento relacional de datos laborales y operativos |
-| Build y automatización | Gradle, npm | Compilación, dependencias y ciclo de desarrollo |
-| Infraestructura local | Docker Compose | Aprovisionamiento del servicio de base de datos |
+| Cliente web | Angular, TypeScript, Leaflet | Interfaz de usuario, representación espacial y UX. |
+| API de negocio | Spring Boot, Java, JUnit 5 | Lógica de dominio, seguridad transaccional y exposición REST. |
+| Persistencia | PostgreSQL | Almacenamiento relacional e inmutable (*JSONB*) de auditoría. |
+| Storage S3 | Cloudflare R2 | Almacenamiento desacoplado de recursos estáticos. |
+| Orquestación | Docker Compose, Nginx | Aislamiento de servicios y proxy inverso perimetral. |
 
 ## Autor e Información Académica
 
@@ -81,7 +75,7 @@ Responsabilidades principales:
 
 ## Documentación Específica
 
-Este README ofrece una visión global del repositorio. La documentación detallada de instalación, configuración, ejecución y arquitectura interna se mantiene en cada módulo:
+Este `README` ofrece una visión global de la arquitectura del repositorio. La documentación detallada de instalación, configuración, ejecución y variables de entorno se mantiene en cada módulo:
 
-- [Backend WorkTrace](./worktrace-backend/README.md)
-- [Frontend WorkTrace](./worktrace-frontend/README.md)
+* [Backend WorkTrace](https://www.google.com/search?q=./worktrace-backend/README.md)
+* [Frontend WorkTrace](https://www.google.com/search?q=./worktrace-frontend/README.md)
