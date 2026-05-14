@@ -77,6 +77,8 @@ public class CloudflareStorageService implements StorageService {
             s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
             return storedFilename;
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Fallo al subir el archivo a la nube", e);
         }
