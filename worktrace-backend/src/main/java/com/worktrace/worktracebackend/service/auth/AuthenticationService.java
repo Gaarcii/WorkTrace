@@ -243,7 +243,7 @@ public class AuthenticationService {
 
         Profile profile = Profile.builder()
                 .fullName(requestDto.getFullName())
-                .employeeCode("N/A")
+                .employeeCode(requestDto.getEmployeeCode())
                 .phone(requestDto.getPhone())
                 .isFirstLogin(false)
                 .isActive(true)

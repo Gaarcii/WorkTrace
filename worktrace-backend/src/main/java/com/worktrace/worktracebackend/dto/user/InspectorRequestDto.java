@@ -2,6 +2,7 @@ package com.worktrace.worktracebackend.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +27,8 @@ public class InspectorRequestDto {
     @NotBlank(message = "El teléfono es obligatorio")
     @Size(max = 20, message = "El teléfono no puede superar los 20 caracteres")
     private String phone;
+
+    @NotBlank(message = "El DNI es obligatorio")
+    @Pattern(regexp = "^[0-9]{8}[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\\s]$", message = "El DNI debe tener 8 números y 1 letra")
+    private String employeeCode;
 }

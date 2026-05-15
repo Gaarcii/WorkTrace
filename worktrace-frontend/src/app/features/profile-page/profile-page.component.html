@@ -37,10 +37,9 @@
 
 @if (mostrarPedirPasswordEmail()) {
   <app-perfil-email-modal
-    [passwordControl]="passwordConfirmacion"
     [loading]="loading()"
     (closeClicked)="cerrarModalPasswordEmail()"
-    (confirm)="confirmarGuardarConPassword()"
+    (confirm)="confirmarGuardarConPassword($event)"
   />
 }
 

@@ -23,7 +23,11 @@ export class AdminCreateInspectorDialogComponent {
       validators: [Validators.required, Validators.email],
       nonNullable: true,
     }),
-    phone: new FormControl<string>('', { validators: [Validators.required], nonNullable: true })
+    phone: new FormControl<string>('', { validators: [Validators.required], nonNullable: true }),
+    employeeCode: new FormControl<string>('', {
+      validators: [Validators.required],
+      nonNullable: true,
+    }),
   });
 
   constructor() {

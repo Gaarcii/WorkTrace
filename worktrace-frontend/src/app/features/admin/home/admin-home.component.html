@@ -78,4 +78,22 @@
     (updateModelValue)="dialogoInspector.set($event)"
     (confirm)="crearInspector($event)"
   />
+
+  @if (snackbar().show) {
+    <div
+      class="snackbar"
+      [class.error]="snackbar().color === 'error'"
+      [class.warning]="snackbar().color === 'warning'"
+      [class.info]="snackbar().color === 'info'"
+    >
+      <span>{{ snackbar().message }}</span>
+      <button
+        class="snackbar-action"
+        type="button"
+        (click)="snackbar.set({ ...snackbar(), show: false })"
+      >
+        CERRAR
+      </button>
+    </div>
+  }
 </div>

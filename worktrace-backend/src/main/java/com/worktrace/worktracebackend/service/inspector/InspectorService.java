@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class InspectorService {
         var companyId = info.getCompany().getId();
         LocalDate today = LocalDate.now();
 
-        long totalEmployees = userRepository.countUsersByCompany_Id(companyId);
+        long totalEmployees = userRepository.countUsersByCompany_IdAndRoleIn(companyId, List.of(Role.WORKER, Role.ADMIN));
         long totalPendingIncidences = incidenceRepository.countByCompany_IdAndStatus(companyId, IncidenceStatus.PENDING);
         long activeWorkersToday = timeEntryRepository.countDistinctActiveWorkersByCompanyAndWorkDate(
                 companyId,

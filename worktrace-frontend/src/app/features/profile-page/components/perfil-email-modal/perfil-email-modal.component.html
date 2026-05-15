@@ -6,37 +6,39 @@
       </h2>
       <mat-icon class="close-icon" (click)="onClose()">close</mat-icon>
     </div>
-    <div class="modal-body">
-      <p class="modal-desc">
-        Has modificado tu correo electrónico. Por motivos de seguridad, introduce tu contraseña
-        actual para confirmar los cambios.
-      </p>
-      <mat-form-field appearance="outline" class="w-100 mt-3">
-        <mat-label>Contraseña actual</mat-label>
-        <input
-          matInput
-          [type]="hideConfirmPassword() ? 'password' : 'text'"
-          [formControl]="passwordControl()"
-        />
-        <mat-icon matSuffix class="cursor-pointer" (click)="toggleVisibility()">
-          {{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}
-        </mat-icon>
-      </mat-form-field>
-    </div>
-    <div class="modal-footer">
-      <button mat-button (click)="onClose()" [disabled]="loading()">Cancelar</button>
-      <button
-        mat-flat-button
-        color="primary"
-        (click)="onConfirm()"
-        [disabled]="passwordControl().invalid || loading()"
-      >
-        @if (loading()) {
-          <mat-spinner diameter="20"></mat-spinner>
-        } @else {
-          Confirmar
-        }
-      </button>
-    </div>
+    <form [formGroup]="form" (ngSubmit)="onConfirm()">
+      <div class="modal-body">
+        <p class="modal-desc">
+          Has modificado tu correo electrónico. Por motivos de seguridad, introduce tu contraseña
+          actual para confirmar los cambios.
+        </p>
+        <mat-form-field appearance="outline" class="w-100 mt-3">
+          <mat-label>Contraseña actual</mat-label>
+          <input
+            matInput
+            [type]="hideConfirmPassword() ? 'password' : 'text'"
+            formControlName="password"
+          />
+          <mat-icon matSuffix class="cursor-pointer" (click)="toggleVisibility()">
+            {{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
+        </mat-form-field>
+      </div>
+      <div class="modal-footer">
+        <button mat-button (click)="onClose()" [disabled]="loading()">Cancelar</button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="form.invalid || loading()"
+        >
+          @if (loading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Confirmar
+          }
+        </button>
+      </div>
+    </form>
   </div>
 </div>

@@ -78,8 +78,6 @@ export class ProfilePageComponent implements OnInit {
     { validators: this.passwordsMatchValidator },
   );
 
-  readonly passwordConfirmacion = this.fb.control('', Validators.required);
-
   readonly horarioSemanal = computed<ScheduleDay[]>(() => {
     const diasSemana = [
       'MONDAY',
@@ -163,17 +161,15 @@ export class ProfilePageComponent implements OnInit {
     this.ejecutarActualizacion('');
   }
 
-  confirmarGuardarConPassword(): void {
-    if (this.passwordConfirmacion.invalid) {
-      this.passwordConfirmacion.markAsTouched();
+  confirmarGuardarConPassword(password: string): void {
+    if (!password) {
       return;
     }
-    this.ejecutarActualizacion(this.passwordConfirmacion.value || '');
+    this.ejecutarActualizacion(password);
   }
 
   cerrarModalPasswordEmail(): void {
     this.mostrarPedirPasswordEmail.set(false);
-    this.passwordConfirmacion.reset();
   }
 
   private ejecutarActualizacion(contrasenaActual: string): void {
@@ -239,10 +235,9 @@ export class ProfilePageComponent implements OnInit {
 
   eliminarFoto(): void {
     this.loading.set(true);
-    const formValues = this.form.getRawValue();
     const request: ProfileRequest = {
-      email: formValues.email,
-      phone: formValues.telefono,
+      email: '',
+      phone: '',
       actualPassword: '',
       deleteAvatar: 'true',
     };

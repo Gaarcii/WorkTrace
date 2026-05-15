@@ -40,11 +40,12 @@ export class EditEmployeeProfileDialogComponent {
   constructor() {
     effect(() => {
       const data = this.empleado();
+      const jobPositions = this.jobPositions();
       const open = this.isOpen();
 
       if (open && data) {
         this.form.patchValue({
-          positionId: data.positionId ?? null,
+          positionId: this.resolvePositionId(data, jobPositions),
           weeklyHours: this.parseWeeklyHours(data.weeklyHours),
         });
       } else if (!open) {
@@ -75,5 +76,21 @@ export class EditEmployeeProfileDialogComponent {
   private parseWeeklyHours(value: string): number | null {
     const parsed = Number(value);
     return Number.isNaN(parsed) ? null : parsed;
+  }
+
+  private resolvePositionId(
+    data: EmployeeResponseDto,
+    jobPositions: JobPositionRequestDto[],
+  ): string | null {
+    if (data.positionId) {
+      return data.positionId;
+    }
+
+    const normalizedJobPosition = data.jobPosition.trim().toLocaleLowerCase();
+    const matchedPosition = jobPositions.find(
+      (puesto) => puesto.title.trim().toLocaleLowerCase() === normalizedJobPosition,
+    );
+
+    return matchedPosition?.id ?? null;
   }
 }

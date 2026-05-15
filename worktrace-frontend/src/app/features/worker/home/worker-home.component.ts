@@ -126,16 +126,19 @@ export class WorkerHomeComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    const request: TimeEntryRequest = {
-      lat: 0,
-      lng: 0,
-      accuracyMeters: 0,
-    };
-    this.workerService.clockIn(request).pipe(take(1)).subscribe();
-
     const intervalId = setInterval(() => {
       this.currentDate.set(new Date());
     }, 1000);
+
+    this.workerService
+      .getDailySummary()
+      .pipe(take(1))
+      .subscribe({
+        error: (err: unknown) => {
+          const msj = err instanceof Error ? err.message : 'No se pudo cargar el resumen';
+          this.errorMsg.set(msj);
+        },
+      });
 
     this.destroyRef.onDestroy(() => {
       clearInterval(intervalId);

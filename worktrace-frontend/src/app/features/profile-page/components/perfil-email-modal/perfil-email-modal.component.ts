@@ -1,5 +1,13 @@
-import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  output,
+  signal,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -20,14 +28,23 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   styleUrls: ['./perfil-email-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PerfilEmailModalComponent {
-  readonly passwordControl = input.required<FormControl>();
+export class PerfilEmailModalComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+
   readonly loading = input.required<boolean>();
 
   readonly closeClicked = output<void>();
-  readonly confirm = output<void>();
+  readonly confirm = output<string>();
 
   readonly hideConfirmPassword = signal<boolean>(true);
+
+  form!: FormGroup;
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      password: ['', Validators.required],
+    });
+  }
 
   toggleVisibility(): void {
     this.hideConfirmPassword.set(!this.hideConfirmPassword());
@@ -37,6 +54,8 @@ export class PerfilEmailModalComponent {
     this.closeClicked.emit();
   }
   onConfirm(): void {
-    this.confirm.emit();
+    if (this.form.valid) {
+      this.confirm.emit(this.form.value.password);
+    }
   }
 }

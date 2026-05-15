@@ -53,18 +53,29 @@ export class ProfileService {
    * @returns Un `Observable` que emite un objeto `ProfileResponse` con el perfil ya actualizado.
    */
   updateMyProfile(request: ProfileRequest): Observable<ProfileResponse> {
-    // Al requerir MULTIPART_FORM_DATA_VALUE en Spring Boot, construimos un FormData
     const formData = new FormData();
 
-    formData.append('email', request.email);
-    formData.append('telefono', request.phone);
-    formData.append('contrasenaActual', request.actualPassword);
-    formData.append('eliminarAvatar', request.deleteAvatar);
-
-    // Adjuntamos el archivo binario solo si el usuario seleccionó uno
+    if (request.email) {
+      formData.append('email', request.email);
+    }
+    if (request.phone) {
+      formData.append('telefono', request.phone);
+    }
+    if (request.actualPassword) {
+      formData.append('actualPassword', request.actualPassword);
+    }
+    if (request.deleteAvatar) {
+      formData.append('deleteAvatar', request.deleteAvatar);
+    }
     if (request.avatar) {
       formData.append('avatar', request.avatar);
     }
+
+    // Log para depuración
+    console.log('Datos a enviar en FormData:');
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
 
     return this.http.patch<ProfileResponse>(`${this.BASE_URL}user`, formData).pipe(
       tap((profile: ProfileResponse) => {

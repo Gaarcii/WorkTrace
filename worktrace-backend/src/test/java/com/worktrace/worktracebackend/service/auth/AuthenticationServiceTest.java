@@ -237,7 +237,7 @@ class AuthenticationServiceTest {
 
     @Test
     void testRegisterInspectorSuccess() {
-        InspectorRequestDto inspectorDto = new InspectorRequestDto("inspector@test.com", "Inspector Gadget", "600333444");
+        InspectorRequestDto inspectorDto = new InspectorRequestDto("inspector@test.com", "Inspector Gadget", "600333444","12345678J");
         when(userRepository.findByEmail("inspector@test.com")).thenReturn(Optional.empty());
         when(userService.getAuthenticatedUser()).thenReturn(adminUser);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPasswordForInspector");

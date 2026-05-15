@@ -27,6 +27,7 @@ import {
   QuickAction,
   RangoExportacion,
   SelectedDayEntry,
+  SnackbarState,
   WeekChartDay,
 } from './admin-home.types';
 import { InspectorRequestDto } from '../../../shared/models/inspector.model';
@@ -85,6 +86,11 @@ export class AdminHomeComponent implements OnInit {
   readonly rangoExportacion = signal<RangoExportacion>('mes');
   readonly formatoExportacion = signal<FormatoExportacion>('pdf');
   readonly cargandoExportacion = signal<boolean>(false);
+  readonly snackbar = signal<SnackbarState>({
+    show: false,
+    message: '',
+    color: 'success',
+  });
 
   readonly acciones = signal<QuickAction[]>([
     { icono: 'mdi-download', texto: 'Exportar' },
@@ -287,7 +293,7 @@ export class AdminHomeComponent implements OnInit {
       this.descargarBlob(blob, fileName);
       this.dialogoExportar.set(false);
     } catch {
-      alert('Error al generar el informe legal de inspección.');
+      this.mostrarSnackbar('Error al generar el informe legal de inspección.', 'error');
     } finally {
       this.cargandoExportacion.set(false);
     }
@@ -306,11 +312,11 @@ export class AdminHomeComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
-          alert(response.message);
+          this.mostrarSnackbar(response.message, 'success');
           this.dialogoInspector.set(false);
         },
         error: () => {
-          alert('Hubo un error al crear o notificar al inspector.');
+          this.mostrarSnackbar('Hubo un error al crear o notificar al inspector.', 'error');
         },
       });
   }
@@ -621,5 +627,12 @@ export class AdminHomeComponent implements OnInit {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  private mostrarSnackbar(message: string, color: SnackbarState['color']): void {
+    this.snackbar.set({ show: true, message, color });
+    setTimeout(() => {
+      this.snackbar.set({ ...this.snackbar(), show: false });
+    }, 3000);
   }
 }

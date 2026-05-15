@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -66,7 +67,7 @@ class InspectorServiceTest {
 
     @Test
     void testGetHomeSuccess() {
-        when(userRepository.countUsersByCompany_Id(companyId)).thenReturn(10L);
+        when(userRepository.countUsersByCompany_IdAndRoleIn(companyId, List.of(Role.WORKER, Role.ADMIN))).thenReturn(10L);
         when(incidenceRepository.countByCompany_IdAndStatus(companyId, IncidenceStatus.PENDING)).thenReturn(5L);
         when(timeEntryRepository.countDistinctActiveWorkersByCompanyAndWorkDate(eq(companyId), any(LocalDate.class), eq(TimeEntryStatus.OPEN))).thenReturn(8L);
         when(auditTimeEntryRepository.countByCompanyId(companyId)).thenReturn(100L);

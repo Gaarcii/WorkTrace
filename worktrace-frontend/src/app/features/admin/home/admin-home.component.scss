@@ -49,3 +49,68 @@
 .pa-4 {
   padding: 16px;
 }
+
+.snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: 88px;
+  transform: translateX(-50%);
+  min-width: 344px;
+  max-width: 672px;
+  background: #4caf50;
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  z-index: 3000;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.875rem;
+  box-shadow:
+    0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  animation: slideUp 0.3s ease-out;
+}
+
+.snackbar.error {
+  background: #ff5252;
+}
+
+.snackbar.warning {
+  background: #fb8c00;
+}
+
+.snackbar.info {
+  background: #2196f3;
+}
+
+.snackbar-action {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  letter-spacing: 0.0892857143em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0 8px;
+  margin-right: -8px;
+
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateX(-50%) translateY(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}

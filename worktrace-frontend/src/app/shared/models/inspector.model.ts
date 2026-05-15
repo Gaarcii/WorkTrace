@@ -64,4 +64,5 @@ export interface InspectorRequestDto {
   email: string;
   fullName: string;
   phone: string;
+  employeeCode: string;
 }

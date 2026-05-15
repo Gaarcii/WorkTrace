@@ -20,6 +20,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Long countUsersByCompany_Id(UUID companyId);
 
+    Long countUsersByCompany_IdAndRoleIn(UUID companyId, List<Role> roles);
+
     Page<User> findByCompanyIdAndRole(UUID companyId, Role role, Pageable pageable);
 
     @Query("SELECT u " +

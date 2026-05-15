@@ -115,11 +115,6 @@ export class AdminCongifComponent implements OnInit {
     this.companyLogoPreview.set(URL.createObjectURL(file));
   }
 
-  removeCurrentLogo(): void {
-    this.companyLogoPreview.set(null);
-    this.selectedLogoFile.set(null);
-  }
-
   saveCompanySettings(): void {
     const data = this.companyFormData();
     const companyName = data.name.trim();

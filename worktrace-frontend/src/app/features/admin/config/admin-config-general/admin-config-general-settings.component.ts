@@ -20,7 +20,6 @@ export class AdminConfigGeneralSettingsComponent {
   readonly companyNameChange = output<string>();
   readonly cifChange = output<string>();
   readonly fileSelected = output<Event>();
-  readonly removeLogo = output<void>();
   readonly saveSettings = output<void>();
 
   onCompanyNameChange(value: string): void {
@@ -33,10 +32,6 @@ export class AdminConfigGeneralSettingsComponent {
 
   onFileChange(event: Event): void {
     this.fileSelected.emit(event);
-  }
-
-  onRemoveLogoClick(): void {
-    this.removeLogo.emit();
   }
 
   onSave(): void {

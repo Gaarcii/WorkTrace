@@ -8,6 +8,12 @@ export interface DashboardAlert {
   jobTitle: string | null;
 }
 
+export interface SnackbarState {
+  show: boolean;
+  message: string;
+  color: 'success' | 'error' | 'warning' | 'info';
+}
+
 export interface WeekChartDay {
   dia: string;
   valor: number;

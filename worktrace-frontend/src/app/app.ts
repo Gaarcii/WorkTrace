@@ -39,10 +39,16 @@ export class App implements OnInit {
         const isLogin = url.includes('/login');
         const isChangePassword = url.includes('/change-password');
         const isResetPassword = url.includes('/reset-password');
-        const isRegisterCompany= url.includes('/register-company')
+        const isRegisterCompany = url.includes('/register-company');
 
         this.showHeader.set(!(isLogin || isChangePassword || isResetPassword || isRegisterCompany));
         this.userRole.set(this.tokenStorage.getRole());
+        // Siempre desplazar al inicio al cambiar de ruta
+        try {
+          window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        } catch (e) {
+          // noop en entornos sin DOM
+        }
       });
   }
 }
