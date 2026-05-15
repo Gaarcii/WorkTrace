@@ -22,3 +22,7 @@ logging:
   level:
     root: INFO
     org.springframework.web: INFO
+
+app:
+  url:
+    frontend: https://app.worktrace.com

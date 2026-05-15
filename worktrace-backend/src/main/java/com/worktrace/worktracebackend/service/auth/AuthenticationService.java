@@ -15,6 +15,7 @@ import com.worktrace.worktracebackend.service.email.EmailService;
 import com.worktrace.worktracebackend.service.workSchedule.WorkScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.RandomStringGenerator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -44,6 +45,9 @@ public class AuthenticationService {
     private final JobPositionRepository jobPositionRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final WorkScheduleService workScheduleService;
+
+    @Value("${app.url.frontend}")
+    private String frontendUrl;
 
 
     /**
@@ -203,7 +207,7 @@ public class AuthenticationService {
                 company.getLogoUrl(),
                 company.getCompanyName(),
                 admin.getProfile().getFullName(),
-                "https://app.worktrace.com/login" //CAMBIAR A URL DEL DOMINIO
+                frontendUrl + "/login"
         );
     }
 
@@ -259,7 +263,7 @@ public class AuthenticationService {
                 company.getLogoUrl(),
                 company.getCompanyName(),
                 admin.getProfile().getFullName(),
-                "https://app.worktrace.com/login" //CAMBIAR A URL DEL DOMINIO
+                frontendUrl + "/login"
         );
     }
 
@@ -289,7 +293,7 @@ public class AuthenticationService {
 
         passwordResetTokenRepository.save(resetToken);
 
-        String resetLink = "http://localhost:4200/reset-password?token=" + token; // Cambiar en producción
+        String resetLink = frontendUrl + "/reset-password?token=" + token;
         Company company = user.getCompany();
         String companyName = company != null ? company.getCompanyName() : "WorkTrace";
         String companyLogoUrl = company != null ? company.getLogoUrl() : null;

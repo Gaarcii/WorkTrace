@@ -72,12 +72,13 @@ export class WorkerIncidenciasComponent implements OnInit {
       }
 
       return {
-        ...inc,
+        tipoIncidencia: inc.incidenceType || '',
         estadoTraducido,
         estadoColor,
         fecha: this.formatearFecha(inc.date),
         horaFormateada: inc.time ? inc.time.substring(0, 5) : '',
-      };
+        comentario: inc.comment || undefined,
+      } as IncidenciaVista;
     });
   });
 
