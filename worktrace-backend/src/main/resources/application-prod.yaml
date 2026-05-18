@@ -25,4 +25,4 @@ logging:
 
 app:
   url:
-    frontend: https://app.worktrace.com
+    frontend: https://worktrace.dev
