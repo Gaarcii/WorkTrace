@@ -71,12 +71,6 @@ export class ProfileService {
       formData.append('avatar', request.avatar);
     }
 
-    // Log para depuración
-    console.log('Datos a enviar en FormData:');
-    formData.forEach((value, key) => {
-      console.log(`${key}:`, value);
-    });
-
     return this.http.patch<ProfileResponse>(`${this.BASE_URL}user`, formData).pipe(
       tap((profile: ProfileResponse) => {
         if (profile.updatedToken != null) {
