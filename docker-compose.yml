@@ -12,6 +12,9 @@ services:
       - worktrace-network
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
 
   backend:
     build:
