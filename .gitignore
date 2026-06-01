@@ -35,6 +35,7 @@ worktrace-backend/.project
 worktrace-backend/.settings/
 worktrace-backend/bin/
 worktrace-backend/uploads/
+worktrace-backend/CLAUDE.md
 
 ####################################
 # NODE / ANGULAR
