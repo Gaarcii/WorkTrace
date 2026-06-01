@@ -6,7 +6,7 @@ import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.*;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
-import com.worktrace.worktracebackend.service.dailyClosure.DailyClosureService;
+import com.worktrace.worktracebackend.dailyclosure.domain.port.in.VerifyIntegrityUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +35,7 @@ public class InspectorService {
     private final TimeEntryRepository timeEntryRepository;
     private final AuditTimeEntryRepository auditTimeEntryRepository;
     private final DailyClosureRepository dailyClosureRepository;
-    private final DailyClosureService dailyClosureService;
+    private final VerifyIntegrityUseCase verifyIntegrityUseCase;
 
     /**
      * Obtiene los datos agregados para la página de inicio del inspector.
@@ -221,7 +221,7 @@ public class InspectorService {
 
         return closures.map(closure -> new InspectorDailyClosureDto(
                 closure.getWorkDate(),
-                dailyClosureService.verifyIntegrity(closure.getWorkDate()),
+                verifyIntegrityUseCase.execute(companyId, closure.getWorkDate()).name(),
                 closure.getRecordsCount(),
                 closure.getDayHash(),
                 closure.getPrevDayHash(),

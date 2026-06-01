@@ -1,0 +1,71 @@
+package com.worktrace.worktracebackend.dailyclosure.infrastructure.adapter.out;
+
+import com.worktrace.worktracebackend.dailyclosure.domain.model.TimeEntrySnapshot;
+import com.worktrace.worktracebackend.dailyclosure.domain.port.out.TimeEntryQueryPort;
+import com.worktrace.worktracebackend.model.TimeEntry;
+import com.worktrace.worktracebackend.model.TimeEntryStatus;
+import com.worktrace.worktracebackend.repository.TimeEntryRepository;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+@Component
+@Transactional(readOnly = true)
+public class TimeEntryJpaAdapter implements TimeEntryQueryPort {
+
+    private final TimeEntryRepository timeEntryRepository;
+
+    public TimeEntryJpaAdapter(TimeEntryRepository timeEntryRepository) {
+        this.timeEntryRepository = timeEntryRepository;
+    }
+
+    @Override
+    public long countOpenShifts(UUID companyId, LocalDate targetDate) {
+        return timeEntryRepository.countByCompanyIdAndWorkDateAndTimeEntryStatus
+                (companyId, targetDate, TimeEntryStatus.OPEN);
+    }
+
+    @Override
+    public List<TimeEntrySnapshot> findOrderedForClosure(UUID companyId, LocalDate date) {
+        return timeEntryRepository
+                .findByCompanyIdAndWorkDateOrderByStartAtAscIdAsc(companyId, date)
+                .stream()
+                .map(this::toSnapshot)
+                .toList();
+    }
+
+    private TimeEntrySnapshot toSnapshot(TimeEntry entity) {
+        return new TimeEntrySnapshot(
+                entity.getId(),
+                entity.getEmployee().getUserId(),
+                entity.getWorkDate(),
+                entity.getStartAt(),
+                entity.getEndAt(),
+                entity.getStartLat(),
+                entity.getStartLng(),
+                entity.getEndLat(),
+                entity.getEndLng(),
+                entity.getStartAccuracyM(),
+                entity.getEndAccuracyM(),
+                entity.getStartIp(),
+                entity.getEndIp(),
+                entity.getStartUserAgent(),
+                entity.getEndUserAgent(),
+                entity.getStartGeoip(),
+                entity.getEndGeoip(),
+                entity.getFlags(),
+                entity.getTimeEntryStatus(),
+                entity.getDeletedAt(),
+                entity.getDeletedBy() != null ? entity.getDeletedBy().getId() : null,
+                entity.getDeleteReason(),
+                entity.getCreatedAt(),
+                entity.getCreatedBy() != null ? entity.getCreatedBy().getId() : null,
+                entity.getUpdatedAt(),
+                entity.getModificationReason(),
+                entity.getCompany().getId()
+        );
+    }
+}
