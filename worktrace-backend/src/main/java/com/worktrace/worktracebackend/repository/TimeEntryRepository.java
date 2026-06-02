@@ -4,10 +4,13 @@ import com.worktrace.worktracebackend.dto.timeEntry.DailyStatisticsProjection;
 import com.worktrace.worktracebackend.dto.timeEntry.DailyTimeEntryCountProjection;
 import com.worktrace.worktracebackend.model.TimeEntry;
 import com.worktrace.worktracebackend.model.TimeEntryStatus;
+import jakarta.persistence.QueryHint;
+import org.hibernate.jpa.HibernateHints;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Repository
 public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
@@ -153,7 +157,14 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
 
     List<TimeEntry> findByCompany_IdAndWorkDateBetweenOrderByWorkDateDesc(UUID companyId, LocalDate startDate, LocalDate endDate);
 
-    List<TimeEntry> findByCompanyIdAndWorkDateOrderByStartAtAscIdAsc(UUID companyId, LocalDate date);
+    @Query("""
+            SELECT t FROM TimeEntry t
+            JOIN FETCH t.employee
+            WHERE t.company.id = :companyId AND t.workDate = :date
+            ORDER BY t.startAt ASC, t.id ASC
+            """)
+    @QueryHints(value = @QueryHint(name = HibernateHints.HINT_FETCH_SIZE, value = "100"))
+    Stream<TimeEntry> streamForClosure(@Param("companyId") UUID companyId, @Param("date") LocalDate date);
 
     long countByCompanyIdAndWorkDateAndTimeEntryStatus(UUID companyId, LocalDate workDate, TimeEntryStatus timeEntryStatus);
 }

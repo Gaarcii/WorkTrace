@@ -1,9 +1,12 @@
 package com.worktrace.worktracebackend.dailyclosure.domain.port.out;
 
+import com.worktrace.worktracebackend.dailyclosure.domain.model.AuditedChange;
+
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface AuditQueryPort {
-    boolean hasEditsAfterClosure(UUID companyId, LocalDate date, OffsetDateTime closureComputedAt);
+    List<AuditedChange> getChangesAfterClosure(UUID companyId, LocalDate date, OffsetDateTime closureComputedAt);
 }
