@@ -7,7 +7,12 @@ import {IncidenceTypeProjection} from '../../models/incidence-type.model';
 
 interface SpringPageResponse<T> {
   content: T[];
-  totalElements?: number;
+  page?: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
 }
 
 /**
@@ -22,7 +27,6 @@ interface SpringPageResponse<T> {
 })
 export class InspectorAuditoriaService {
   private readonly BASE_URL = API_CONFIG.baseUrl + 'inspector';
-  private readonly INCIDENCE_TYPES_URL = `${API_CONFIG.baseUrl}incidence/types`;
   private readonly http = inject(HttpClient);
   readonly incidenceTypesSignal = signal<IncidenceTypeProjection[]>([]);
 

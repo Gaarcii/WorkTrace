@@ -10,7 +10,12 @@ import {
 
 interface SpringPageResponse<T> {
   content: T[];
-  totalElements?: number;
+  page?: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
 }
 
 /**

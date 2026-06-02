@@ -7,7 +7,12 @@ import { IncidenceTypeProjection } from '../../models/incidence-type.model';
 
 interface SpringPageResponse<T> {
   content: T[];
-  totalElements?: number;
+  page?: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
 }
 
 /**

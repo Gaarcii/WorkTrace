@@ -14,7 +14,12 @@ import { InspectorRequestDto } from '../../models/inspector.model';
 
 interface SpringPageResponse<T> {
   content: T[];
-  totalElements?: number;
+  page?: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
 }
 
 /**
@@ -109,7 +114,7 @@ export class AdminHomeService {
         tap((response) => {
           const incidencias = response.content ?? [];
           this.adminIncidenciasSignal.set(incidencias);
-          this.adminIncidenciasTotalSignal.set(response.totalElements ?? incidencias.length);
+          this.adminIncidenciasTotalSignal.set(response.page?.totalElements ?? incidencias.length);
         }),
         map((response) => response.content ?? []),
       );
