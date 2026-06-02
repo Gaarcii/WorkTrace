@@ -62,7 +62,7 @@ export class AdminWorkersService {
         tap((response) => {
           const workers = response.content ?? [];
           this.workersSignal.set(workers);
-          this.totalWorkersSignal.set(response.totalElements ?? workers.length);
+          this.totalWorkersSignal.set(response.page?.totalElements ?? workers.length);
         }),
       );
   }
