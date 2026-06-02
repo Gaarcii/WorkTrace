@@ -9,18 +9,35 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface AuditTimeEntryRepository extends JpaRepository<AuditTimeEntry, UUID> {
-    long countByCompanyId(UUID companyId);
 
-    @Query("SELECT COUNT(a) > 0 FROM AuditTimeEntry a " +
-            "WHERE a.companyId = :companyId " +
-            "AND a.createdAt > :closureTime " +
-            "AND a.timeEntryId IN (SELECT t.id FROM TimeEntry t WHERE t.workDate = :workDate)")
-    boolean existsEditsAfterClosure(@Param("companyId") UUID companyId,
-                                    @Param("workDate") LocalDate workDate,
-                                    @Param("closureTime") OffsetDateTime closureTime);
+    long countByCompanyId(UUID companyId);
+    @Query(value = """
+            SELECT a.time_entry_id AS timeEntryId,
+                   a.action        AS action,
+                   a.old_data      AS oldData
+            FROM audit_time_entries a
+            WHERE a.company_id  = :companyId
+              AND a.created_at  > :closureTime
+              AND a.action     IN ('ADMIN_ADJUST', 'SOFT_DELETE')
+              AND a.time_entry_id IN (
+                  SELECT id FROM time_entries WHERE work_date = :workDate
+              )
+            ORDER BY a.created_at
+            """, nativeQuery = true)
+    List<AuditChangeProjection> findChangesAfterClosure(
+            @Param("companyId") UUID companyId,
+            @Param("workDate") LocalDate workDate,
+            @Param("closureTime") OffsetDateTime closureTime);
+
+    interface AuditChangeProjection {
+        String getTimeEntryId();
+        String getAction();
+        String getOldData();
+    }
 
     @Query("SELECT a FROM AuditTimeEntry a WHERE a.companyId = :companyId " +
             "AND (cast(:action as string) IS NULL OR :action = '' OR LOWER(a.action) = LOWER(:action)) " +

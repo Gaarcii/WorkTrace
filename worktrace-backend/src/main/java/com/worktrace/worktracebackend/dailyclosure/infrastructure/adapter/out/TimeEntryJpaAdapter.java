@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Component
 @Transactional(readOnly = true)
@@ -24,17 +24,15 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort {
 
     @Override
     public long countOpenShifts(UUID companyId, LocalDate targetDate) {
-        return timeEntryRepository.countByCompanyIdAndWorkDateAndTimeEntryStatus
-                (companyId, targetDate, TimeEntryStatus.OPEN);
+        return timeEntryRepository.countByCompanyIdAndWorkDateAndTimeEntryStatus(
+                companyId, targetDate, TimeEntryStatus.OPEN);
     }
 
     @Override
-    public List<TimeEntrySnapshot> findOrderedForClosure(UUID companyId, LocalDate date) {
+    public Stream<TimeEntrySnapshot> findOrderedForClosure(UUID companyId, LocalDate date) {
         return timeEntryRepository
-                .findByCompanyIdAndWorkDateOrderByStartAtAscIdAsc(companyId, date)
-                .stream()
-                .map(this::toSnapshot)
-                .toList();
+                .streamForClosure(companyId, date)
+                .map(this::toSnapshot);
     }
 
     private TimeEntrySnapshot toSnapshot(TimeEntry entity) {
