@@ -3,6 +3,7 @@ package com.worktrace.worktracebackend.timeentry.infrastructure.adapter.in;
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.GetTimeEntryCountTodayUseCase;
+import com.worktrace.worktracebackend.timeentry.domain.port.in.GetTotalHoursTodayUseCase;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class TimeEntryController {
 
     private final TimeEntryService timeEntryService;
     private final GetTimeEntryCountTodayUseCase getTimeEntryCountTodayUseCase;
+    private final GetTotalHoursTodayUseCase getTotalHoursTodayUseCase;
 
     /**
      * Registra un nuevo fichaje (entrada o salida) para el trabajador autenticado.
@@ -164,8 +166,8 @@ public class TimeEntryController {
     @GetMapping("/hours-today")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TotalHoursTodayResponseDto> getTotalHoursToday() {
-        TotalHoursTodayResponseDto response = timeEntryService.getTotalHoursToday();
-        return ResponseEntity.ok(response);
+        Long minutes = getTotalHoursTodayUseCase.execute();
+        return ResponseEntity.ok(new TotalHoursTodayResponseDto(minutes));
     }
 
     /**

@@ -415,41 +415,6 @@ public class TimeEntryService {
     }
 
     /**
-     * Cuenta el número total de fichajes (entradas y salidas) realizados en el día actual
-     * para la empresa del administrador autenticado.
-     *
-     * @return El número total de fichajes del día.
-     */
-    @Transactional(readOnly = true)
-    public Long getTimeEntriesCountToday() {
-        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
-        Company company = info.getCompany();
-
-        return timeEntryRepository.countAllByCompany_IdAndWorkDateBetween(
-                company.getId(), LocalDate.now(), LocalDate.now());
-    }
-
-    /**
-     * Calcula el total de horas trabajadas por todos los empleados de la empresa en el día actual.
-     *
-     * @return Un DTO {@link TotalHoursTodayResponseDto} con el total de minutos trabajados.
-     */
-    @Transactional(readOnly = true)
-    public TotalHoursTodayResponseDto getTotalHoursToday() {
-        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
-        Company company = info.getCompany();
-
-        Long totalMinutes = timeEntryRepository
-                .getWorkedMinutesByCompanyAndDate(company.getId(), LocalDate.now());
-
-        if (totalMinutes == null) {
-            totalMinutes = 0L;
-        }
-
-        return new TotalHoursTodayResponseDto(totalMinutes);
-    }
-
-    /**
      * Obtiene los datos para un gráfico que muestra el número de fichajes por día en un rango de fechas.
      * Este método es útil para que los administradores visualicen la actividad de fichajes a lo largo de una semana.
      *
