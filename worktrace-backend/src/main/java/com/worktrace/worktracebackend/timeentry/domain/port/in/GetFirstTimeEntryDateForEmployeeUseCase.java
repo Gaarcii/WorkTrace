@@ -3,7 +3,7 @@ package com.worktrace.worktracebackend.timeentry.domain.port.in;
 import java.time.LocalDate;
 
 /**
- * Caso de uso (puerto de entrada) que obtiene la fecha del primer fichaje
+ * Caso de uso (puerto  de entrada) que obtiene la fecha del primer fichaje
  * registrado por el trabajador autenticado.
  * <p>
  * Se utiliza como valor por defecto del inicio de rango en las consultas de
