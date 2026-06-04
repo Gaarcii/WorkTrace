@@ -5,4 +5,6 @@ import java.util.UUID;
 
 public interface TimeEntryQueryPort {
     Long countByCompanyAndDate(UUID companyId, LocalDate date);
+
+    Long getWorkedMinutesByCompanyAndDate(UUID companyId, LocalDate date);
 }

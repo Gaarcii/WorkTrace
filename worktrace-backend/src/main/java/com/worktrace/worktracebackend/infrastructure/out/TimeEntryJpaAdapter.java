@@ -71,4 +71,10 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort, com.worktrace.wo
     public Long countByCompanyAndDate(UUID companyId, LocalDate date) {
         return timeEntryRepository.countByCompany_IdAndWorkDate(companyId, date);
     }
+
+    @Override
+    public Long getWorkedMinutesByCompanyAndDate(UUID companyId, LocalDate date) {
+        return timeEntryRepository.getWorkedMinutesByCompanyAndDate(companyId, date);
+    }
+
 }
