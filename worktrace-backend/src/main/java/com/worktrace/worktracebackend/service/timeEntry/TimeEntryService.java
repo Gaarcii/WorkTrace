@@ -415,38 +415,6 @@ public class TimeEntryService {
     }
 
     /**
-     * Obtiene los datos para un gráfico que muestra el número de fichajes por día en un rango de fechas.
-     * Este método es útil para que los administradores visualicen la actividad de fichajes a lo largo de una semana.
-     *
-     * @param startDate La fecha de inicio del rango.
-     * @param endDate   La fecha de fin del rango.
-     * @return Una lista de DTOs {@link DailyTimeEntryCountDto} con el recuento de fichajes por día.
-     */
-    @Transactional(readOnly = true)
-    public List<DailyTimeEntryCountDto> getWeeklyTimeEntryCountChartData(LocalDate startDate, LocalDate endDate) {
-        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
-        Company company = info.getCompany();
-
-        List<DailyTimeEntryCountProjection> timeEntryCounts = timeEntryRepository
-                .getTimeEntryCountByCompanyAndDateRange(
-                        company.getId(), startDate, endDate);
-
-        Map<LocalDate, Long> countByDateMap = new HashMap<>();
-        for (DailyTimeEntryCountProjection projection : timeEntryCounts) {
-            countByDateMap.put(projection.getFecha(), projection.getNumFichajes());
-        }
-
-        List<DailyTimeEntryCountDto> result = new ArrayList<>();
-        LocalDate date = startDate;
-        while (!date.isAfter(endDate)) {
-            Long timeEntryCount = countByDateMap.getOrDefault(date, 0L);
-            result.add(new DailyTimeEntryCountDto(date.toString(), timeEntryCount));
-            date = date.plusDays(1);
-        }
-        return result;
-    }
-
-    /**
      * Permite a un administrador modificar un fichaje existente.
      * Esta operación requiere una justificación y registra un evento de auditoría detallado
      * que incluye el estado del fichaje antes y después del cambio, garantizando la trazabilidad.

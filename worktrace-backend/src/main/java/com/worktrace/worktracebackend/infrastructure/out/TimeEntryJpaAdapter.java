@@ -5,10 +5,12 @@ import com.worktrace.worktracebackend.dailyclosure.domain.port.out.TimeEntryQuer
 import com.worktrace.worktracebackend.model.TimeEntry;
 import com.worktrace.worktracebackend.model.TimeEntryStatus;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
+import com.worktrace.worktracebackend.timeentry.domain.model.DailyEntryCount;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -80,6 +82,14 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort, com.worktrace.wo
     @Override
     public LocalDate findFirstWorkDateByEmployee(UUID userId) {
         return timeEntryRepository.findFirstWorkDateByEmployee(userId);
+    }
+
+    @Override
+    public List<DailyEntryCount> countByCompanyAndDateRange(UUID companyId, LocalDate start, LocalDate end) {
+        return timeEntryRepository.getTimeEntryCountByCompanyAndDateRange(companyId, start, end)
+                .stream()
+                .map(p -> new DailyEntryCount(p.getFecha(), p.getNumFichajes()))
+                .toList();
     }
 
 }
