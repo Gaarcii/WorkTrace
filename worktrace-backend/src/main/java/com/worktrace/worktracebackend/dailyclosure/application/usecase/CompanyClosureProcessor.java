@@ -18,22 +18,52 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 /**
- * Servicio de aplicación encargado de ejecutar el cierre diario completo de una compañía.
- * Este componente orquesta la regla de negocio que consolida las fichas del día,
- * verifica que no existan jornadas abiertas, calcula la cadena de hash de integridad
- * y persiste el registro final del cierre para el dominio de {@code DailyClosure}.
- * La operación se ejecuta en una transacción independiente para aislar el cierre
- * de cada compañía y garantizar que un fallo no afecte al resto de ejecuciones.
+ * Servicio de aplicación que ejecuta el cierre diario de <strong>una única
+ * compañía</strong> para una fecha concreta.
+ * <p>
+ * Es la unidad de trabajo transaccional del proceso de cierre: consolida los
+ * fichajes del día, valida las precondiciones de negocio y produce un registro
+ * de cierre ({@link DailyClosureRecord}) sellado con un hash criptográfico
+ * encadenado al cierre del día anterior. Ese encadenamiento de hashes es la base
+ * de la protección anti-fraude, ya que cualquier modificación retroactiva de un
+ * fichaje rompe la cadena y se vuelve detectable.
+ *
+ * <p><strong>Reglas de negocio aplicadas (en orden):</strong>
+ * <ol>
+ *   <li>No puede existir ya un cierre para la compañía y fecha indicadas
+ *       (idempotencia: un día se cierra una sola vez).</li>
+ *   <li>No pueden quedar turnos abiertos: todas las jornadas deben estar
+ *       finalizadas antes de sellar el día.</li>
+ * </ol>
+ *
+ * <p><strong>Frontera transaccional:</strong> {@code process} se ejecuta con
+ * {@link Propagation#REQUIRES_NEW}, de modo que el cierre de cada compañía vive
+ * en su propia transacción. Así, un fallo (o rollback) en una compañía no
+ * arrastra ni contamina el cierre de las demás cuando este procesador se invoca
+ * en paralelo desde {@link RunDailyClosureUseCaseImpl}.
+ *
+ * @see RunDailyClosureUseCaseImpl
+ * @see DailyHashChain
  */
 @Service
 public class CompanyClosureProcessor {
 
+    /**
+     * Hash semilla usado como eslabón inicial de la cadena cuando la compañía
+     * aún no tiene ningún cierre anterior (primer día que se cierra).
+     */
     private static final String GENESIS_HASH = "GENESIS_HASH_0000000000000000000000000000";
 
     private final TimeEntryQueryPort timeEntryQueryPort;
     private final DailyClosurePort dailyClosurePort;
     private final DailyHashChain dailyHashChain;
 
+    /**
+     * @param timeEntryQueryPort Puerto de consulta de fichajes (turnos abiertos
+     *                           y snapshots ordenados para el cierre).
+     * @param dailyClosurePort   Puerto de persistencia/consulta de cierres
+     *                           diarios (existencia, hash previo y guardado).
+     */
     public CompanyClosureProcessor(
             TimeEntryQueryPort timeEntryQueryPort,
             DailyClosurePort dailyClosurePort) {
@@ -42,20 +72,32 @@ public class CompanyClosureProcessor {
         this.dailyHashChain = new DailyHashChain();
     }
 
+
     /**
-     * Ejecuta el cierre diario de una compañía para una fecha concreta, aplicando las reglas
-     * de integridad y consistencia antes de registrar el resultado final.
-     * La operación valida primero que no exista ya un cierre para la fecha indicada y que no
-     * permanezcan jornadas abiertas. Si ambas comprobaciones son correctas, obtiene el hash
-     * previo, calcula la nueva cadena de integridad a partir de las fichas ordenadas y guarda
-     * el resumen del cierre diario.
+     * Ejecuta el cierre diario de una compañía para la fecha indicada.
+     * <p>
+     * Flujo:
+     * <ol>
+     *   <li>Verifica que no exista ya un cierre para esa fecha; si existe, aborta.</li>
+     *   <li>Verifica que no queden turnos abiertos; si los hay, aborta.</li>
+     *   <li>Recupera el hash del cierre anterior, o usa {@link #GENESIS_HASH} si
+     *       es el primer cierre de la compañía.</li>
+     *   <li>Recorre los fichajes del día en orden determinista (vía un
+     *       {@link Stream} que se cierra con try-with-resources) y calcula el
+     *       hash encadenado con {@link DailyHashChain}.</li>
+     *   <li>Construye y persiste el {@link DailyClosureRecord} resultante,
+     *       sellando la fecha y el instante de cómputo.</li>
+     * </ol>
+     * Se ejecuta en una transacción nueva e independiente
+     * ({@link Propagation#REQUIRES_NEW}).
      *
-     * @param companyId  identificador de la compañía cuyo cierre diario se va a procesar.
-     * @param targetDate fecha objetivo sobre la que se debe consolidar el cierre diario.
-     * @throws DailyClosureAlreadyExistsException si ya existe un cierre diario registrado para
-     *                                            la compañía en la fecha indicada.
-     * @throws OpenShiftsExistException           si todavía existen jornadas abiertas para la compañía
-     *                                            en la fecha objetivo, impidiendo el cierre.
+     * @param companyId  Identificador de la compañía cuyo cierre se procesa
+     *                   (aislamiento multi-tenant).
+     * @param targetDate Fecha laboral sobre la que se consolida el cierre.
+     * @throws DailyClosureAlreadyExistsException si ya existe un cierre para esa
+     *                                            compañía y fecha.
+     * @throws OpenShiftsExistException           si quedan turnos abiertos en la
+     *                                            fecha objetivo.
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void process(UUID companyId, LocalDate targetDate) {

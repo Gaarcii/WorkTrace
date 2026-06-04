@@ -19,6 +19,18 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.*;
 
+/**
+ * Adaptador de salida JPA para las consultas sobre el log de auditoría de
+ * fichajes.
+ * <p>
+ * Implementa {@link AuditQueryPort} leyendo los registros de auditoría y
+ * deserializando su carga JSON ({@code old_data}) a los modelos de dominio
+ * ({@link AuditedChange}, {@link TimeEntrySnapshot}, {@link AuditRecord}).
+ * <p>
+ * Es una pieza central de la verificación de integridad: permite detectar y
+ * reconstruir las modificaciones realizadas sobre los fichajes después de que
+ * un cierre diario haya sido calculado.
+ */
 @Component
 @Transactional(readOnly = true)
 public class AuditJpaAdapter implements AuditQueryPort {
@@ -31,6 +43,20 @@ public class AuditJpaAdapter implements AuditQueryPort {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Recupera, para cada fichaje, el primer cambio auditado posterior al
+     * cálculo del cierre, reconstruyendo el estado anterior ({@code old_data})
+     * como {@link TimeEntrySnapshot}. Se conserva solo el primer cambio por
+     * fichaje, que representa su valor original antes de la manipulación.
+     *
+     * @param companyId         Identificador de la empresa.
+     * @param date              Fecha laboral de los fichajes afectados.
+     * @param closureComputedAt Instante en que se calculó el cierre; solo se
+     *                          consideran cambios posteriores.
+     * @return La lista de cambios auditados (uno por fichaje) tras el cierre.
+     */
     @Override
     public List<AuditedChange> getChangesAfterClosure(UUID companyId, LocalDate date, OffsetDateTime closureComputedAt) {
         List<AuditChangeProjection> rows =
@@ -46,6 +72,15 @@ public class AuditJpaAdapter implements AuditQueryPort {
         return List.copyOf(firstPerEntry.values());
     }
 
+    /**
+     * Deserializa la carga JSON {@code old_data} de un registro de auditoría al
+     * snapshot de dominio que representa el estado previo del fichaje.
+     *
+     * @param json Contenido JSON del campo {@code old_data}.
+     * @return El {@link TimeEntrySnapshot} reconstruido.
+     * @throws IllegalArgumentException si falta un campo obligatorio.
+     * @throws IllegalStateException    si el JSON no puede procesarse.
+     */
     private TimeEntrySnapshot parseOldSnapshot(String json) {
         try {
             JsonNode n = objectMapper.readTree(json);
@@ -158,6 +193,20 @@ public class AuditJpaAdapter implements AuditQueryPort {
         return node.isMissingNode() || node.isNull() ? null : TimeEntryStatus.valueOf(node.asText());
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Recupera todos los cambios auditados de los fichajes de una empresa y
+     * fecha posteriores al cálculo del cierre, como una lista plana de
+     * {@link AuditRecord} (fichaje, acción e instante), para la comprobación de
+     * integridad.
+     *
+     * @param companyId         Identificador de la empresa.
+     * @param workDate          Fecha laboral de los fichajes afectados.
+     * @param closureComputedAt Instante en que se calculó el cierre; solo se
+     *                          consideran cambios posteriores.
+     * @return La lista de registros de auditoría relevantes para la integridad.
+     */
     @Override
     public List<AuditRecord> findAllChangesForIntegrityCheck(UUID companyId, LocalDate workDate, OffsetDateTime closureComputedAt) {
         List<AuditIntegrityProjection> rows =

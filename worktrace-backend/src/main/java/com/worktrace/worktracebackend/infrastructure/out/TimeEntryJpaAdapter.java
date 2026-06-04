@@ -14,6 +14,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+/**
+ * Adaptador de salida JPA para las consultas de fichajes.
+ * <p>
+ * Implementa los dos puertos de consulta de fichajes del proyecto: el del
+ * dominio de cierre diario ({@link TimeEntryQueryPort}) y el del dominio de
+ * fichajes ({@code timeentry.domain.port.out.TimeEntryQueryPort}). Traduce las
+ * entidades JPA a los modelos de dominio (p. ej. {@link TimeEntrySnapshot}) y
+ * mantiene todas las consultas como solo lectura.
+ */
 @Component
 @Transactional(readOnly = true)
 public class TimeEntryJpaAdapter implements TimeEntryQueryPort, com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort {
@@ -24,12 +33,33 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort, com.worktrace.wo
         this.timeEntryRepository = timeEntryRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Cuenta los fichajes aún abiertos (sin salida) de una empresa en una fecha,
+     * usado para validar que un día puede cerrarse.
+     *
+     * @param companyId  Identificador de la empresa.
+     * @param targetDate Fecha sobre la que se cuentan los turnos abiertos.
+     * @return El número de fichajes en estado {@code OPEN}.
+     */
     @Override
     public long countOpenShifts(UUID companyId, LocalDate targetDate) {
         return timeEntryRepository.countByCompanyIdAndWorkDateAndTimeEntryStatus(
                 companyId, targetDate, TimeEntryStatus.OPEN);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Devuelve los fichajes de una empresa y fecha en el orden determinista
+     * requerido para el cálculo del hash del cierre, como flujo de
+     * {@link TimeEntrySnapshot}.
+     *
+     * @param companyId Identificador de la empresa.
+     * @param date      Fecha del cierre.
+     * @return Un {@link Stream} de snapshots ordenados para el cierre.
+     */
     @Override
     public Stream<TimeEntrySnapshot> findOrderedForClosure(UUID companyId, LocalDate date) {
         return timeEntryRepository
@@ -37,6 +67,14 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort, com.worktrace.wo
                 .map(this::toSnapshot);
     }
 
+    /**
+     * Convierte una entidad {@link TimeEntry} en un {@link TimeEntrySnapshot}
+     * inmutable, capturando el estado completo del fichaje para el cierre y la
+     * auditoría.
+     *
+     * @param entity Entidad de fichaje persistida.
+     * @return El snapshot de dominio equivalente.
+     */
     private TimeEntrySnapshot toSnapshot(TimeEntry entity) {
         return new TimeEntrySnapshot(
                 entity.getId(),
@@ -69,16 +107,42 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort, com.worktrace.wo
         );
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Cuenta los fichajes de una empresa en una fecha concreta.
+     *
+     * @param companyId Identificador de la empresa.
+     * @param date      Fecha sobre la que se realiza el recuento.
+     * @return El número de fichajes de la empresa en esa fecha.
+     */
     @Override
     public Long countByCompanyAndDate(UUID companyId, LocalDate date) {
         return timeEntryRepository.countByCompany_IdAndWorkDate(companyId, date);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Suma los minutos trabajados por una empresa en una fecha concreta.
+     *
+     * @param companyId Identificador de la empresa.
+     * @param date      Fecha sobre la que se calculan los minutos trabajados.
+     * @return El total de minutos trabajados por la empresa en esa fecha.
+     */
     @Override
     public Long getWorkedMinutesByCompanyAndDate(UUID companyId, LocalDate date) {
         return timeEntryRepository.getWorkedMinutesByCompanyAndDate(companyId, date);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Obtiene la fecha del primer fichaje registrado por un empleado.
+     *
+     * @param userId Identificador del usuario/empleado.
+     * @return La fecha del primer fichaje, o {@code null} si no tiene ninguno.
+     */
     @Override
     public LocalDate findFirstWorkDateByEmployee(UUID userId) {
         return timeEntryRepository.findFirstWorkDateByEmployee(userId);
