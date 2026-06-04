@@ -254,9 +254,11 @@ public class InspectorService {
         );
 
         return audits.map(audit -> {
-            String actorName = userRepository.findById(audit.getActorUserId())
-                    .map(u -> u.getProfile().getFullName())
-                    .orElse("Usuario Desconocido");
+            String actorName = audit.getActorUserId() != null
+                    ? userRepository.findById(audit.getActorUserId())
+                        .map(u -> u.getProfile().getFullName())
+                        .orElse("Usuario Desconocido")
+                    : "Sistema (Modificación Directa en BD)";
 
             return new InspectorAuditDto(
                     audit.getId(),
@@ -288,9 +290,11 @@ public class InspectorService {
             throw new RuntimeException("No tienes permiso para ver este registro");
         }
 
-        String actorName = userRepository.findById(audit.getActorUserId())
-                .map(u -> u.getProfile().getFullName())
-                .orElse("Usuario Desconocido");
+        String actorName = audit.getActorUserId() != null
+                ? userRepository.findById(audit.getActorUserId())
+                    .map(u -> u.getProfile().getFullName())
+                    .orElse("Usuario Desconocido")
+                : "Modificación Directa en BD";
 
         return new InspectorAuditDetailDto(
                 audit.getId(),
