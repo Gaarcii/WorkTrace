@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.dailyclosure.infrastructure.adapter.out;
+package com.worktrace.worktracebackend.infrastructure.out;
 
 import com.worktrace.worktracebackend.dailyclosure.domain.model.TimeEntrySnapshot;
 import com.worktrace.worktracebackend.dailyclosure.domain.port.out.TimeEntryQueryPort;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 @Component
 @Transactional(readOnly = true)
-public class TimeEntryJpaAdapter implements TimeEntryQueryPort {
+public class TimeEntryJpaAdapter implements TimeEntryQueryPort, com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort {
 
     private final TimeEntryRepository timeEntryRepository;
 
@@ -65,5 +65,10 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort {
                 entity.getModificationReason(),
                 entity.getCompany().getId()
         );
+    }
+
+    @Override
+    public Long countByCompanyAndDate(UUID companyId, LocalDate date) {
+        return timeEntryRepository.countByCompany_IdAndWorkDate(companyId, date);
     }
 }

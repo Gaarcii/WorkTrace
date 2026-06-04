@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.dailyclosure.infrastructure.adapter.out;
+package com.worktrace.worktracebackend.infrastructure.out;
 
 import com.worktrace.worktracebackend.dailyclosure.domain.model.DailyClosureRecord;
 import com.worktrace.worktracebackend.dailyclosure.domain.port.out.DailyClosurePort;

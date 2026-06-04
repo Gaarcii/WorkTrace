@@ -1,7 +1,8 @@
-package com.worktrace.worktracebackend.controller.timeEntry;
+package com.worktrace.worktracebackend.timeentry.infrastructure.adapter.in;
 
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
+import com.worktrace.worktracebackend.timeentry.domain.port.in.GetTimeEntryCountTodayUseCase;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import java.util.UUID;
 public class TimeEntryController {
 
     private final TimeEntryService timeEntryService;
+    private final GetTimeEntryCountTodayUseCase getTimeEntryCountTodayUseCase;
 
     /**
      * Registra un nuevo fichaje (entrada o salida) para el trabajador autenticado.
@@ -152,7 +154,7 @@ public class TimeEntryController {
     @GetMapping("/count-today")
     @PreAuthorize("hasRole('ADMIN')")
     public Long getTimeEntriesCountToday() {
-        return timeEntryService.getTimeEntriesCountToday();
+        return getTimeEntryCountTodayUseCase.execute();
     }
 
     /**
