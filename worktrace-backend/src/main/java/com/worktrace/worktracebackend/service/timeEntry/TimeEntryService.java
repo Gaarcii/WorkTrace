@@ -8,12 +8,12 @@ import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
+import com.worktrace.worktracebackend.service.auditTimeEntry.AuditTimeEntryService;
+import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
+import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.files.AdminPdfGeneratorService;
 import com.worktrace.worktracebackend.service.files.EmployeePdfGeneratorService;
 import com.worktrace.worktracebackend.service.files.ExcelGeneratorService;
-import com.worktrace.worktracebackend.service.auditTimeEntry.AuditTimeEntryService;
-import com.worktrace.worktracebackend.service.auth.UserService;
-import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
 import com.worktrace.worktracebackend.service.incidence.IncidenceService;
 import com.worktrace.worktracebackend.service.ip.IpDetectionService;
 import lombok.RequiredArgsConstructor;
@@ -533,6 +533,7 @@ public class TimeEntryService {
             String newDataJson = objectMapper.writeValueAsString(timeEntry);
 
             auditTimeEntryService.logTimeEntryChange("ADMIN_ADJUST", dto.getJustification(), oldDataJson, newDataJson, timeEntry.getId());
+            auditTimeEntryService.saveTimeEntry(timeEntry);
 
         } catch (JacksonException e) {
             throw new RuntimeException("Error al generar los datos de auditoría", e);
@@ -568,6 +569,9 @@ public class TimeEntryService {
             String newDataJson = objectMapper.writeValueAsString(timeEntry);
 
             auditTimeEntryService.logTimeEntryChange("SOFT_DELETE", dto.getJustification(), oldDataJson, newDataJson, timeEntry.getId());
+
+            auditTimeEntryService.saveTimeEntry(timeEntry);
+
         } catch (JacksonException e) {
             throw new RuntimeException("Error al generar los datos de auditoría", e);
         }

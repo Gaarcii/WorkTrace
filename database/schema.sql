@@ -144,14 +144,14 @@ create table if not exists audit_time_entries (
     id uuid primary key default gen_random_uuid (),
     time_entry_id uuid not null,
     action text not null,
-    actor_user_id uuid not null,
+    actor_user_id uuid,
     reason text not null,
     old_data jsonb,
     new_data jsonb,
     created_at timestamp with time zone not null default now(),
     company_id uuid not null,
     check (
-        action in ('ADMIN_ADJUST', 'SOFT_DELETE')
+        action in ('ADMIN_ADJUST', 'SOFT_DELETE', 'DB_DIRECT_MODIFY')
     )
 );
 

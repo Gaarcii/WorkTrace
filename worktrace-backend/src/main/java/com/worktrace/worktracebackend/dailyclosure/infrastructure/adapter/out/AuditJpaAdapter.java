@@ -3,23 +3,21 @@ package com.worktrace.worktracebackend.dailyclosure.infrastructure.adapter.out;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.worktrace.worktracebackend.dailyclosure.domain.model.AuditRecord;
 import com.worktrace.worktracebackend.dailyclosure.domain.model.AuditedChange;
 import com.worktrace.worktracebackend.dailyclosure.domain.model.TimeEntrySnapshot;
 import com.worktrace.worktracebackend.dailyclosure.domain.port.out.AuditQueryPort;
 import com.worktrace.worktracebackend.model.TimeEntryStatus;
 import com.worktrace.worktracebackend.repository.AuditTimeEntryRepository;
 import com.worktrace.worktracebackend.repository.AuditTimeEntryRepository.AuditChangeProjection;
+import com.worktrace.worktracebackend.repository.AuditTimeEntryRepository.AuditIntegrityProjection;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @Transactional(readOnly = true)
@@ -38,7 +36,6 @@ public class AuditJpaAdapter implements AuditQueryPort {
         List<AuditChangeProjection> rows =
                 auditTimeEntryRepository.findChangesAfterClosure(companyId, date, closureComputedAt);
 
-        // Keep only the first (oldest) audit per entry — that old_data equals the state at closure time.
         Map<UUID, AuditedChange> firstPerEntry = new LinkedHashMap<>();
         for (AuditChangeProjection row : rows) {
             if (row.getOldData() == null) continue;
@@ -52,10 +49,14 @@ public class AuditJpaAdapter implements AuditQueryPort {
     private TimeEntrySnapshot parseOldSnapshot(String json) {
         try {
             JsonNode n = objectMapper.readTree(json);
+            String workDate = text(n, "workDate");
+            if (workDate == null) {
+                throw new IllegalArgumentException("workDate is required in audit old_data");
+            }
             return new TimeEntrySnapshot(
-                    uuid(n, "id"),
-                    uuid(n.path("employee"), "userId"),
-                    LocalDate.parse(n.get("workDate").asText()),
+                    uuid(n),
+                    uuidFromNode(n.path("employee"), "userId"),
+                    LocalDate.parse(workDate),
                     offsetDateTime(n, "startAt"),
                     offsetDateTime(n, "endAt"),
                     bigDecimal(n, "startLat"),
@@ -71,28 +72,48 @@ public class AuditJpaAdapter implements AuditQueryPort {
                     toMap(n.path("startGeoip")),
                     toMap(n.path("endGeoip")),
                     toStringList(n.path("flags")),
-                    enumVal(n, "timeEntryStatus", TimeEntryStatus.class),
+                    timeEntryStatus(n),
                     offsetDateTime(n, "deletedAt"),
-                    uuidOrNull(n.path("deletedBy"), "id"),
+                    uuidFromNodeOrNull(n.path("deletedBy")),
                     text(n, "deleteReason"),
                     offsetDateTime(n, "createdAt"),
-                    uuid(n.path("createdBy"), "id"),
+                    uuidFromNode(n.path("createdBy")),
                     offsetDateTime(n, "updatedAt"),
                     text(n, "modificationReason"),
-                    uuid(n.path("company"), "id")
+                    uuidFromNode(n.path("company"))
             );
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Error parsing audit old_data", e);
         }
     }
 
-    private static UUID uuid(JsonNode parent, String field) {
-        return UUID.fromString(parent.get(field).asText());
+    private static UUID uuid(JsonNode parent) {
+        JsonNode node = parent.path("id");
+        if (node.isMissingNode() || node.isNull()) {
+            throw new IllegalArgumentException("Required field missing: " + "id");
+        }
+        return UUID.fromString(node.asText());
     }
 
-    private static UUID uuidOrNull(JsonNode parent, String field) {
-        JsonNode node = parent.path(field);
-        return node.isMissingNode() || node.isNull() ? null : UUID.fromString(node.asText());
+    private static UUID uuidFromNode(JsonNode node) {
+        return uuidFromNode(node, "id");
+    }
+
+    private static UUID uuidFromNode(JsonNode node, String field) {
+        JsonNode fieldNode = node.path(field);
+        if (fieldNode.isMissingNode() || fieldNode.isNull()) {
+            throw new IllegalArgumentException("Required field missing: " + field);
+        }
+        return UUID.fromString(fieldNode.asText());
+    }
+
+    private static UUID uuidFromNodeOrNull(JsonNode node) {
+        JsonNode idNode = node.path("id");
+        return idNode.isMissingNode() || idNode.isNull() ? null : UUID.fromString(idNode.asText());
+    }
+
+    private static TimeEntryStatus timeEntryStatus(JsonNode parent) {
+        return enumVal(parent);
     }
 
     private static OffsetDateTime offsetDateTime(JsonNode parent, String field) {
@@ -132,8 +153,35 @@ public class AuditJpaAdapter implements AuditQueryPort {
         return list;
     }
 
-    private static <E extends Enum<E>> E enumVal(JsonNode parent, String field, Class<E> cls) {
-        JsonNode node = parent.path(field);
-        return node.isMissingNode() || node.isNull() ? null : Enum.valueOf(cls, node.asText());
+    private static TimeEntryStatus enumVal(JsonNode parent) {
+        JsonNode node = parent.path("timeEntryStatus");
+        return node.isMissingNode() || node.isNull() ? null : TimeEntryStatus.valueOf(node.asText());
+    }
+
+    @Override
+    public List<AuditRecord> findAllChangesForIntegrityCheck(UUID companyId, LocalDate workDate, OffsetDateTime closureComputedAt) {
+        List<AuditIntegrityProjection> rows =
+                auditTimeEntryRepository.findAllChangesForIntegrityCheck(companyId, workDate.toString(), closureComputedAt);
+
+        return rows.stream()
+                .map(row -> {
+                    OffsetDateTime createdAt = convertToOffsetDateTime(row.getCreatedAt());
+                    return new AuditRecord(
+                            UUID.fromString(row.getTimeEntryId()),
+                            row.getAction(),
+                            createdAt
+                    );
+                })
+                .toList();
+    }
+
+    private OffsetDateTime convertToOffsetDateTime(Object obj) {
+        return switch (obj) {
+            case null -> null;
+            case OffsetDateTime odt -> odt;
+            case java.time.Instant instant -> instant.atOffset(java.time.ZoneOffset.UTC);
+            case String str -> OffsetDateTime.parse(str);
+            default -> throw new IllegalArgumentException("Cannot convert " + obj.getClass() + " to OffsetDateTime");
+        };
     }
 }

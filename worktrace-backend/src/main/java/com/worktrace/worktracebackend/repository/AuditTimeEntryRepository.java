@@ -51,4 +51,30 @@ public interface AuditTimeEntryRepository extends JpaRepository<AuditTimeEntry, 
             @Param("endDate") java.time.LocalDate endDate,
             Pageable pageable
     );
+
+    @Query(value = """
+            SELECT a.time_entry_id AS timeEntryId,
+                   a.action        AS action,
+                   a.created_at    AS createdAt
+            FROM audit_time_entries a
+            WHERE a.company_id  = :companyId
+              AND a.created_at  > :closureTime
+              AND (
+                a.old_data->>'workDate' = :workDate
+                OR a.new_data->>'workDate' = :workDate
+                OR a.old_data->>'work_date' = :workDate
+                OR a.new_data->>'work_date' = :workDate
+              )
+            ORDER BY a.created_at
+            """, nativeQuery = true)
+    List<AuditIntegrityProjection> findAllChangesForIntegrityCheck(
+            @Param("companyId") UUID companyId,
+            @Param("workDate") String workDate,
+            @Param("closureTime") OffsetDateTime closureTime);
+
+    interface AuditIntegrityProjection {
+        String getTimeEntryId();
+        String getAction();
+        Object getCreatedAt();  // PostgreSQL timestamp devuelve Instant, no OffsetDateTime
+    }
 }

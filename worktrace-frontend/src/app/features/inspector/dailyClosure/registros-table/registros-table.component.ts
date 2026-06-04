@@ -53,7 +53,6 @@ export class RegistrosTableComponent {
   getRowClass(estado: string): string {
     const s = estado?.toUpperCase();
     if (s === 'CORRUPTED' || s === 'INVALID') return 'manipulated-row';
-    if (s === 'TAMPERED') return 'tampered-row';
     if (s === 'MODIFIED') return 'modified-row';
     if (s === 'VALID') return 'valid-row';
     return '';
@@ -63,7 +62,6 @@ export class RegistrosTableComponent {
     const s = estado?.toUpperCase();
     if (s === 'VALID') return 'ÍNTEGRO';
     if (s === 'CORRUPTED' || s === 'INVALID') return 'CORRUPTO';
-    if (s === 'TAMPERED') return 'ALTERADO';
     if (s === 'MODIFIED') return 'MODIFICADO';
     return 'SIN VERIFICAR';
   }
@@ -72,7 +70,6 @@ export class RegistrosTableComponent {
     const s = estado?.toUpperCase();
     if (s === 'VALID') return 'success';
     if (s === 'CORRUPTED' || s === 'INVALID') return 'error';
-    if (s === 'TAMPERED') return 'critical';
     if (s === 'MODIFIED') return 'warning';
     return 'default';
   }
