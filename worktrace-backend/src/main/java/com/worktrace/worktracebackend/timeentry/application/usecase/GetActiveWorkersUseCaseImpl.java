@@ -1,0 +1,96 @@
+package com.worktrace.worktracebackend.timeentry.application.usecase;
+
+import com.worktrace.worktracebackend.shared.port.AuthenticatedUserPort;
+import com.worktrace.worktracebackend.timeentry.domain.model.ActiveTimeEntry;
+import com.worktrace.worktracebackend.timeentry.domain.model.ActiveWorker;
+import com.worktrace.worktracebackend.timeentry.domain.model.ScheduledShift;
+import com.worktrace.worktracebackend.timeentry.domain.port.in.GetActiveWorkersUseCase;
+import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort;
+import com.worktrace.worktracebackend.timeentry.domain.port.out.WorkScheduleQueryPort;
+import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+/**
+ * Implementación del caso de uso {@link GetActiveWorkersUseCase}.
+ * <p>
+ * Combina dos fuentes para construir la vista de trabajadores activos:
+ * <ol>
+ *   <li>Los fichajes abiertos de la empresa ({@link TimeEntryQueryPort}).</li>
+ *   <li>Los horarios previstos de esos empleados para el día de la semana actual
+ *       ({@link WorkScheduleQueryPort}).</li>
+ * </ol>
+ * Para cada fichaje activo calcula la <strong>puntualidad</strong> como la
+ * diferencia en minutos entre la hora de entrada real y la prevista en el
+ * horario; si el empleado no tiene horario ese día, la puntualidad queda a
+ * {@code null}. La compañía se resuelve desde el usuario autenticado, asegurando
+ * el aislamiento multi-tenant.
+ */
+@Service
+public class GetActiveWorkersUseCaseImpl implements GetActiveWorkersUseCase {
+
+    private final TimeEntryQueryPort timeEntryQueryPort;
+    private final AuthenticatedUserPort authenticatedUserPort;
+    private final WorkScheduleQueryPort workScheduleQueryPort;
+
+    public GetActiveWorkersUseCaseImpl(TimeEntryQueryPort timeEntryQueryPort, AuthenticatedUserPort authenticatedUserPort, WorkScheduleQueryPort workScheduleQueryPort) {
+        this.timeEntryQueryPort = timeEntryQueryPort;
+        this.authenticatedUserPort = authenticatedUserPort;
+        this.workScheduleQueryPort = workScheduleQueryPort;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Recupera los fichajes abiertos de la empresa autenticada; si no hay
+     * ninguno, devuelve una lista vacía sin consultar horarios. En caso
+     * contrario, obtiene en una sola consulta los horarios de todos los
+     * empleados activos para el día de la semana actual (indexados por empleado)
+     * y los cruza con cada fichaje para calcular su puntualidad.
+     */
+    @Override
+    public List<ActiveWorker> execute() {
+        UUID companyId = authenticatedUserPort.getAuthenticatedUser().companyId();
+
+        List<ActiveTimeEntry> timeEntryList = timeEntryQueryPort.findActiveByCompany(companyId);
+
+        if (timeEntryList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<UUID> employeesIds = timeEntryList.stream()
+                .map(ActiveTimeEntry::employeeId)
+                .toList();
+
+        Map<UUID, ScheduledShift> scheduledShiftsList = workScheduleQueryPort
+                .findByEmployeesAndDayOfWeek(employeesIds, LocalDate.now().getDayOfWeek());
+
+
+        return timeEntryList.stream()
+                .map(activeTimeEntry -> {
+                    UUID employeeId = activeTimeEntry.employeeId();
+                    String fullName = activeTimeEntry.fullName();
+                    String jobPosition = activeTimeEntry.jobPosition();
+                    String avatarUrl = activeTimeEntry.avatarUrl();
+                    OffsetDateTime entryTime = activeTimeEntry.startAt();
+
+                    Long punctualityMinutes = null;
+
+                    if (scheduledShiftsList.get(employeeId) != null) {
+                        LocalTime scheduleTime = scheduledShiftsList.get(employeeId).startTime();
+                        LocalTime localTimeEntry = activeTimeEntry.startAt().toLocalTime();
+                        punctualityMinutes = Duration.between(scheduleTime, localTimeEntry).toMinutes();
+                    }
+                    return new ActiveWorker(
+                            employeeId, fullName, jobPosition, avatarUrl, entryTime, punctualityMinutes);
+
+                }).toList();
+    }
+}

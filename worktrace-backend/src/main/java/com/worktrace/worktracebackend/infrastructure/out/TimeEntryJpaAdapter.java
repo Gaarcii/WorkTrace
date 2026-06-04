@@ -5,6 +5,7 @@ import com.worktrace.worktracebackend.dailyclosure.domain.port.out.TimeEntryQuer
 import com.worktrace.worktracebackend.model.TimeEntry;
 import com.worktrace.worktracebackend.model.TimeEntryStatus;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
+import com.worktrace.worktracebackend.timeentry.domain.model.ActiveTimeEntry;
 import com.worktrace.worktracebackend.timeentry.domain.model.DailyEntryCount;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -153,6 +154,23 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort, com.worktrace.wo
         return timeEntryRepository.getTimeEntryCountByCompanyAndDateRange(companyId, start, end)
                 .stream()
                 .map(p -> new DailyEntryCount(p.getFecha(), p.getNumFichajes()))
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Recupera los fichajes de la empresa sin hora de salida (jornadas abiertas)
+     * y los traduce a {@link ActiveTimeEntry}, resolviendo el puesto del empleado
+     * o {@code null} si no tiene asignado.
+     */
+    @Override
+    public List<ActiveTimeEntry> findActiveByCompany(UUID companyId) {
+        return timeEntryRepository.getAllByCompany_IdAndEndAtIsNull(companyId)
+                .stream()
+                .map(p -> new ActiveTimeEntry(p.getEmployee().getUserId(), p.getEmployee().getFullName(),
+                        p.getEmployee().getPosition() != null ? p.getEmployee().getPosition().getTitle() : null,
+                        p.getEmployee().getAvatarUrl(), p.getStartAt()))
                 .toList();
     }
 

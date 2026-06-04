@@ -359,62 +359,6 @@ public class TimeEntryService {
     }
 
     /**
-     * Obtiene una lista de los trabajadores que tienen un fichaje abierto en el momento de la consulta.
-     * Este método es utilizado por los administradores para ver en tiempo real quién está trabajando.
-     * También calcula la puntualidad comparando la hora de entrada con la hora de inicio de su turno.
-     *
-     * @return Una lista de DTOs {@link ActiveWorkerDto} con la información de los trabajadores activos.
-     */
-    @Transactional(readOnly = true)
-    public List<ActiveWorkerDto> getActiveWorkers() {
-        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
-        Company company = info.getCompany();
-
-        List<TimeEntry> timeEntryList = timeEntryRepository
-                .getAllByCompany_IdAndEndAtIsNull(company.getId());
-
-        ZoneId zone = ZoneId.of("Europe/Madrid");
-
-        return timeEntryList.stream()
-                .map(timeEntry -> {
-                    Profile employee = timeEntry.getEmployee();
-
-                    String jobPositionTitle = null;
-                    if (employee.getPosition() != null) {
-                        jobPositionTitle = employee.getPosition().getTitle();
-                    }
-
-                    Long punctuality = null;
-                    OffsetDateTime startAt = timeEntry.getStartAt();
-
-                    if (startAt != null) {
-                        ZonedDateTime localEntryTime = startAt.atZoneSameInstant(zone);
-                        DayOfWeek localDay = localEntryTime.getDayOfWeek();
-
-                        Optional<WorkSchedule> scheduleOpt = workScheduleRepository
-                                .findByEmployee_UserIdAndDayOfWeek(employee.getUserId(), localDay);
-
-                        if (scheduleOpt.isPresent()) {
-                            LocalTime scheduleTime = scheduleOpt.get().getStartTime();
-                            LocalTime localEntryTimeOnly = localEntryTime.toLocalTime();
-
-                            punctuality = Duration.between(scheduleTime, localEntryTimeOnly).toMinutes();
-                        }
-                    }
-
-                    return new ActiveWorkerDto(
-                            employee.getUserId(),
-                            employee.getFullName(),
-                            jobPositionTitle,
-                            employee.getAvatarUrl(),
-                            timeEntry.getStartAt(),
-                            punctuality
-                    );
-                })
-                .toList();
-    }
-
-    /**
      * Permite a un administrador modificar un fichaje existente.
      * Esta operación requiere una justificación y registra un evento de auditoría detallado
      * que incluye el estado del fichaje antes y después del cambio, garantizando la trazabilidad.

@@ -2,6 +2,7 @@ package com.worktrace.worktracebackend.timeentry.infrastructure.adapter.in;
 
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
+import com.worktrace.worktracebackend.timeentry.application.usecase.GetActiveWorkersUseCaseImpl;
 import com.worktrace.worktracebackend.timeentry.application.usecase.GetFirstTimeEntryDateForEmployeeUseCaseImpl;
 import com.worktrace.worktracebackend.timeentry.application.usecase.GetWeeklyTimeEntryCountChartDataUseCaseImpl;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.GetTimeEntryCountTodayUseCase;
@@ -43,7 +44,7 @@ public class TimeEntryController {
     private final GetTotalHoursTodayUseCase getTotalHoursTodayUseCase;
     private final GetFirstTimeEntryDateForEmployeeUseCaseImpl getFirstTimeEntryDateForEmployeeUseCase;
     private final GetWeeklyTimeEntryCountChartDataUseCaseImpl getWeeklyTimeEntryCountChartDataUseCase;
-
+    private final GetActiveWorkersUseCaseImpl getActiveWorkersUseCase;
     /**
      * Registra un nuevo fichaje (entrada o salida) para el trabajador autenticado.
      * Captura la dirección IP y el User-Agent para fines de auditoría y seguridad.
@@ -191,7 +192,18 @@ public class TimeEntryController {
     @GetMapping("/active-workers")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ActiveWorkerDto>> getActiveWorkers() {
-        List<ActiveWorkerDto> activeWorkerDto = timeEntryService.getActiveWorkers();
+        List<ActiveWorkerDto> activeWorkerDto = getActiveWorkersUseCase.execute()
+                .stream()
+                .map(
+                        e -> new ActiveWorkerDto(
+                                e.employeeId(),
+                                e.fullName(),
+                                e.jobPosition(),
+                                e.avatarUrl(),
+                                e.entryTime(),
+                                e.punctualityMinutes()
+                        )
+                ).toList();
         return ResponseEntity.ok(activeWorkerDto);
     }
 
