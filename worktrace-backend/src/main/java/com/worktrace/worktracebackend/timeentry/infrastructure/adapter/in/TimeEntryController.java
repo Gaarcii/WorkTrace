@@ -3,6 +3,7 @@ package com.worktrace.worktracebackend.timeentry.infrastructure.adapter.in;
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
 import com.worktrace.worktracebackend.timeentry.application.usecase.GetFirstTimeEntryDateForEmployeeUseCaseImpl;
+import com.worktrace.worktracebackend.timeentry.application.usecase.GetWeeklyTimeEntryCountChartDataUseCaseImpl;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.GetTimeEntryCountTodayUseCase;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.GetTotalHoursTodayUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,6 +42,8 @@ public class TimeEntryController {
     private final GetTimeEntryCountTodayUseCase getTimeEntryCountTodayUseCase;
     private final GetTotalHoursTodayUseCase getTotalHoursTodayUseCase;
     private final GetFirstTimeEntryDateForEmployeeUseCaseImpl getFirstTimeEntryDateForEmployeeUseCase;
+    private final GetWeeklyTimeEntryCountChartDataUseCaseImpl getWeeklyTimeEntryCountChartDataUseCase;
+
     /**
      * Registra un nuevo fichaje (entrada o salida) para el trabajador autenticado.
      * Captura la dirección IP y el User-Agent para fines de auditoría y seguridad.
@@ -242,9 +245,12 @@ public class TimeEntryController {
             @Parameter(description = "Fecha de fin de la semana", example = "2026-06-07")
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        List<DailyTimeEntryCountDto> dailyTimeEntryCounts =
-                timeEntryService.getWeeklyTimeEntryCountChartData(startDate, endDate);
-        return ResponseEntity.ok(dailyTimeEntryCounts);
+        List<DailyTimeEntryCountDto> result = getWeeklyTimeEntryCountChartDataUseCase
+                .execute(startDate, endDate)
+                .stream()
+                .map(e -> new DailyTimeEntryCountDto(e.date().toString(), e.count()))
+                .toList();
+        return ResponseEntity.ok(result);
 
     }
 

@@ -1,6 +1,9 @@
 package com.worktrace.worktracebackend.timeentry.domain.port.out;
 
+import com.worktrace.worktracebackend.timeentry.domain.model.DailyEntryCount;
+
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -39,4 +42,19 @@ public interface TimeEntryQueryPort {
      * empleado todavía no tiene ningún fichaje.
      */
     LocalDate findFirstWorkDateByEmployee(UUID userId);
+
+    /**
+     * Cuenta los fichajes de una empresa agrupados por día dentro de un rango de
+     * fechas.
+     * <p>
+     * Solo devuelve los días que tienen al menos un fichaje; los días sin
+     * actividad no aparecen en el resultado.
+     *
+     * @param companyId Identificador de la empresa (aislamiento multi-tenant).
+     * @param start     Fecha de inicio del rango (incluida).
+     * @param end       Fecha de fin del rango (incluida).
+     * @return Una lista de {@link DailyEntryCount} con el recuento por día,
+     * únicamente para los días con fichajes.
+     */
+    List<DailyEntryCount> countByCompanyAndDateRange(UUID companyId, LocalDate start, LocalDate end);
 }
