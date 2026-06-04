@@ -1,7 +1,7 @@
 package com.worktrace.worktracebackend.shared.port;
 
-import java.util.UUID;
+import com.worktrace.worktracebackend.shared.model.AuthenticatedUser;
 
 public interface AuthenticatedUserPort {
-    UUID getCompanyId();
+    AuthenticatedUser getAuthenticatedUser();
 }

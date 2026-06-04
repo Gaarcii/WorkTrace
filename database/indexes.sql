@@ -26,3 +26,8 @@ CREATE INDEX idx_time_entries_company_date_open
 -- ------------------------------------------------------------
 CREATE INDEX idx_daily_closures_company_date
     ON daily_closures (company_id, work_date DESC);
+
+-- getFirstTimeEntryDateForEmployee: mínimo de work_date por empleado
+CREATE INDEX idx_time_entries_employee_date
+    ON time_entries (employee_id, work_date ASC)
+    WHERE deleted_at IS NULL;

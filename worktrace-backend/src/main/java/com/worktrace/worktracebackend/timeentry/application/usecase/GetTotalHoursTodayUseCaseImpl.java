@@ -8,6 +8,14 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * Implementación del caso de uso {@link GetTotalHoursTodayUseCase}.
+ * <p>
+ * Resuelve la compañía del usuario autenticado a través del
+ * {@link AuthenticatedUserPort} y delega el cálculo de los minutos trabajados
+ * hoy en el {@link TimeEntryQueryPort}, garantizando el aislamiento
+ * multi-tenant.
+ */
 @Service
 public class GetTotalHoursTodayUseCaseImpl implements GetTotalHoursTodayUseCase {
 
@@ -19,9 +27,15 @@ public class GetTotalHoursTodayUseCaseImpl implements GetTotalHoursTodayUseCase 
         this.authenticatedUserPort = authenticatedUserPort;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Suma los minutos trabajados por la compañía del usuario autenticado para
+     * la fecha de hoy.
+     */
     @Override
     public Long execute() {
-        UUID companyId = authenticatedUserPort.getCompanyId();
+        UUID companyId = authenticatedUserPort.getAuthenticatedUser().companyId();
         return timeEntryQueryPort.getWorkedMinutesByCompanyAndDate(companyId, LocalDate.now());
     }
 }

@@ -77,4 +77,9 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort, com.worktrace.wo
         return timeEntryRepository.getWorkedMinutesByCompanyAndDate(companyId, date);
     }
 
+    @Override
+    public LocalDate findFirstWorkDateByEmployee(UUID userId) {
+        return timeEntryRepository.findFirstWorkDateByEmployee(userId);
+    }
+
 }
