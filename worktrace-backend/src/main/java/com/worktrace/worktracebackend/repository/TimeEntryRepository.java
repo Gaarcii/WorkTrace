@@ -133,6 +133,8 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
             @Param("date") LocalDate date
     );
 
+    Long countByCompany_IdAndWorkDate(UUID companyId, LocalDate workDate);
+
     Long countAllByCompany_IdAndWorkDateBetween(
             UUID companyId, LocalDate startDate, LocalDate endDate);
 

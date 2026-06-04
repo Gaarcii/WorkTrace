@@ -1,4 +1,4 @@
-package com.worktrace.worktracebackend.dailyclosure.infrastructure.adapter.out;
+package com.worktrace.worktracebackend.infrastructure.out;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
