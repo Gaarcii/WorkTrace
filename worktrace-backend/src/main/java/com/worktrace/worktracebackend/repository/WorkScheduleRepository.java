@@ -13,6 +13,9 @@ import java.util.UUID;
 public interface WorkScheduleRepository extends JpaRepository<WorkSchedule, UUID> {
     Optional<WorkSchedule> findByEmployee_UserIdAndDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
 
+    List<WorkSchedule> findByEmployee_UserIdInAndDayOfWeek(
+            List<UUID> employeeIds, DayOfWeek dayOfWeek);
+
     List<WorkSchedule> findByEmployee_UserId(UUID userId);
 
     List<WorkSchedule> findBySite_Id(UUID siteId);

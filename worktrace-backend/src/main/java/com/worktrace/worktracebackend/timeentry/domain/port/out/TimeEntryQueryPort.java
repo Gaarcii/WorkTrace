@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.timeentry.domain.port.out;
 
+import com.worktrace.worktracebackend.timeentry.domain.model.ActiveTimeEntry;
 import com.worktrace.worktracebackend.timeentry.domain.model.DailyEntryCount;
 
 import java.time.LocalDate;
@@ -57,4 +58,14 @@ public interface TimeEntryQueryPort {
      * únicamente para los días con fichajes.
      */
     List<DailyEntryCount> countByCompanyAndDateRange(UUID companyId, LocalDate start, LocalDate end);
+
+    /**
+     * Obtiene los fichajes actualmente abiertos (sin hora de salida) de una
+     * empresa, junto con los datos de perfil de cada trabajador.
+     *
+     * @param companyId Identificador de la empresa (aislamiento multi-tenant).
+     * @return Una lista de {@link ActiveTimeEntry}, una por cada jornada en curso;
+     * lista vacía si no hay ninguna.
+     */
+    List<ActiveTimeEntry> findActiveByCompany(UUID companyId);
 }

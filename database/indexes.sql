@@ -31,3 +31,12 @@ CREATE INDEX idx_daily_closures_company_date
 CREATE INDEX idx_time_entries_employee_date
     ON time_entries (employee_id, work_date ASC)
     WHERE deleted_at IS NULL;
+
+    -- getActiveWorkers: fichajes abiertos por empresa (sin end_at)
+CREATE INDEX idx_time_entries_company_open
+    ON time_entries (company_id)
+    WHERE deleted_at IS NULL AND end_at IS NULL;
+
+-- WorkSchedule: horarios por empleado y día (evita N+1 en getActiveWorkers)
+CREATE INDEX idx_work_schedules_employee_day
+    ON work_schedules (employee_id, day_of_week);
