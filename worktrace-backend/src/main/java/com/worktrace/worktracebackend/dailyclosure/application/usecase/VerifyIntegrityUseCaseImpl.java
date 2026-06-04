@@ -15,6 +15,19 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+/**
+ * Implementación del caso de uso {@link VerifyIntegrityUseCase}, que verifica la
+ * integridad criptográfica de un cierre diario ya calculado.
+ * <p>
+ * Recalcula el hash encadenado de los fichajes actuales (vía
+ * {@link DailyHashChain}) y lo compara con el hash almacenado en el cierre. Si
+ * difieren, cruza el resultado con el log de auditoría para distinguir entre
+ * modificaciones legítimas (registradas por la aplicación) y manipulaciones no
+ * trazadas, devolviendo un {@link IntegrityResult}.
+ * <p>
+ * Toda la operación se ejecuta como transacción de solo lectura y filtrada por
+ * compañía, garantizando el aislamiento multi-tenant.
+ */
 @Service
 public class VerifyIntegrityUseCaseImpl implements VerifyIntegrityUseCase {
 
@@ -33,6 +46,31 @@ public class VerifyIntegrityUseCaseImpl implements VerifyIntegrityUseCase {
         this.auditQueryPort = auditQueryPort;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Aplica la siguiente lógica de decisión sobre el cierre de la compañía y
+     * fecha indicadas:
+     * <ol>
+     *   <li>Si no existe cierre para la fecha, lanza
+     *       {@link DailyClosureNotFoundException}.</li>
+     *   <li>Recalcula el hash de los fichajes actuales. Si coincide con el hash
+     *       almacenado, devuelve {@link IntegrityResult#VALID}.</li>
+     *   <li>Si difiere y no hay ningún cambio en auditoría posterior al cierre,
+     *       devuelve {@link IntegrityResult#CORRUPTED}.</li>
+     *   <li>Si entre los cambios auditados hay alguno marcado como
+     *       {@code DB_DIRECT_MODIFY} (modificación directa en BD), devuelve
+     *       {@link IntegrityResult#CORRUPTED}.</li>
+     *   <li>En caso contrario, los cambios se consideran modificaciones
+     *       legítimas registradas por la aplicación y devuelve
+     *       {@link IntegrityResult#MODIFIED}.</li>
+     * </ol>
+     *
+     * @param companyId Identificador de la empresa (aislamiento multi-tenant).
+     * @param date      Fecha del cierre a verificar.
+     * @return El estado de integridad calculado para el cierre.
+     * @throws DailyClosureNotFoundException si no existe cierre para esa fecha.
+     */
     @Override
     @Transactional(readOnly = true)
     public IntegrityResult execute(UUID companyId, LocalDate date) {

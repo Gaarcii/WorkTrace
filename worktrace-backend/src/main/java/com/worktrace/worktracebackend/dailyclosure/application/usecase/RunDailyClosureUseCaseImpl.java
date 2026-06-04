@@ -14,33 +14,36 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 /**
- * Servicio responsable de orquestar el cierre diario de registros de tiempo y jornadas
- * laborales para todas las compañías en el sistema.
- *
+ * Caso de uso que orquesta el cierre diario de <strong>todas las compañías</strong>
+ * para una fecha dada.
  * <p>
- * Este caso de uso implementa la regla de negocio que garantiza que todas las jornadas
- * laborales de un día determinado sean cerradas de forma automática y segura. El cierre
- * diario incluye la validación de integridad, la generación de hashes criptográficos
- * para auditoría anti-fraude y la inmutabilización de los registros de entrada/salida
- * del personal.
- * </p>
+ * Su única responsabilidad es la coordinación: recupera la lista de compañías y
+ * delega el cierre real de cada una en {@link CompanyClosureProcessor}. La lógica
+ * de negocio y la frontera transaccional viven en el procesador, no aquí.
  *
- * <p>
- * <strong>Decisiones de diseño (Clean Architecture):</strong>
+ * <p><strong>Modelo de ejecución (concurrencia):</strong>
  * <ul>
- *   <li>Sin anotación @Transactional a nivel de clase: el límite transaccional se define
- *       por compañía dentro de {@link CompanyClosureProcessor} con REQUIRES_NEW. Este
- *       servicio solo orquesta la paralización.</li>
- *   <li>Hilos virtuales de Java 21: son económicos en recursos, permitiendo un hilo
- *       por compañía sin degradación de rendimiento.</li>
- *   <li>Control de concurrencia: un Semáforo limita accesos simultáneos a la base de
- *       datos según {@code app.daily-closure.concurrency} (default 8), evitando
- *       congestión del pool HikariCP. Calibrar ≤ (hikaricp.maximum-pool-size - 2).</li>
- *   <li>Bloqueo garantizado: {@link ExecutorService#close()} invoca shutdown() +
- *       awaitTermination(MAX), asegurando que el método retorna solo cuando todas
- *       las compañías terminan.</li>
+ *   <li><em>Hilos virtuales (Java 21):</em> se lanza una tarea por compañía con
+ *       {@link Executors#newVirtualThreadPerTaskExecutor()}. Son muy baratos, por
+ *       lo que tener un hilo por compañía no degrada el rendimiento aunque haya
+ *       miles.</li>
+ *   <li><em>Concurrencia acotada:</em> un {@link Semaphore} limita cuántos
+ *       cierres acceden a la base de datos a la vez, según
+ *       {@code app.daily-closure.concurrency} (por defecto 8). Esto evita agotar
+ *       el pool de conexiones; conviene calibrarlo a un valor &le; (tamaño del
+ *       pool HikariCP − 2).</li>
+ *   <li><em>Aislamiento de fallos:</em> cada compañía se procesa en su propia
+ *       transacción ({@code REQUIRES_NEW} en el procesador) y sus errores se
+ *       capturan y registran sin propagarse, de modo que un fallo individual no
+ *       interrumpe el cierre del resto.</li>
+ *   <li><em>Sincronía:</em> el método bloquea hasta que todas las tareas
+ *       terminan, gracias al cierre automático del {@link ExecutorService} en el
+ *       try-with-resources, que invoca {@code shutdown()} + {@code awaitTermination}.</li>
  * </ul>
- * </p>
+ *
+ * <p>No lleva {@code @Transactional} a nivel de clase de forma deliberada: abrir
+ * una transacción aquí mantendría una conexión retenida durante todo el lote y
+ * entraría en conflicto con el modelo de una transacción por compañía.
  *
  * @see CompanyClosureProcessor
  * @see RunDailyClosureUseCase
@@ -51,8 +54,19 @@ public class RunDailyClosureUseCaseImpl implements RunDailyClosureUseCase {
 
     private final CompanyQueryPort companyQueryPort;
     private final CompanyClosureProcessor companyClosureProcessor;
+
+    /** Número máximo de cierres de compañía procesados simultáneamente. */
     private final int concurrency;
 
+    /**
+     * @param companyQueryPort        Puerto para recuperar los identificadores
+     *                                de todas las compañías a cerrar.
+     * @param companyClosureProcessor Procesador que ejecuta el cierre de una
+     *                                única compañía.
+     * @param concurrency             Límite de concurrencia leído de
+     *                                {@code app.daily-closure.concurrency}
+     *                                (por defecto 8).
+     */
     public RunDailyClosureUseCaseImpl(
             CompanyQueryPort companyQueryPort,
             CompanyClosureProcessor companyClosureProcessor,
@@ -63,40 +77,19 @@ public class RunDailyClosureUseCaseImpl implements RunDailyClosureUseCase {
     }
 
     /**
-     * Ejecuta el cierre diario de jornadas laborales para todas las compañías en la fecha especificada.
-     *
+     * Ejecuta el cierre diario de todas las compañías para la fecha indicada.
      * <p>
-     * <strong>Regla de negocio:</strong> Este método implementa el flujo de cierre automático que:
-     * <ul>
-     *   <li>Recupera la lista de todas las compañías activas en el sistema.</li>
-     *   <li>Crea un hilo virtual aislado para cada compañía, evitando que fallos en una
-     *       empresa impacten el cierre de otras.</li>
-     *   <li>Controla la concurrencia mediante un semáforo para no saturar el pool de conexiones
-     *       de base de datos.</li>
-     *   <li>Invoca el procesador de cierre para realizar validación de integridad, generación
-     *       de hashes y cierre transaccional de la jornada.</li>
-     *   <li>Registra éxitos y errores en logs para auditoría operativa.</li>
-     *   <li>Bloquea el hilo actual hasta que todas las compañías terminen (síncrono).</li>
-     * </ul>
-     * </p>
-     *
+     * Recupera todas las compañías y lanza una tarea por cada una sobre hilos
+     * virtuales, limitando la concurrencia con un semáforo. El método es
+     * <strong>síncrono</strong>: no retorna hasta que todas las tareas han
+     * finalizado (con éxito o error).
      * <p>
-     * <strong>Comportamiento en caso de error:</strong> Si una compañía falla durante su
-     * cierre (ej. validación de integridad rechazada, error de base de datos), se registra
-     * el error en logs pero NO detiene el cierre de otras compañías. Las excepciones internas
-     * no se propagan al llamador; se consideran eventos de error capturados y registrados
-     * para auditoría.
-     * </p>
+     * <strong>Tratamiento de errores:</strong> el fallo al cerrar una compañía
+     * se registra en el log pero <em>no</em> se propaga ni detiene el resto; una
+     * {@link InterruptedException} restaura el flag de interrupción del hilo.
      *
-     * <p>
-     * <strong>Sincronización:</strong> Este método es síncrono y bloquea el hilo actual
-     * hasta que todos los cierres de compañías se completan (exitosamente o con error),
-     * garantizado por {@link ExecutorService#close()}.
-     * </p>
-     *
-     * @param targetDate la fecha del cierre a procesar. Determina qué registros de tiempo
-     *                   y jornadas laborales se incluyen en la operación. Por ejemplo,
-     *                   si es {@code 2026-06-02}, se cierran todas las jornadas de ese día.
+     * @param targetDate Fecha laboral cuyo cierre se procesa (p. ej.
+     *                   {@code 2026-06-02} cierra las jornadas de ese día).
      */
     @Override
     public void execute(LocalDate targetDate) {
