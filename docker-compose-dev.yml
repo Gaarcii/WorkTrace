@@ -12,8 +12,9 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
-      - ./database/trigger_integrity_protection.sql:/docker-entrypoint-initdb.d/03-trigger_integrity_protection.sql
+      - ./database/indexes.sql:/docker-entrypoint-initdb.d/02-indexes.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/03-seed.sql
+      - ./database/trigger_integrity_protection.sql:/docker-entrypoint-initdb.d/04-trigger_integrity_protection.sql
 
 volumes:
   postgres-data:

@@ -447,20 +447,6 @@ public class TimeEntryService {
     }
 
     /**
-     * Obtiene la fecha del primer fichaje registrado por el empleado autenticado.
-     * Es útil para establecer la fecha de inicio por defecto en los selectores de rango de fechas.
-     *
-     * @return La {@link LocalDate} del primer fichaje, o la fecha actual si no hay ninguno.
-     */
-    @Transactional(readOnly = true)
-    public LocalDate getFirstTimeEntryDateForEmployee() {
-        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
-        LocalDate firstDate = timeEntryRepository.findFirstWorkDateByEmployee
-                (info.getProfile().getUserId());
-        return firstDate != null ? firstDate : LocalDate.now();
-    }
-
-    /**
      * Permite a un administrador modificar un fichaje existente.
      * Esta operación requiere una justificación y registra un evento de auditoría detallado
      * que incluye el estado del fichaje antes y después del cambio, garantizando la trazabilidad.
