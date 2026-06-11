@@ -1,20 +1,16 @@
 package com.worktrace.worktracebackend.service.timeEntry;
 
 import com.worktrace.worktracebackend.dto.auditTimeEntry.AuditRecordDto;
-import com.worktrace.worktracebackend.dto.incidence.WorkerIncidenceResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.exception.NotFoundException;
 import com.worktrace.worktracebackend.model.*;
-import com.worktrace.worktracebackend.repository.IncidenceRepository;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
-import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
 import com.worktrace.worktracebackend.service.auditTimeEntry.AuditTimeEntryService;
 import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
 import com.worktrace.worktracebackend.service.auth.UserService;
 import com.worktrace.worktracebackend.service.files.AdminPdfGeneratorService;
 import com.worktrace.worktracebackend.service.files.EmployeePdfGeneratorService;
 import com.worktrace.worktracebackend.service.files.ExcelGeneratorService;
-import com.worktrace.worktracebackend.service.incidence.IncidenceService;
 import com.worktrace.worktracebackend.service.ip.IpDetectionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,12 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
-import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Servicio principal para gestionar toda la lógica de negocio relacionada con los fichajes (Time Entries).
@@ -43,12 +40,9 @@ public class TimeEntryService {
     private final TimeEntryRepository timeEntryRepository;
     private final UserService userService;
     private final IpDetectionService ipDetectionService;
-    private final WorkScheduleRepository workScheduleRepository;
-    private final IncidenceRepository incidentRepository;
     private final EmployeePdfGeneratorService employeePdfGeneratorService;
     private final AdminPdfGeneratorService adminPdfGeneratorService;
     private final ExcelGeneratorService excelGeneratorService;
-    private final IncidenceService incidenceService;
     private final ObjectMapper objectMapper;
     private final AuditTimeEntryService auditTimeEntryService;
 
@@ -136,90 +130,6 @@ public class TimeEntryService {
         response.setStatus(savedTimeEntry.getTimeEntryStatus().name());
 
         return response;
-    }
-
-    /**
-     * Calcula y devuelve estadísticas de trabajo para el empleado autenticado en un rango de fechas.
-     * Este método es clave para los informes de empleado, ya que calcula el balance de horas
-     * (trabajadas vs. planificadas), el número de jornadas incompletas y las incidencias reportadas.
-     *
-     * @param startDate La fecha de inicio del período de estadísticas.
-     * @param endDate   La fecha de fin del período de estadísticas.
-     * @return Un DTO {@link StatisticsResponseDto} con todas las estadísticas calculadas.
-     */
-    public StatisticsResponseDto getStatistics(LocalDate startDate, LocalDate endDate) {
-        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
-        StatisticsResponseDto responseDto = new StatisticsResponseDto();
-
-        List<WorkSchedule> schedulesList = workScheduleRepository
-                .findByEmployee_UserId(info.getProfile().getUserId());
-
-        Map<DayOfWeek, Long> dailyTargetMinutes = new EnumMap<>(DayOfWeek.class);
-        for (WorkSchedule schedule : schedulesList) {
-            Duration duration = Duration.between(schedule.getStartTime(), schedule.getEndTime());
-            if (duration.isNegative()) {
-                duration = duration.plusDays(1);
-            }
-            dailyTargetMinutes.put(DayOfWeek.valueOf(
-                    schedule.getDayOfWeek().toString()), duration.toMinutes());
-        }
-
-        List<DailyStatisticsProjection> dailyStatistics = timeEntryRepository
-                .getGroupedDailyStatistics(info.getProfile().getUserId(), startDate, endDate);
-
-        Map<LocalDate, Long> workedMinutesByDate = dailyStatistics.stream()
-                .collect(Collectors.toMap(
-                        DailyStatisticsProjection::getFecha,
-                        DailyStatisticsProjection::getMinutosTrabajados
-                ));
-
-        List<WorkerIncidenceResponseDto> incidencesInRange = incidenceService
-                .getIncidencesByDateRange(startDate, endDate);
-
-        long totalWorkedMinutes = 0L;
-        long totalMinutesBalance = 0L;
-        int incompleteWorkdays = 0;
-
-        LocalDate currentDate = startDate;
-        List<DailyStatisticDto> dailySummaries = new ArrayList<>();
-
-        while (!currentDate.isAfter(endDate)) {
-            long plannedMinutes = dailyTargetMinutes.getOrDefault(
-                    currentDate.getDayOfWeek(), 0L);
-            long workedMinutes = workedMinutesByDate.getOrDefault(
-                    currentDate, 0L);
-
-            DailyStatisticDto dailyStatisticDto = new DailyStatisticDto();
-            dailyStatisticDto.setDate(currentDate);
-            dailyStatisticDto.setPlannedMinutes(plannedMinutes);
-            dailyStatisticDto.setWorkedMinutes(workedMinutes);
-
-            totalWorkedMinutes += workedMinutes;
-            totalMinutesBalance += (workedMinutes - plannedMinutes);
-
-            if (plannedMinutes > 0 && workedMinutes < plannedMinutes) {
-                incompleteWorkdays++;
-            }
-
-            dailySummaries.add(dailyStatisticDto);
-
-            currentDate = currentDate.plusDays(1);
-        }
-
-        int totalIncidences = incidentRepository.countIncidentsByUserAndDates(
-                info.getUser().getId(),
-                startDate,
-                endDate
-        );
-
-        responseDto.setTotalWorkedMinutes(totalWorkedMinutes);
-        responseDto.setMinutesBalance(totalMinutesBalance);
-        responseDto.setIncompleteWorkdays(incompleteWorkdays);
-        responseDto.setIncidencesCount(totalIncidences);
-        responseDto.setDailySummary(dailySummaries);
-        responseDto.setIncidenceList(incidencesInRange);
-
-        return responseDto;
     }
 
     /**

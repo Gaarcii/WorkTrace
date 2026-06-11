@@ -12,8 +12,10 @@ import java.util.UUID;
  * Puerto de salida para consultar los horarios de trabajo desde el dominio de
  * fichajes.
  * <p>
- * Da soporte al cálculo de puntualidad de los trabajadores activos, aportando el
- * turno previsto de cada empleado sin acoplar el dominio a la persistencia.
+ * Aporta el turno previsto de los empleados sin acoplar el dominio a la
+ * persistencia. Da soporte a varios casos de uso: la puntualidad de los
+ * trabajadores activos, el objetivo de jornada del resumen diario y del
+ * historial, y las estadísticas de trabajo.
  */
 public interface WorkScheduleQueryPort {
 
@@ -40,4 +42,17 @@ public interface WorkScheduleQueryPort {
      * vacío si no tiene horario definido ese día.
      */
     Optional<ScheduledShift> findByEmployeeAndDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
+
+    /**
+     * Obtiene el horario semanal completo de un empleado.
+     * <p>
+     * Devuelve los turnos indexados por día de la semana, permitiendo resolver
+     * el turno previsto de cualquier día sin consultas adicionales (útil al
+     * recorrer rangos de fechas).
+     *
+     * @param userId Identificador del usuario/empleado.
+     * @return Un mapa de día de la semana a su {@link ScheduledShift}; los días
+     * sin turno definido no aparecen en el mapa.
+     */
+    Map<DayOfWeek, ScheduledShift> findByEmployee(UUID userId);
 }
