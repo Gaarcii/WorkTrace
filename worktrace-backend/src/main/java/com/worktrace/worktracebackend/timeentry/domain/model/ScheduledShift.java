@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.timeentry.domain.model;
 
+import java.time.Duration;
 import java.time.LocalTime;
 
 /**
@@ -17,4 +18,18 @@ public record ScheduledShift(
         LocalTime startTime,
         LocalTime endTime
 ) {
+
+    /**
+     * Calcula la duración prevista del turno en minutos.
+     * <p>
+     * Si el turno cruza la medianoche (la hora de fin es anterior a la de
+     * inicio), se le suma un día para obtener una duración positiva.
+     *
+     * @return Los minutos de jornada previstos entre la entrada y la salida.
+     */
+    public long durationMinutes() {
+        Duration d = Duration.between(startTime, endTime);
+        if (d.isNegative()) d = d.plusDays(1);
+        return d.toMinutes();
+    }
 }

@@ -101,5 +101,26 @@ public interface TimeEntryQueryPort {
      */
     Optional<ActiveTimeEntry> findOpenByEmployee(UUID userId);
 
+    /**
+     * Obtiene los eventos de fichaje de un empleado en una fecha concreta.
+     * <p>
+     * Cada fichaje del día se descompone en sus eventos (entrada y, si existe,
+     * salida), ordenados cronológicamente de forma descendente.
+     *
+     * @param userId Identificador del usuario/empleado.
+     * @param date   Fecha cuyos eventos se consultan.
+     * @return Una lista de {@link LastTimeEntries} con los eventos del día.
+     */
+    List<LastTimeEntries> findEventsByEmployeeAndDate(UUID userId, LocalDate date);
+
+    /**
+     * Suma los minutos trabajados por un empleado dentro de un rango de fechas.
+     *
+     * @param userId Identificador del usuario/empleado.
+     * @param start  Fecha de inicio del rango (incluida).
+     * @param end    Fecha de fin del rango (incluida).
+     * @return El total de minutos trabajados por el empleado en el rango.
+     */
+    long getWorkedMinutesByEmployeeAndDateRange(UUID userId, LocalDate start, LocalDate end);
 
 }

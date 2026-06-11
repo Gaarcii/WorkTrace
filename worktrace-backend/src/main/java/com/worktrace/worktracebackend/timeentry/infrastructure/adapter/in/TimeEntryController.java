@@ -2,6 +2,7 @@ package com.worktrace.worktracebackend.timeentry.infrastructure.adapter.in;
 
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
+import com.worktrace.worktracebackend.timeentry.domain.model.DailyHistory;
 import com.worktrace.worktracebackend.timeentry.domain.model.DailySummary;
 import com.worktrace.worktracebackend.timeentry.domain.model.DateRange;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.*;
@@ -44,6 +45,7 @@ public class TimeEntryController {
     private final GetWeeklyTimeEntryCountChartDataUseCase getWeeklyTimeEntryCountChartDataUseCase;
     private final GetActiveWorkersUseCase getActiveWorkersUseCase;
     private final GetDailySummaryUseCase getDailySummaryUseCase;
+    private final GetHistoryByDateUseCase getHistoryByDateUseCase;
     /**
      * Registra un nuevo fichaje (entrada o salida) para el trabajador autenticado.
      * Captura la dirección IP y el User-Agent para fines de auditoría y seguridad.
@@ -111,7 +113,17 @@ public class TimeEntryController {
     public ResponseEntity<HistoryResponseDto> getHistoryByDate(
             @Parameter(description = "Fecha del historial a consultar", example = "2026-06-02")
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        HistoryResponseDto history = timeEntryService.getHistoryByDate(date);
+
+        DailyHistory dailyHistory = getHistoryByDateUseCase.execute(date);
+
+        HistoryResponseDto history = new HistoryResponseDto();
+        history.setWeeklyWorkedMinutes(dailyHistory.weeklyWorkedMinutes());
+        history.setWeeklyTargetMinutes(dailyHistory.weeklyTargetMinutes());
+        history.setDailyRecords(dailyHistory.dailyRecords().stream()
+                .map(e -> new LastTimeEntriesResponseDto(e.timeEntryId(), e.eventType(), e.date()))
+                .toList());
+        history.setDailyWorkedMinutes(dailyHistory.dailyWorkedMinutes());
+        history.setDailyTargetMinutes(dailyHistory.dailyTargetMinutes());
         return ResponseEntity.ok(history);
     }
 

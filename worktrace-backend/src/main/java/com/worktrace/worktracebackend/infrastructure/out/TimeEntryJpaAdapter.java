@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.infrastructure.out;
 
+import com.worktrace.worktracebackend.model.TimeEntry;
 import com.worktrace.worktracebackend.model.TimeEntryStatus;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.timeentry.domain.model.ActiveTimeEntry;
@@ -10,11 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Adaptador de salida JPA para las consultas de fichajes del dominio de
@@ -112,16 +110,9 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort {
      */
     @Override
     public List<LastTimeEntries> findTop5ByEmployee(UUID userId) {
-        return timeEntryRepository.findTop5ByEmployee_UserIdOrderByStartAtDesc(userId)
-                .stream()
-                .flatMap(te -> {
-                    List<LastTimeEntries> events = new ArrayList<>();
-                    events.add(new LastTimeEntries(te.getId(), "Entrada", te.getStartAt()));
-                    if (te.getEndAt() != null) {
-                        events.add(new LastTimeEntries(te.getId(), "Salida", te.getEndAt()));
-                    }
-                    return events.stream();
-                })
+        List<TimeEntry> timeEntries = timeEntryRepository.findTop5ByEmployee_UserIdOrderByStartAtDesc(userId);
+        return timeEntries.stream()
+                .flatMap(this::toEvents)
                 .sorted(Comparator.comparing(LastTimeEntries::date).reversed())
                 .limit(5)
                 .toList();
@@ -155,6 +146,48 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort {
                         te.getEmployee().getAvatarUrl(),
                         te.getStartAt()
                 ));
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Recupera los fichajes del empleado en la fecha, los descompone en eventos
+     * de entrada/salida y los ordena cronológicamente de forma descendente.
+     */
+    @Override
+    public List<LastTimeEntries> findEventsByEmployeeAndDate(UUID userId, LocalDate date) {
+        List<TimeEntry> timeEntries = timeEntryRepository.findTimeEntriesByEmployee_UserIdAndWorkDate(userId, date);
+        return timeEntries.stream()
+                .flatMap(this::toEvents)
+                .sorted(Comparator.comparing(LastTimeEntries::date).reversed())
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Suma, a nivel de persistencia, los minutos trabajados por el empleado en el
+     * rango de fechas.
+     */
+    @Override
+    public long getWorkedMinutesByEmployeeAndDateRange(UUID userId, LocalDate start, LocalDate end) {
+        return timeEntryRepository.getWorkedMinutesByEmployeeAndDateRange(userId, start, end);
+    }
+
+    /**
+     * Descompone un fichaje en sus eventos: siempre una "Entrada" y, si ya tiene
+     * hora de fin, también una "Salida".
+     *
+     * @param te Entidad de fichaje.
+     * @return Un flujo con uno o dos {@link LastTimeEntries}.
+     */
+    private Stream<LastTimeEntries> toEvents(TimeEntry te) {
+        Stream.Builder<LastTimeEntries> events = Stream.builder();
+        events.add(new LastTimeEntries(te.getId(), "Entrada", te.getStartAt()));
+        if (te.getEndAt() != null) {
+            events.add(new LastTimeEntries(te.getId(), "Salida", te.getEndAt()));
+        }
+        return events.build();
     }
 
 }

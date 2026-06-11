@@ -9,9 +9,7 @@ import com.worktrace.worktracebackend.timeentry.domain.port.in.GetDailySummaryUs
 import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.WorkScheduleQueryPort;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -74,23 +72,11 @@ public class GetDailySummaryUseCaseImpl implements GetDailySummaryUseCase {
 
         Optional<ScheduledShift> scheduleOpt = workScheduleQueryPort.findByEmployeeAndDayOfWeek(userId, LocalDate.now().getDayOfWeek());
 
-        Duration targetDuration;
-        if (scheduleOpt.isPresent()) {
-            LocalTime start = scheduleOpt.get().startTime();
-            LocalTime end = scheduleOpt.get().endTime();
-
-            targetDuration = Duration.between(start, end);
-
-            if (targetDuration.isNegative()) {
-                targetDuration = targetDuration.plusDays(1);
-            }
-        } else {
-            targetDuration = Duration.ofMinutes(0);
-        }
+        long targetMinutes = scheduleOpt.map(ScheduledShift::durationMinutes).orElse(0L);
 
         return new DailySummary(
                 accumulatedMinutes,
-                targetDuration.toMinutes(),
+                targetMinutes,
                 activeTimeEntryOpt.map(ActiveTimeEntry::startAt).orElse(null),
                 lastTimeEntries
         );
