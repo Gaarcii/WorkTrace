@@ -2,11 +2,8 @@ package com.worktrace.worktracebackend.timeentry.infrastructure.adapter.in;
 
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
-import com.worktrace.worktracebackend.timeentry.application.usecase.GetActiveWorkersUseCaseImpl;
-import com.worktrace.worktracebackend.timeentry.application.usecase.GetFirstTimeEntryDateForEmployeeUseCaseImpl;
-import com.worktrace.worktracebackend.timeentry.application.usecase.GetWeeklyTimeEntryCountChartDataUseCaseImpl;
-import com.worktrace.worktracebackend.timeentry.domain.port.in.GetTimeEntryCountTodayUseCase;
-import com.worktrace.worktracebackend.timeentry.domain.port.in.GetTotalHoursTodayUseCase;
+import com.worktrace.worktracebackend.timeentry.domain.model.DailySummary;
+import com.worktrace.worktracebackend.timeentry.domain.port.in.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,9 +39,10 @@ public class TimeEntryController {
     private final TimeEntryService timeEntryService;
     private final GetTimeEntryCountTodayUseCase getTimeEntryCountTodayUseCase;
     private final GetTotalHoursTodayUseCase getTotalHoursTodayUseCase;
-    private final GetFirstTimeEntryDateForEmployeeUseCaseImpl getFirstTimeEntryDateForEmployeeUseCase;
-    private final GetWeeklyTimeEntryCountChartDataUseCaseImpl getWeeklyTimeEntryCountChartDataUseCase;
-    private final GetActiveWorkersUseCaseImpl getActiveWorkersUseCase;
+    private final GetFirstTimeEntryDateForEmployeeUseCase getFirstTimeEntryDateForEmployeeUseCase;
+    private final GetWeeklyTimeEntryCountChartDataUseCase getWeeklyTimeEntryCountChartDataUseCase;
+    private final GetActiveWorkersUseCase getActiveWorkersUseCase;
+    private final GetDailySummaryUseCase getDailySummaryUseCase;
     /**
      * Registra un nuevo fichaje (entrada o salida) para el trabajador autenticado.
      * Captura la dirección IP y el User-Agent para fines de auditoría y seguridad.
@@ -86,8 +84,15 @@ public class TimeEntryController {
     @GetMapping("/daily-summary")
     @PreAuthorize("hasRole('WORKER')")
     public ResponseEntity<DailySummaryResponseDto> getDailySummary() {
-        DailySummaryResponseDto responseDto = timeEntryService.getDailySummary();
-        return ResponseEntity.ok(responseDto);
+        DailySummary dailySummary = getDailySummaryUseCase.execute();
+        DailySummaryResponseDto dto = new DailySummaryResponseDto();
+        dto.setAccumulatedMinutes(dailySummary.accumulatedMinutes());
+        dto.setTargetMinutes(dailySummary.targetMinutes());
+        dto.setEntryTime(dailySummary.entryTime());
+        dto.setLastTimeEntries(dailySummary.lastTimeEntries().stream()
+                .map(e -> new LastTimeEntriesResponseDto(e.timeEntryId(), e.eventType(), e.date()))
+                .toList());
+        return ResponseEntity.ok(dto);
     }
 
     /**

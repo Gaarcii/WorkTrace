@@ -7,11 +7,14 @@ import com.worktrace.worktracebackend.model.TimeEntryStatus;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.timeentry.domain.model.ActiveTimeEntry;
 import com.worktrace.worktracebackend.timeentry.domain.model.DailyEntryCount;
+import com.worktrace.worktracebackend.timeentry.domain.model.LastTimeEntries;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -172,6 +175,58 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort, com.worktrace.wo
                         p.getEmployee().getPosition() != null ? p.getEmployee().getPosition().getTitle() : null,
                         p.getEmployee().getAvatarUrl(), p.getStartAt()))
                 .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Recupera los 5 fichajes más recientes del empleado y los descompone en
+     * eventos individuales: una "Entrada" por cada fichaje y una "Salida" si ya
+     * tiene hora de fin. El resultado se limita a 5 eventos.
+     */
+    @Override
+    public List<LastTimeEntries> findTop5ByEmployee(UUID userId) {
+        return timeEntryRepository.findTop5ByEmployee_UserIdOrderByStartAtDesc(userId)
+                .stream()
+                .flatMap(te -> {
+                    List<LastTimeEntries> events = new ArrayList<>();
+                    events.add(new LastTimeEntries(te.getId(), "Entrada", te.getStartAt()));
+                    if (te.getEndAt() != null) {
+                        events.add(new LastTimeEntries(te.getId(), "Salida", te.getEndAt()));
+                    }
+                    return events.stream();
+                }).limit(5)
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Suma, a nivel de persistencia, los minutos trabajados por el empleado en la
+     * fecha dada.
+     */
+    @Override
+    public long getWorkedMinutesByEmployeeAndDate(UUID userId, LocalDate date) {
+        return timeEntryRepository.getWorkedMinutesByEmployeeAndDate(userId, date);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Busca el fichaje abierto ({@code OPEN}, sin hora de salida) del empleado y
+     * lo traduce a {@link ActiveTimeEntry}, resolviendo el puesto o {@code null}
+     * si no tiene asignado.
+     */
+    @Override
+    public Optional<ActiveTimeEntry> findOpenByEmployee(UUID userId) {
+        return timeEntryRepository.findByEmployee_UserIdAndEndAtIsNullAndTimeEntryStatus(userId, TimeEntryStatus.OPEN)
+                .map(te -> new ActiveTimeEntry(
+                        te.getEmployee().getUserId(),
+                        te.getEmployee().getFullName(),
+                        te.getEmployee().getPosition() != null ? te.getEmployee().getPosition().getTitle() : null,
+                        te.getEmployee().getAvatarUrl(),
+                        te.getStartAt()
+                ));
     }
 
 }

@@ -5,6 +5,7 @@ import com.worktrace.worktracebackend.timeentry.domain.model.ScheduledShift;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -29,4 +30,14 @@ public interface WorkScheduleQueryPort {
      */
     Map<UUID, ScheduledShift> findByEmployeesAndDayOfWeek(
             List<UUID> employeeIds, DayOfWeek dayOfWeek);
+
+    /**
+     * Obtiene el turno previsto de un único empleado para un día de la semana.
+     *
+     * @param userId    Identificador del usuario/empleado.
+     * @param dayOfWeek Día de la semana cuyo horario se solicita.
+     * @return Un {@link Optional} con el {@link ScheduledShift} del empleado, o
+     * vacío si no tiene horario definido ese día.
+     */
+    Optional<ScheduledShift> findByEmployeeAndDayOfWeek(UUID userId, DayOfWeek dayOfWeek);
 }
