@@ -24,8 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
-import java.math.BigDecimal;
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -134,92 +136,6 @@ public class TimeEntryService {
         response.setStatus(savedTimeEntry.getTimeEntryStatus().name());
 
         return response;
-    }
-
-    /**
-     * Obtiene el historial detallado de fichajes para una fecha específica del empleado autenticado.
-     * Además de los fichajes del día, calcula el total de minutos trabajados en la semana
-     * en comparación con el objetivo semanal, proporcionando una visión completa del cumplimiento horario.
-     *
-     * @param date La fecha para la cual se solicita el historial.
-     * @return Un DTO {@link HistoryResponseDto} con los detalles diarios y semanales.
-     */
-    @Transactional(readOnly = true)
-    public HistoryResponseDto getHistoryByDate(LocalDate date) {
-        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
-        DailySummaryResponseDto dailySummary = calculateDailySummary(info.getUser(), info.getProfile(), date);
-
-        List<TimeEntry> dailyTimeEntries = timeEntryRepository.
-                findTimeEntriesByEmployee_UserIdAndWorkDate(info.getUser().getId(), date);
-
-        LocalDate startDate = date.with(DayOfWeek.MONDAY);
-        LocalDate endDate = date.with(DayOfWeek.SUNDAY);
-
-        Long weeklyWorkedMinutes = timeEntryRepository.
-                getWorkedMinutesByEmployeeAndDateRange(info.getProfile().getUserId(), startDate, endDate);
-
-        Long weeklyTargetMinutes = info.getProfile().getWeeklyHours() != null
-                ? info.getProfile().getWeeklyHours().multiply(BigDecimal.valueOf(60)).longValue()
-                : 0L;
-
-        List<LastTimeEntriesResponseDto> dailyRecords = mapTimeEntriesToDto(dailyTimeEntries).stream()
-                .sorted((e1, e2) -> e2.getDate().compareTo(e1.getDate()))
-                .toList();
-        HistoryResponseDto historyResponseDto = new HistoryResponseDto();
-        historyResponseDto.setDailyTargetMinutes(dailySummary.getTargetMinutes());
-        historyResponseDto.setDailyWorkedMinutes(dailySummary.getAccumulatedMinutes());
-        historyResponseDto.setDailyRecords(dailyRecords);
-        historyResponseDto.setWeeklyTargetMinutes(weeklyTargetMinutes);
-        historyResponseDto.setWeeklyWorkedMinutes(weeklyWorkedMinutes);
-        return historyResponseDto;
-    }
-
-
-    private List<LastTimeEntriesResponseDto> mapTimeEntriesToDto(List<TimeEntry> timeEntries) {
-        List<LastTimeEntriesResponseDto> dtos = new ArrayList<>();
-        for (TimeEntry timeEntry : timeEntries) {
-            dtos.add(new LastTimeEntriesResponseDto(
-                    timeEntry.getId(), "Entrada", timeEntry.getStartAt()));
-            if (timeEntry.getEndAt() != null) {
-                dtos.add(new LastTimeEntriesResponseDto(
-                        timeEntry.getId(), "Salida", timeEntry.getEndAt()));
-            }
-        }
-        return dtos;
-    }
-
-    private DailySummaryResponseDto calculateDailySummary(User user, Profile profile, LocalDate date) {
-        DayOfWeek dayOfWeek = date.getDayOfWeek();
-
-        Optional<TimeEntry> currentTimeEntryOpt = timeEntryRepository.
-                findByEmployee_UserIdAndEndAtIsNullAndTimeEntryStatus(user.getId(), TimeEntryStatus.OPEN);
-
-        Long accumulatedMinutes = timeEntryRepository.
-                getWorkedMinutesByEmployeeAndDate(user.getId(), date);
-
-        Optional<WorkSchedule> scheduleOpt = workScheduleRepository
-                .findByEmployee_UserIdAndDayOfWeek(profile.getUserId(), dayOfWeek);
-
-        Duration targetDuration;
-        if (scheduleOpt.isPresent()) {
-            LocalTime start = scheduleOpt.get().getStartTime();
-            LocalTime end = scheduleOpt.get().getEndTime();
-
-            targetDuration = Duration.between(start, end);
-
-            if (targetDuration.isNegative()) {
-                targetDuration = targetDuration.plusDays(1);
-            }
-        } else {
-            targetDuration = Duration.ofMinutes(0);
-        }
-
-        DailySummaryResponseDto dailySummary = new DailySummaryResponseDto();
-        dailySummary.setEntryTime(currentTimeEntryOpt.map(TimeEntry::getStartAt).orElse(null));
-        dailySummary.setAccumulatedMinutes(accumulatedMinutes);
-        dailySummary.setTargetMinutes(targetDuration.toMinutes());
-
-        return dailySummary;
     }
 
     /**

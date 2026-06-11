@@ -29,9 +29,11 @@ import java.util.UUID;
  * </ol>
  * Para cada fichaje activo calcula la <strong>puntualidad</strong> como la
  * diferencia en minutos entre la hora de entrada real y la prevista en el
- * horario; si el empleado no tiene horario ese día, la puntualidad queda a
- * {@code null}. La compañía se resuelve desde el usuario autenticado, asegurando
- * el aislamiento multi-tenant.
+ * horario; la hora real se convierte previamente a la zona horaria de la
+ * aplicación ({@link ZoneId}) para comparar horas locales coherentes. Si el
+ * empleado no tiene horario ese día, la puntualidad queda a {@code null}. La
+ * compañía se resuelve desde el usuario autenticado, asegurando el aislamiento
+ * multi-tenant.
  */
 public class GetActiveWorkersUseCaseImpl implements GetActiveWorkersUseCase {
 

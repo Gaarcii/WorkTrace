@@ -1,20 +1,9 @@
 package com.worktrace.worktracebackend.timeentry.infrastructure.config;
 
 import com.worktrace.worktracebackend.shared.port.AuthenticatedUserPort;
-import com.worktrace.worktracebackend.timeentry.application.usecase.GetActiveWorkersUseCaseImpl;
-import com.worktrace.worktracebackend.timeentry.application.usecase.GetDailySummaryUseCaseImpl;
-import com.worktrace.worktracebackend.timeentry.application.usecase.GetFirstTimeEntryDateForEmployeeUseCaseImpl;
-import com.worktrace.worktracebackend.timeentry.application.usecase.GetTimeEntryCountTodayUseCaseImpl;
-import com.worktrace.worktracebackend.timeentry.application.usecase.GetTotalHoursTodayUseCaseImpl;
-import com.worktrace.worktracebackend.timeentry.application.usecase.GetWeeklyTimeEntryCountChartDataUseCaseImpl;
-import com.worktrace.worktracebackend.timeentry.application.usecase.ResolveEmployeeReportRangeUseCaseImpl;
-import com.worktrace.worktracebackend.timeentry.domain.port.in.GetActiveWorkersUseCase;
-import com.worktrace.worktracebackend.timeentry.domain.port.in.GetDailySummaryUseCase;
-import com.worktrace.worktracebackend.timeentry.domain.port.in.GetFirstTimeEntryDateForEmployeeUseCase;
-import com.worktrace.worktracebackend.timeentry.domain.port.in.GetTimeEntryCountTodayUseCase;
-import com.worktrace.worktracebackend.timeentry.domain.port.in.GetTotalHoursTodayUseCase;
-import com.worktrace.worktracebackend.timeentry.domain.port.in.GetWeeklyTimeEntryCountChartDataUseCase;
-import com.worktrace.worktracebackend.timeentry.domain.port.in.ResolveEmployeeReportRangeUseCase;
+import com.worktrace.worktracebackend.timeentry.application.usecase.*;
+import com.worktrace.worktracebackend.timeentry.domain.port.in.*;
+import com.worktrace.worktracebackend.timeentry.domain.port.out.ProfileQueryPort;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.WorkScheduleQueryPort;
 import org.springframework.context.annotation.Bean;
@@ -77,5 +66,14 @@ public class TimeEntryUseCaseConfig {
     public ResolveEmployeeReportRangeUseCase resolveEmployeeReportRangeUseCase(
             GetFirstTimeEntryDateForEmployeeUseCase getFirstTimeEntryDateForEmployeeUseCase) {
         return new ResolveEmployeeReportRangeUseCaseImpl(getFirstTimeEntryDateForEmployeeUseCase);
+    }
+
+    @Bean
+    public GetHistoryByDateUseCase getHistoryByDateUseCase(
+            TimeEntryQueryPort timeEntryQueryPort, AuthenticatedUserPort authenticatedUserPort,
+            WorkScheduleQueryPort workScheduleQueryPort, ProfileQueryPort profileQueryPort
+    ) {
+        return new GetHistoryByDateUseCaseImpl(timeEntryQueryPort, authenticatedUserPort,
+                workScheduleQueryPort, profileQueryPort);
     }
 }
