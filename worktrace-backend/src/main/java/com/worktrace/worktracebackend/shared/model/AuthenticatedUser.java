@@ -14,11 +14,9 @@ import java.util.UUID;
  * @param companyId     Identificador de la empresa a la que pertenece el usuario.
  * @param profileUserId Identificador del perfil del usuario (clave de las
  *                      relaciones de perfil, p. ej. en los fichajes).
- * @param userId        Identificador del usuario (cuenta) autenticado.
  */
 public record AuthenticatedUser(
         UUID companyId,
-        UUID profileUserId,
-        UUID userId
+        UUID profileUserId
 ) {
 }

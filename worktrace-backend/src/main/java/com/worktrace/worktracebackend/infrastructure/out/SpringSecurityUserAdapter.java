@@ -32,8 +32,7 @@ public class SpringSecurityUserAdapter implements AuthenticatedUserPort {
         UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
         return new AuthenticatedUser(
                 info.getCompany().getId(),
-                info.getProfile().getUserId(),
-                info.getUser().getId()
+                info.getProfile().getUserId()
         );
     }
 }
