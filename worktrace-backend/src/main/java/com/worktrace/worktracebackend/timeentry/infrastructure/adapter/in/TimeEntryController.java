@@ -3,6 +3,7 @@ package com.worktrace.worktracebackend.timeentry.infrastructure.adapter.in;
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
 import com.worktrace.worktracebackend.timeentry.domain.model.DailySummary;
+import com.worktrace.worktracebackend.timeentry.domain.model.DateRange;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,7 +40,7 @@ public class TimeEntryController {
     private final TimeEntryService timeEntryService;
     private final GetTimeEntryCountTodayUseCase getTimeEntryCountTodayUseCase;
     private final GetTotalHoursTodayUseCase getTotalHoursTodayUseCase;
-    private final GetFirstTimeEntryDateForEmployeeUseCase getFirstTimeEntryDateForEmployeeUseCase;
+    private final ResolveEmployeeReportRangeUseCase resolveEmployeeReportRangeUseCase;
     private final GetWeeklyTimeEntryCountChartDataUseCase getWeeklyTimeEntryCountChartDataUseCase;
     private final GetActiveWorkersUseCase getActiveWorkersUseCase;
     private final GetDailySummaryUseCase getDailySummaryUseCase;
@@ -134,13 +135,8 @@ public class TimeEntryController {
             @Parameter(description = "Fecha de fin (opcional, por defecto hoy)", example = "2026-06-02")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        if (endDate == null) {
-            endDate = LocalDate.now();
-        }
-        if (startDate == null) {
-            startDate =getFirstTimeEntryDateForEmployeeUseCase.execute();
-        }
-        StatisticsResponseDto statistics = timeEntryService.getStatistics(startDate, endDate);
+        DateRange range = resolveEmployeeReportRangeUseCase.execute(startDate, endDate);
+        StatisticsResponseDto statistics = timeEntryService.getStatistics(range.start(), range.end());
         return ResponseEntity.ok(statistics);
     }
 
@@ -163,20 +159,16 @@ public class TimeEntryController {
             @Parameter(description = "Fecha de fin del informe (opcional, por defecto hoy)", example = "2026-06-02")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        if (endDate == null) {
-            endDate = LocalDate.now();
-        }
+        DateRange range = resolveEmployeeReportRangeUseCase.execute(startDate, endDate);
+        LocalDate resolvedStart = range.start();
+        LocalDate resolvedEnd = range.end();
 
-        if (startDate == null) {
-            startDate =getFirstTimeEntryDateForEmployeeUseCase.execute();
-        }
-
-        byte[] pdfBytes = timeEntryService.exportEmployeeHistoryPdf(startDate, endDate);
+        byte[] pdfBytes = timeEntryService.exportEmployeeHistoryPdf(resolvedStart, resolvedEnd);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
 
-        String fileName = "fichajes_" + startDate + "_al_" + endDate + ".pdf";
+        String fileName = "fichajes_" + resolvedStart + "_al_" + resolvedEnd + ".pdf";
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
         headers.setContentLength(pdfBytes.length);
 

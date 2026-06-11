@@ -3,7 +3,6 @@ package com.worktrace.worktracebackend.timeentry.application.usecase;
 import com.worktrace.worktracebackend.shared.port.AuthenticatedUserPort;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.GetTotalHoursTodayUseCase;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -16,7 +15,6 @@ import java.util.UUID;
  * hoy en el {@link TimeEntryQueryPort}, garantizando el aislamiento
  * multi-tenant.
  */
-@Service
 public class GetTotalHoursTodayUseCaseImpl implements GetTotalHoursTodayUseCase {
 
     private final TimeEntryQueryPort timeEntryQueryPort;

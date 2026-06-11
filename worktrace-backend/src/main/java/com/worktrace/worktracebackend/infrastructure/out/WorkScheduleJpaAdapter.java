@@ -42,7 +42,7 @@ public class WorkScheduleJpaAdapter implements WorkScheduleQueryPort {
                 .stream()
                 .collect(Collectors.toMap(
                         ws -> ws.getEmployee().getUserId(),
-                        ws -> new ScheduledShift(ws.getEmployee().getUserId(), ws.getStartTime(), ws.getEndTime())
+                        ws -> new ScheduledShift(ws.getStartTime(), ws.getEndTime())
                 ));
     }
 
@@ -56,7 +56,6 @@ public class WorkScheduleJpaAdapter implements WorkScheduleQueryPort {
     public Optional<ScheduledShift> findByEmployeeAndDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
         return workScheduleRepository.findByEmployee_UserIdAndDayOfWeek(userId, dayOfWeek)
                 .map(ws -> new ScheduledShift(
-                        ws.getEmployee().getUserId(),
                         ws.getStartTime(),
                         ws.getEndTime()
                 ));

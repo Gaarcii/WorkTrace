@@ -99,7 +99,13 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
     @Query("SELECT MIN(t.workDate) FROM TimeEntry t WHERE t.employee.userId = :userId")
     LocalDate findFirstWorkDateByEmployee(@Param("userId") UUID userId);
 
-    List<TimeEntry> getAllByCompany_IdAndEndAtIsNull(UUID companyId);
+    @Query("""
+            SELECT t FROM TimeEntry t
+            JOIN FETCH t.employee e
+            LEFT JOIN FETCH e.position
+            WHERE t.company.id = :companyId AND t.endAt IS NULL
+            """)
+    List<TimeEntry> findActiveWithEmployeeByCompany(@Param("companyId") UUID companyId);
 
     @Query("""
             SELECT COUNT(DISTINCT t.employee.userId)
@@ -135,11 +141,8 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
 
     Long countByCompany_IdAndWorkDate(UUID companyId, LocalDate workDate);
 
-    Long countAllByCompany_IdAndWorkDateBetween(
-            UUID companyId, LocalDate startDate, LocalDate endDate);
-
     @Query(value = """
-            SELECT t.work_date AS fecha, COUNT(t.id) AS numFichajes
+            SELECT t.work_date AS entryDate, COUNT(t.id) AS entryCount
             FROM time_entries t
             WHERE t.company_id = :companyId
               AND t.work_date BETWEEN :startDate AND :endDate

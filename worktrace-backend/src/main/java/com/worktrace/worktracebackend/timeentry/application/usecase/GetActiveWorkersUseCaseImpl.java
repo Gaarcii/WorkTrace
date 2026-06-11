@@ -7,12 +7,12 @@ import com.worktrace.worktracebackend.timeentry.domain.model.ScheduledShift;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.GetActiveWorkersUseCase;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.WorkScheduleQueryPort;
-import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,17 +33,18 @@ import java.util.UUID;
  * {@code null}. La compañía se resuelve desde el usuario autenticado, asegurando
  * el aislamiento multi-tenant.
  */
-@Service
 public class GetActiveWorkersUseCaseImpl implements GetActiveWorkersUseCase {
 
     private final TimeEntryQueryPort timeEntryQueryPort;
     private final AuthenticatedUserPort authenticatedUserPort;
     private final WorkScheduleQueryPort workScheduleQueryPort;
+    private final ZoneId zoneId;
 
-    public GetActiveWorkersUseCaseImpl(TimeEntryQueryPort timeEntryQueryPort, AuthenticatedUserPort authenticatedUserPort, WorkScheduleQueryPort workScheduleQueryPort) {
+    public GetActiveWorkersUseCaseImpl(TimeEntryQueryPort timeEntryQueryPort, AuthenticatedUserPort authenticatedUserPort, WorkScheduleQueryPort workScheduleQueryPort, ZoneId zoneId) {
         this.timeEntryQueryPort = timeEntryQueryPort;
         this.authenticatedUserPort = authenticatedUserPort;
         this.workScheduleQueryPort = workScheduleQueryPort;
+        this.zoneId = zoneId;
     }
 
     /**
@@ -81,11 +82,12 @@ public class GetActiveWorkersUseCaseImpl implements GetActiveWorkersUseCase {
                     String avatarUrl = activeTimeEntry.avatarUrl();
                     OffsetDateTime entryTime = activeTimeEntry.startAt();
 
+                    ScheduledShift shift = scheduledShiftsList.get(employeeId);
                     Long punctualityMinutes = null;
 
-                    if (scheduledShiftsList.get(employeeId) != null) {
-                        LocalTime scheduleTime = scheduledShiftsList.get(employeeId).startTime();
-                        LocalTime localTimeEntry = activeTimeEntry.startAt().toLocalTime();
+                    if (shift != null) {
+                        LocalTime scheduleTime = shift.startTime();
+                        LocalTime localTimeEntry = activeTimeEntry.startAt().atZoneSameInstant(zoneId).toLocalTime();
                         punctualityMinutes = Duration.between(scheduleTime, localTimeEntry).toMinutes();
                     }
                     return new ActiveWorker(

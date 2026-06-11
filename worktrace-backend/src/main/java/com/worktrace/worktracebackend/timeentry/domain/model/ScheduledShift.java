@@ -1,7 +1,6 @@
 package com.worktrace.worktracebackend.timeentry.domain.model;
 
 import java.time.LocalTime;
-import java.util.UUID;
 
 /**
  * Turno previsto de un trabajador para un día de la semana.
@@ -11,12 +10,10 @@ import java.util.UUID;
  * un fichaje activo (hora de entrada) y el objetivo de jornada del resumen diario
  * (duración entre entrada y salida).
  *
- * @param employeeId Identificador del empleado.
- * @param startTime  Hora de entrada prevista en su horario.
- * @param endTime    Hora de salida prevista en su horario.
+ * @param startTime Hora de entrada prevista en su horario.
+ * @param endTime   Hora de salida prevista en su horario.
  */
 public record ScheduledShift(
-        UUID employeeId,
         LocalTime startTime,
         LocalTime endTime
 ) {

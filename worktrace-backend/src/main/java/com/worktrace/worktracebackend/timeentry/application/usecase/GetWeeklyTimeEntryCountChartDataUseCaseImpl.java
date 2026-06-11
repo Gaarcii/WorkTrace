@@ -4,7 +4,6 @@ import com.worktrace.worktracebackend.shared.port.AuthenticatedUserPort;
 import com.worktrace.worktracebackend.timeentry.domain.model.DailyEntryCount;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.GetWeeklyTimeEntryCountChartDataUseCase;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
  * fichajes, este caso de uso <strong>rellena los días sin actividad</strong> con
  * recuento {@code 0} para entregar una serie continua y sin huecos al gráfico.
  */
-@Service
 public class GetWeeklyTimeEntryCountChartDataUseCaseImpl implements GetWeeklyTimeEntryCountChartDataUseCase {
 
     private final TimeEntryQueryPort timeEntryQueryPort;

@@ -8,7 +8,6 @@ import com.worktrace.worktracebackend.timeentry.domain.model.ScheduledShift;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.GetDailySummaryUseCase;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.WorkScheduleQueryPort;
-import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -25,7 +24,6 @@ import java.util.UUID;
  * (si la hay), los minutos ya trabajados hoy y su horario previsto para el día.
  * A partir del horario calcula el objetivo de jornada en minutos.
  */
-@Service
 public class GetDailySummaryUseCaseImpl implements GetDailySummaryUseCase {
 
 

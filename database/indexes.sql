@@ -32,6 +32,11 @@ CREATE INDEX idx_time_entries_employee_date
     ON time_entries (employee_id, work_date ASC)
     WHERE deleted_at IS NULL;
 
+-- findTop5ByEmployee: últimos eventos de fichaje del empleado, ordenados por start_at desc
+CREATE INDEX idx_time_entries_employee_start
+    ON time_entries (employee_id, start_at DESC)
+    WHERE deleted_at IS NULL;
+
     -- getActiveWorkers: fichajes abiertos por empresa (sin end_at)
 CREATE INDEX idx_time_entries_company_open
     ON time_entries (company_id)

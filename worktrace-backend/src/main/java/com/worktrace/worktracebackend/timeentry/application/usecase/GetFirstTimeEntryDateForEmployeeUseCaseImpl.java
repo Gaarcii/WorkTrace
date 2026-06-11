@@ -3,7 +3,6 @@ package com.worktrace.worktracebackend.timeentry.application.usecase;
 import com.worktrace.worktracebackend.shared.port.AuthenticatedUserPort;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.GetFirstTimeEntryDateForEmployeeUseCase;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -16,7 +15,6 @@ import java.util.UUID;
  * un valor por defecto (la fecha actual) cuando el empleado todavía no tiene
  * fichajes.
  */
-@Service
 public class GetFirstTimeEntryDateForEmployeeUseCaseImpl implements GetFirstTimeEntryDateForEmployeeUseCase {
     private final TimeEntryQueryPort timeEntryQueryPort;
     private final AuthenticatedUserPort authenticatedUserPort;

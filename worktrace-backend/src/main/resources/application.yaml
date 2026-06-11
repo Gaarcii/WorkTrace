@@ -1,3 +1,6 @@
+worktrace:
+  timezone: Europe/Madrid
+
 spring:
   application:
     name: worktrace-backend
