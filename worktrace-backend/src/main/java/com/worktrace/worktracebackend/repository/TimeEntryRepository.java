@@ -67,7 +67,7 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
     @Query(value = """
             
             SELECT
-               t.work_date AS fecha,
+               t.work_date AS date,
                CAST(
                    COALESCE(SUM(
                        CASE
@@ -76,7 +76,7 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
                            ELSE 0
                        END
                    ), 0) AS BIGINT
-               ) AS minutosTrabajados
+               ) AS workedMinutes
             FROM time_entries t
             WHERE t.employee_id = :userId
               AND t.work_date BETWEEN :startDate AND :endDate

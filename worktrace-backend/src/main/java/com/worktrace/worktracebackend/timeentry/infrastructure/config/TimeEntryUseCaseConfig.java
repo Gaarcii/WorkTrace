@@ -17,8 +17,9 @@ import java.time.ZoneId;
  * Mantiene la capa de aplicación como POJOs (sin anotaciones de Spring) y declara
  * aquí, en infraestructura, cómo construir cada caso de uso a partir de sus
  * puertos. Spring inyecta los adaptadores ({@link TimeEntryQueryPort},
- * {@link WorkScheduleQueryPort}, {@link AuthenticatedUserPort}) y el
- * {@link ZoneId} de la aplicación como parámetros de cada bean.
+ * {@link WorkScheduleQueryPort}, {@link AuthenticatedUserPort}) como parámetros
+ * de cada bean, y el {@link ZoneId} de la aplicación en los beans que lo
+ * necesitan (p. ej. {@code getActiveWorkersUseCase}).
  */
 @Configuration
 public class TimeEntryUseCaseConfig {
@@ -75,5 +76,12 @@ public class TimeEntryUseCaseConfig {
     ) {
         return new GetHistoryByDateUseCaseImpl(timeEntryQueryPort, authenticatedUserPort,
                 workScheduleQueryPort, profileQueryPort);
+    }
+
+    @Bean
+    public GetStatisticsUseCase getStatisticsUseCase(TimeEntryQueryPort timeEntryQueryPort, AuthenticatedUserPort authenticatedUserPort,
+                                                         WorkScheduleQueryPort workScheduleQueryPort) {
+        return new GetStatisticsUseCaseImpl(timeEntryQueryPort, authenticatedUserPort,
+                workScheduleQueryPort);
     }
 }

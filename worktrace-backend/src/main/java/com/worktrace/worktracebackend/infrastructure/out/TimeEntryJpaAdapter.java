@@ -5,6 +5,7 @@ import com.worktrace.worktracebackend.model.TimeEntryStatus;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.timeentry.domain.model.ActiveTimeEntry;
 import com.worktrace.worktracebackend.timeentry.domain.model.DailyEntryCount;
+import com.worktrace.worktracebackend.timeentry.domain.model.DailyWorkedMinutes;
 import com.worktrace.worktracebackend.timeentry.domain.model.LastTimeEntries;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort;
 import org.springframework.stereotype.Component;
@@ -172,6 +173,21 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort {
     @Override
     public long getWorkedMinutesByEmployeeAndDateRange(UUID userId, LocalDate start, LocalDate end) {
         return timeEntryRepository.getWorkedMinutesByEmployeeAndDateRange(userId, start, end);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Delega en la consulta agregada de la base de datos, que agrupa los minutos
+     * trabajados por día, y traduce cada fila a {@link DailyWorkedMinutes}.
+     */
+    @Override
+    public List<DailyWorkedMinutes> getDailyWorkedMinutesInRange(UUID userId, LocalDate start, LocalDate end) {
+        return timeEntryRepository.getGroupedDailyStatistics(userId, start, end)
+                .stream()
+                .map(ds-> new DailyWorkedMinutes(
+                        ds.getDate(),ds.getWorkedMinutes()
+                )).toList();
     }
 
     /**

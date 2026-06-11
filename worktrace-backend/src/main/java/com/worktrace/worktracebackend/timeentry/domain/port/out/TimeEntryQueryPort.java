@@ -2,6 +2,7 @@ package com.worktrace.worktracebackend.timeentry.domain.port.out;
 
 import com.worktrace.worktracebackend.timeentry.domain.model.ActiveTimeEntry;
 import com.worktrace.worktracebackend.timeentry.domain.model.DailyEntryCount;
+import com.worktrace.worktracebackend.timeentry.domain.model.DailyWorkedMinutes;
 import com.worktrace.worktracebackend.timeentry.domain.model.LastTimeEntries;
 
 import java.time.LocalDate;
@@ -123,4 +124,18 @@ public interface TimeEntryQueryPort {
      */
     long getWorkedMinutesByEmployeeAndDateRange(UUID userId, LocalDate start, LocalDate end);
 
+    /**
+     * Obtiene los minutos trabajados por un empleado agregados por día dentro de
+     * un rango de fechas.
+     * <p>
+     * Resuelve en una sola consulta el total por día; solo incluye los días con
+     * minutos trabajados, los días sin actividad no aparecen.
+     *
+     * @param userId Identificador del usuario/empleado.
+     * @param start  Fecha de inicio del rango (incluida).
+     * @param end    Fecha de fin del rango (incluida).
+     * @return Una lista de {@link DailyWorkedMinutes}, un elemento por día con
+     * actividad.
+     */
+    List<DailyWorkedMinutes> getDailyWorkedMinutesInRange(UUID userId, LocalDate start, LocalDate end);
 }

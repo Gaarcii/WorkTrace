@@ -1,10 +1,13 @@
 package com.worktrace.worktracebackend.timeentry.infrastructure.adapter.in;
 
+import com.worktrace.worktracebackend.dto.incidence.WorkerIncidenceResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.*;
+import com.worktrace.worktracebackend.service.incidence.IncidenceService;
 import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
 import com.worktrace.worktracebackend.timeentry.domain.model.DailyHistory;
 import com.worktrace.worktracebackend.timeentry.domain.model.DailySummary;
 import com.worktrace.worktracebackend.timeentry.domain.model.DateRange;
+import com.worktrace.worktracebackend.timeentry.domain.model.WorkStatistics;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,6 +41,7 @@ import java.util.UUID;
 @Tag(name = "Fichajes", description = "Registro y consulta de fichajes de trabajadores, e informes administrativos")
 public class TimeEntryController {
 
+    private final IncidenceService incidenceService;
     private final TimeEntryService timeEntryService;
     private final GetTimeEntryCountTodayUseCase getTimeEntryCountTodayUseCase;
     private final GetTotalHoursTodayUseCase getTotalHoursTodayUseCase;
@@ -46,6 +50,7 @@ public class TimeEntryController {
     private final GetActiveWorkersUseCase getActiveWorkersUseCase;
     private final GetDailySummaryUseCase getDailySummaryUseCase;
     private final GetHistoryByDateUseCase getHistoryByDateUseCase;
+    private final GetStatisticsUseCase getStatisticsUseCase;
     /**
      * Registra un nuevo fichaje (entrada o salida) para el trabajador autenticado.
      * Captura la dirección IP y el User-Agent para fines de auditoría y seguridad.
@@ -148,7 +153,19 @@ public class TimeEntryController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         DateRange range = resolveEmployeeReportRangeUseCase.execute(startDate, endDate);
-        StatisticsResponseDto statistics = timeEntryService.getStatistics(range.start(), range.end());
+
+        WorkStatistics workStatistics = getStatisticsUseCase.execute(range.start(), range.end());
+
+        List<WorkerIncidenceResponseDto> incidences = incidenceService.getIncidencesByDateRange(range.start(), range.end());
+
+        StatisticsResponseDto statistics = new StatisticsResponseDto();
+        statistics.setTotalWorkedMinutes(workStatistics.totalWorkedMinutes());
+        statistics.setMinutesBalance(workStatistics.minutesBalance());
+        statistics.setIncompleteWorkdays(workStatistics.incompleteWorkdays());
+        statistics.setDailySummary(workStatistics.dailySummary().stream()
+                .map(ds -> new DailyStatisticDto(ds.date(), ds.workedMinutes(), ds.plannedMinutes())).toList());
+        statistics.setIncidencesCount(incidences.size());
+        statistics.setIncidenceList(incidences);
         return ResponseEntity.ok(statistics);
     }
 

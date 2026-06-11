@@ -84,7 +84,8 @@ create table if not exists work_schedules (
             'SATURDAY',
             'SUNDAY'
         )
-    )
+    ),
+    UNIQUE (employee_id, day_of_week)
 );
 
 --Sistema de fichajes

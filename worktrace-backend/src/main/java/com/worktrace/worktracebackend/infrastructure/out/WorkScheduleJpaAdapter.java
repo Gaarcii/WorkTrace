@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.infrastructure.out;
 
+import com.worktrace.worktracebackend.model.WorkSchedule;
 import com.worktrace.worktracebackend.repository.WorkScheduleRepository;
 import com.worktrace.worktracebackend.timeentry.domain.model.ScheduledShift;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.WorkScheduleQueryPort;
@@ -17,8 +18,8 @@ import java.util.stream.Collectors;
  * Adaptador de salida que implementa {@link WorkScheduleQueryPort} sobre JPA.
  * <p>
  * Consulta los horarios de trabajo en modo solo lectura y traduce las entidades
- * JPA al modelo de dominio {@link ScheduledShift}, dando soporte al cálculo de
- * puntualidad de los trabajadores activos.
+ * JPA al modelo de dominio {@link ScheduledShift}, dando soporte a los cálculos
+ * de puntualidad, objetivo de jornada (resumen e historial) y estadísticas.
  */
 @Component
 @Transactional(readOnly = true)
@@ -58,6 +59,22 @@ public class WorkScheduleJpaAdapter implements WorkScheduleQueryPort {
                 .map(ws -> new ScheduledShift(
                         ws.getStartTime(),
                         ws.getEndTime()
+                ));
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Recupera todos los horarios del empleado y los agrupa en un mapa por día de
+     * la semana.
+     */
+    @Override
+    public Map<DayOfWeek, ScheduledShift> findByEmployee(UUID userId) {
+        return workScheduleRepository.findByEmployee_UserId(userId)
+                .stream()
+                .collect(Collectors.toMap(
+                        WorkSchedule::getDayOfWeek,
+                        ws-> new ScheduledShift(ws.getStartTime(),ws.getEndTime())
                 ));
     }
 }
