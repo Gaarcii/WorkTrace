@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -57,19 +58,24 @@ public class CompanyClosureProcessor {
     private final TimeEntryQueryPort timeEntryQueryPort;
     private final DailyClosurePort dailyClosurePort;
     private final DailyHashChain dailyHashChain;
+    private final ZoneId zoneId;
 
     /**
      * @param timeEntryQueryPort Puerto de consulta de fichajes (turnos abiertos
      *                           y snapshots ordenados para el cierre).
      * @param dailyClosurePort   Puerto de persistencia/consulta de cierres
      *                           diarios (existencia, hash previo y guardado).
+     * @param zoneId             Zona horaria de referencia de la aplicación, usada
+     *                           para sellar el instante de cálculo del cierre.
      */
     public CompanyClosureProcessor(
             TimeEntryQueryPort timeEntryQueryPort,
-            DailyClosurePort dailyClosurePort) {
+            DailyClosurePort dailyClosurePort,
+            ZoneId zoneId) {
         this.timeEntryQueryPort = timeEntryQueryPort;
         this.dailyClosurePort = dailyClosurePort;
         this.dailyHashChain = new DailyHashChain();
+        this.zoneId = zoneId;
     }
 
 
@@ -124,7 +130,7 @@ public class CompanyClosureProcessor {
                 result.hash(),
                 prevHash,
                 result.recordCount(),
-                OffsetDateTime.now()
+                OffsetDateTime.now(zoneId)
         );
 
         dailyClosurePort.save(record);

@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -33,7 +34,7 @@ class CompanyClosureProcessorTest {
 
     @BeforeEach
     void setUp() {
-        processor = new CompanyClosureProcessor(timeEntryQueryPort, dailyClosurePort);
+        processor = new CompanyClosureProcessor(timeEntryQueryPort, dailyClosurePort, ZoneId.of("Europe/Madrid"));
         companyId = UUID.randomUUID();
         targetDate = LocalDate.now().minusDays(1);
     }
