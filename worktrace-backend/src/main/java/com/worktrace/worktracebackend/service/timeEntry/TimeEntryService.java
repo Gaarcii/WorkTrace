@@ -137,29 +137,6 @@ public class TimeEntryService {
     }
 
     /**
-     * Obtiene un resumen diario de la jornada del empleado autenticado.
-     * Calcula las horas trabajadas en el día actual, las horas objetivo según su horario
-     * y una lista de sus últimos fichajes para una visualización rápida.
-     *
-     * @return Un DTO {@link DailySummaryResponseDto} con el resumen de la jornada.
-     */
-    @Transactional(readOnly = true)
-    public DailySummaryResponseDto getDailySummary() {
-        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
-
-        DailySummaryResponseDto dailySummary = calculateDailySummary(info.getUser(), info.getProfile(), LocalDate.now());
-
-        List<TimeEntry> latestTimeEntriesList = timeEntryRepository.findTop5ByEmployee_UserIdOrderByStartAtDesc(info.getUser().getId());
-        List<LastTimeEntriesResponseDto> latest5TimeEntries = mapTimeEntriesToDto(latestTimeEntriesList).stream()
-                .sorted((e1, e2) -> e2.getDate().compareTo(e1.getDate()))
-                .limit(5)
-                .toList();
-        dailySummary.setLastTimeEntries(latest5TimeEntries);
-
-        return dailySummary;
-    }
-
-    /**
      * Obtiene el historial detallado de fichajes para una fecha específica del empleado autenticado.
      * Además de los fichajes del día, calcula el total de minutos trabajados en la semana
      * en comparación con el objetivo semanal, proporcionando una visión completa del cumplimiento horario.

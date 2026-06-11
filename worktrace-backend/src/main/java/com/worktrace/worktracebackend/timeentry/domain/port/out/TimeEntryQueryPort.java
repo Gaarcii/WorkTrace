@@ -2,9 +2,11 @@ package com.worktrace.worktracebackend.timeentry.domain.port.out;
 
 import com.worktrace.worktracebackend.timeentry.domain.model.ActiveTimeEntry;
 import com.worktrace.worktracebackend.timeentry.domain.model.DailyEntryCount;
+import com.worktrace.worktracebackend.timeentry.domain.model.LastTimeEntries;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -68,4 +70,36 @@ public interface TimeEntryQueryPort {
      * lista vacía si no hay ninguna.
      */
     List<ActiveTimeEntry> findActiveByCompany(UUID companyId);
+
+    /**
+     * Obtiene los últimos eventos de fichaje de un empleado.
+     * <p>
+     * Cada fichaje puede aportar hasta dos eventos (entrada y salida); el
+     * resultado se limita a los 5 más recientes.
+     *
+     * @param userId Identificador del usuario/empleado.
+     * @return Una lista de hasta 5 {@link LastTimeEntries} en orden cronológico
+     * inverso.
+     */
+    List<LastTimeEntries> findTop5ByEmployee(UUID userId);
+
+    /**
+     * Suma los minutos trabajados por un empleado en una fecha concreta.
+     *
+     * @param userId Identificador del usuario/empleado.
+     * @param date   Fecha sobre la que se calculan los minutos trabajados.
+     * @return El total de minutos trabajados por el empleado en esa fecha.
+     */
+    long getWorkedMinutesByEmployeeAndDate(UUID userId, LocalDate date);
+
+    /**
+     * Obtiene la jornada actualmente abierta (sin hora de salida) de un empleado.
+     *
+     * @param userId Identificador del usuario/empleado.
+     * @return Un {@link Optional} con el {@link ActiveTimeEntry} en curso, o
+     * vacío si el empleado no tiene ninguna jornada abierta.
+     */
+    Optional<ActiveTimeEntry> findOpenByEmployee(UUID userId);
+
+
 }

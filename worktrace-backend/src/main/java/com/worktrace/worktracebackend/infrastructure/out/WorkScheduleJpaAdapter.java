@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -41,7 +42,23 @@ public class WorkScheduleJpaAdapter implements WorkScheduleQueryPort {
                 .stream()
                 .collect(Collectors.toMap(
                         ws -> ws.getEmployee().getUserId(),
-                        ws -> new ScheduledShift(ws.getEmployee().getUserId(), ws.getStartTime())
+                        ws -> new ScheduledShift(ws.getEmployee().getUserId(), ws.getStartTime(), ws.getEndTime())
+                ));
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Recupera el horario del empleado para el día indicado y lo traduce a
+     * {@link ScheduledShift}, o devuelve vacío si no tiene horario ese día.
+     */
+    @Override
+    public Optional<ScheduledShift> findByEmployeeAndDayOfWeek(UUID userId, DayOfWeek dayOfWeek) {
+        return workScheduleRepository.findByEmployee_UserIdAndDayOfWeek(userId, dayOfWeek)
+                .map(ws -> new ScheduledShift(
+                        ws.getEmployee().getUserId(),
+                        ws.getStartTime(),
+                        ws.getEndTime()
                 ));
     }
 }
