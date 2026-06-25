@@ -7,6 +7,17 @@
   padding: 16px;
 }
 
+.error-banner {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background-color: #fdecea;
+  border: 1px solid #f5c2c0;
+  color: #b71c1c;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 .tooltip-overlay {
   position: fixed;
   top: 0;
