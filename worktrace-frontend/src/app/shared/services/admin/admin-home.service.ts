@@ -12,7 +12,7 @@ import { AdminIncidenceResponseDto } from '../../models/incidence.model';
 import { DepartmentStatDto } from '../../models/profile.model';
 import { InspectorRequestDto } from '../../models/inspector.model';
 
-interface SpringPageResponse<T> {
+export interface SpringPageResponse<T> {
   content: T[];
   page?: {
     size: number;
@@ -173,14 +173,24 @@ export class AdminHomeService {
   }
 
   /**
-   * Obtiene los fichajes de un día específico para la tabla de visualización del administrador.
+   * Obtiene una página de fichajes de un día específico para la tabla del administrador.
    *
    * @param date - La fecha para la cual se solicitan los fichajes (objeto `Date` o string 'YYYY-MM-DD').
-   * @returns Un `Observable` que emite un array de `AdminTimeEntryByDateResponseDto`.
+   * @param page - El número de página a solicitar (basado en 0). Por defecto es 0.
+   * @param size - El tamaño de la página. Por defecto es 10.
+   * @returns Un `Observable` que emite la página (`content` + metadatos de paginación).
    */
-  getTimeEntriesByDate(date: Date | string): Observable<AdminTimeEntryByDateResponseDto[]> {
-    const params = new HttpParams().set('date', this.toIsoDate(date));
-    return this.http.get<AdminTimeEntryByDateResponseDto[]>(
+  getTimeEntriesByDate(
+    date: Date | string,
+    page = 0,
+    size = 10,
+  ): Observable<SpringPageResponse<AdminTimeEntryByDateResponseDto>> {
+    const params = new HttpParams()
+      .set('date', this.toIsoDate(date))
+      .set('page', page)
+      .set('size', size);
+
+    return this.http.get<SpringPageResponse<AdminTimeEntryByDateResponseDto>>(
       `${this.BASE_URL}time-entries/admin/by-date`,
       {
         params,

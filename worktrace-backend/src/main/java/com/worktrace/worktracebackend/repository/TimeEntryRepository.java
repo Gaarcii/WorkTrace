@@ -1,5 +1,6 @@
 package com.worktrace.worktracebackend.repository;
 
+import com.worktrace.worktracebackend.dto.timeEntry.AdminByDateProjection;
 import com.worktrace.worktracebackend.dto.timeEntry.DailyStatisticsProjection;
 import com.worktrace.worktracebackend.dto.timeEntry.DailyTimeEntryCountProjection;
 import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRowProjection;
@@ -160,7 +161,31 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
     Page<TimeEntryRowProjection> findByCompany_IdAndEmployee_UserIdAndDeletedAtIsNullOrderByWorkDateDescStartAtDescIdDesc(
             UUID companyId, UUID employeeId, Pageable pageable);
 
-    List<TimeEntry> findByCompany_IdAndWorkDateOrderByStartAtDesc(UUID companyId, LocalDate workDate);
+    @Query(value = """
+            SELECT
+              t.id AS id,
+              e.userId AS employeeId,
+              e.fullName AS workerName,
+              pos.title AS jobPosition,
+              e.avatarUrl AS avatarUrl,
+              t.workDate AS date,
+              t.startAt AS startAt,
+              t.endAt AS endAt
+            FROM TimeEntry t
+            JOIN t.employee e
+            LEFT JOIN e.position pos
+            WHERE t.company.id = :companyId AND t.workDate = :workDate
+            ORDER BY t.startAt DESC, t.id
+            """,
+            countQuery = """
+                    SELECT COUNT(t) FROM TimeEntry t
+                    WHERE t.company.id = :companyId AND t.workDate = :workDate
+                    """)
+    Page<AdminByDateProjection> findByCompanyIdAndWorkDate(
+            @Param("companyId") UUID companyId,
+            @Param("workDate") LocalDate workDate,
+            Pageable pageable
+    );
 
     List<TimeEntry> findByCompany_IdAndWorkDateBetweenOrderByWorkDateDesc(UUID companyId, LocalDate startDate, LocalDate endDate);
 

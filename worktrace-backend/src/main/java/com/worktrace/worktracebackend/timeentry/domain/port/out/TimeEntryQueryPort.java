@@ -151,4 +151,17 @@ public interface TimeEntryQueryPort {
      * metadatos de paginación.
      */
     PageResult<TimeEntryRow> findByEmployeePaged(UUID companyId, UUID employeeId, int page, int size);
+
+    /**
+     * Obtiene de forma paginada los fichajes de todos los empleados de una empresa
+     * en una fecha concreta, junto con los datos básicos de cada trabajador.
+     *
+     * @param companyId Identificador de la empresa (aislamiento multi-tenant).
+     * @param workDate  Fecha de los fichajes a consultar.
+     * @param page      Índice de la página (base 0).
+     * @param size      Tamaño de página.
+     * @return Una {@link PageResult} de {@link AdminByDate} con la página y sus
+     * metadatos de paginación.
+     */
+    PageResult<AdminByDate> findByCompanyIdAndWorkDate(UUID companyId, LocalDate workDate, int page, int size);
 }

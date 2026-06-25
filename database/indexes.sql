@@ -12,9 +12,14 @@
 --        getActiveWorkers
 -- ------------------------------------------------------------
 
--- Consultas por empresa y fecha (el filtro más frecuente del sistema)
+-- Consultas por empresa y fecha (el filtro más frecuente del sistema).
+-- Las columnas (start_at DESC, id) hacen que la tabla admin por fecha
+-- (getTimeEntriesByDateForCompany) salga ya ordenada del índice, sin sort,
+-- aun con decenas de miles de fichajes en un mismo día. Las columnas líderes
+-- (company_id, work_date) siguen cubriendo countByCompanyAndDate,
+-- getWorkedMinutesByCompanyAndDate y el recuento por rango.
 CREATE INDEX idx_time_entries_company_date
-    ON time_entries (company_id, work_date)
+    ON time_entries (company_id, work_date, start_at DESC, id)
     WHERE deleted_at IS NULL;
 
 -- Fichajes abiertos por empresa y fecha (dailyclosure)

@@ -1,4 +1,4 @@
-@if (fichajesDiaSeleccionado().length > 0) {
+@if (total() > 0) {
   <div class="mb-6">
     <h3 class="text-subtitle-2 text-grey-darken-1 mb-3 font-weight-medium">
       Fichajes del {{ formatFechaDia()(diaSeleccionado()) }}
@@ -6,7 +6,7 @@
     <div class="stat-card mb-3">
       <div class="pa-4">
         <div class="text-caption text-grey mb-3">
-          {{ fichajesDiaSeleccionado().length }} fichaje(s) registrado(s)
+          {{ total() }} fichaje(s) registrado(s)
         </div>
 
         @for (fichaje of fichajesDiaSeleccionado(); track fichaje.id) {
@@ -40,6 +40,30 @@
                 }
               </div>
             </div>
+          </div>
+        }
+
+        @if (totalPaginas() > 1) {
+          <div class="pager">
+            <button
+              type="button"
+              class="pager-btn"
+              [disabled]="pagina() === 0"
+              (click)="cambiarPagina.emit(pagina() - 1)"
+            >
+              ‹
+            </button>
+            <span class="text-caption text-grey">
+              Página {{ pagina() + 1 }} de {{ totalPaginas() }}
+            </span>
+            <button
+              type="button"
+              class="pager-btn"
+              [disabled]="pagina() + 1 >= totalPaginas()"
+              (click)="cambiarPagina.emit(pagina() + 1)"
+            >
+              ›
+            </button>
           </div>
         }
       </div>
