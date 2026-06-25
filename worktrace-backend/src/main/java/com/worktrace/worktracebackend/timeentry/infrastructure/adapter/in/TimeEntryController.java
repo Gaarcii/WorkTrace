@@ -4,10 +4,8 @@ import com.worktrace.worktracebackend.dto.incidence.WorkerIncidenceResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.*;
 import com.worktrace.worktracebackend.service.incidence.IncidenceService;
 import com.worktrace.worktracebackend.service.timeEntry.TimeEntryService;
-import com.worktrace.worktracebackend.timeentry.domain.model.DailyHistory;
-import com.worktrace.worktracebackend.timeentry.domain.model.DailySummary;
-import com.worktrace.worktracebackend.timeentry.domain.model.DateRange;
-import com.worktrace.worktracebackend.timeentry.domain.model.WorkStatistics;
+import com.worktrace.worktracebackend.shared.model.PageResult;
+import com.worktrace.worktracebackend.timeentry.domain.model.*;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -51,6 +51,7 @@ public class TimeEntryController {
     private final GetDailySummaryUseCase getDailySummaryUseCase;
     private final GetHistoryByDateUseCase getHistoryByDateUseCase;
     private final GetStatisticsUseCase getStatisticsUseCase;
+    private final GetTimeEntriesByEmployeeUseCase getTimeEntriesByEmployeeUseCase;
     /**
      * Registra un nuevo fichaje (entrada o salida) para el trabajador autenticado.
      * Captura la dirección IP y el User-Agent para fines de auditoría y seguridad.
@@ -375,9 +376,18 @@ public class TimeEntryController {
             @Parameter(description = "Identificador del empleado")
             @PathVariable UUID employeeId,
             Pageable pageable) {
-        Page<TimeEntryTableResponseDto> response = timeEntryService
-                .getTimeEntriesByEmployee(employeeId, pageable);
-        return ResponseEntity.ok(response);
+        PageResult<TimeEntryRow> result = getTimeEntriesByEmployeeUseCase
+                .execute(employeeId, pageable.getPageNumber(), pageable.getPageSize());
+
+        List<TimeEntryTableResponseDto> dtos = result.content().stream()
+                .map(row -> new TimeEntryTableResponseDto(
+                        row.id(), row.date(), row.startAt(), row.endAt(),
+                        row.latStartAt(), row.lngStartAt(), row.latEndAt(), row.lngEndAt(),
+                        row.workedMinutes()))
+                .toList();
+
+        return ResponseEntity.ok(new PageImpl<>(
+                dtos, PageRequest.of(result.page(), result.size()), result.totalElements()));
     }
 
     /**

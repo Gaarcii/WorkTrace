@@ -2,6 +2,7 @@ package com.worktrace.worktracebackend.repository;
 
 import com.worktrace.worktracebackend.dto.timeEntry.DailyStatisticsProjection;
 import com.worktrace.worktracebackend.dto.timeEntry.DailyTimeEntryCountProjection;
+import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRowProjection;
 import com.worktrace.worktracebackend.model.TimeEntry;
 import com.worktrace.worktracebackend.model.TimeEntryStatus;
 import jakarta.persistence.QueryHint;
@@ -156,7 +157,8 @@ public interface TimeEntryRepository extends JpaRepository<TimeEntry, UUID> {
             @Param("endDate") LocalDate endDate
     );
 
-    Page<TimeEntry> findByEmployee_UserIdAndDeletedAtIsNullOrderByWorkDateDesc(UUID userId, Pageable pageable);
+    Page<TimeEntryRowProjection> findByCompany_IdAndEmployee_UserIdAndDeletedAtIsNullOrderByWorkDateDescStartAtDescIdDesc(
+            UUID companyId, UUID employeeId, Pageable pageable);
 
     List<TimeEntry> findByCompany_IdAndWorkDateOrderByStartAtDesc(UUID companyId, LocalDate workDate);
 

@@ -22,9 +22,12 @@ CREATE INDEX idx_time_entries_company_date_open
     ON time_entries (company_id, work_date)
     WHERE deleted_at IS NULL AND status = 'OPEN';
 
--- Mínimo de work_date por empleado (getFirstTimeEntryDateForEmployee)
-CREATE INDEX idx_time_entries_employee_date
-    ON time_entries (employee_id, work_date ASC)
+-- Por empleado, fecha desc + desempate (start_at, id): paginación estable y sin
+-- sort de la tabla admin (findByEmployeePaged). Las columnas líderes
+-- (employee_id, work_date) cubren además MIN(work_date) (getFirstTimeEntryDateForEmployee),
+-- los rangos (getWorkedMinutesByEmployeeAndDateRange) y los agrupados por día.
+CREATE INDEX idx_time_entries_employee_paged
+    ON time_entries (employee_id, work_date DESC, start_at DESC, id DESC)
     WHERE deleted_at IS NULL;
 
 -- Últimos eventos de fichaje del empleado ordenados por start_at (findTop5ByEmployee)

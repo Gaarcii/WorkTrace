@@ -84,4 +84,9 @@ public class TimeEntryUseCaseConfig {
         return new GetStatisticsUseCaseImpl(timeEntryQueryPort, authenticatedUserPort,
                 workScheduleQueryPort);
     }
+
+    @Bean
+    public GetTimeEntriesByEmployeeUseCase getTimeEntriesByEmployeeUseCase(TimeEntryQueryPort timeEntryQueryPort, AuthenticatedUserPort authenticatedUserPort) {
+        return new GetTimeEntriesByEmployeeUseCaseImpl(timeEntryQueryPort, authenticatedUserPort);
+    }
 }
