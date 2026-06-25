@@ -13,8 +13,6 @@ import com.worktrace.worktracebackend.service.files.EmployeePdfGeneratorService;
 import com.worktrace.worktracebackend.service.files.ExcelGeneratorService;
 import com.worktrace.worktracebackend.service.ip.IpDetectionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.core.JacksonException;
@@ -241,49 +239,6 @@ public class TimeEntryService {
         } catch (JacksonException e) {
             throw new RuntimeException("Error al generar los datos de auditoría", e);
         }
-    }
-
-    /**
-     * Obtiene una lista paginada de los fichajes de un empleado específico.
-     * Utilizado por los administradores para consultar el historial de un trabajador concreto.
-     *
-     * @param employeeId El UUID del empleado cuyos fichajes se quieren consultar.
-     * @param pageable   La información de paginación.
-     * @return Una página {@link Page} de DTOs {@link TimeEntryTableResponseDto} con los fichajes.
-     */
-    @Transactional(readOnly = true)
-    public Page<TimeEntryTableResponseDto> getTimeEntriesByEmployee
-            (UUID employeeId, Pageable pageable) {
-        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
-
-        User employee = userService.getUserById(employeeId);
-        if (!employee.getCompany().getId().equals(info.getCompany().getId())) {
-            throw new IllegalStateException("El trabajador no pertenece a tu empresa");
-        }
-
-        Page<TimeEntry> page = timeEntryRepository
-                .findByEmployee_UserIdAndDeletedAtIsNullOrderByWorkDateDesc(employeeId, pageable);
-
-        return page.map(f -> {
-            Long workedMinutes = null;
-
-            if (f.getStartAt() != null && f.getEndAt() != null) {
-                Duration duration = Duration.between(f.getStartAt(), f.getEndAt());
-                workedMinutes = duration.toMinutes();
-            }
-
-            return new TimeEntryTableResponseDto(
-                    f.getId(),
-                    f.getWorkDate(),
-                    f.getStartAt(),
-                    f.getEndAt(),
-                    f.getStartLat(),
-                    f.getStartLng(),
-                    f.getEndLat(),
-                    f.getEndLng(),
-                    workedMinutes
-            );
-        });
     }
 
     /**

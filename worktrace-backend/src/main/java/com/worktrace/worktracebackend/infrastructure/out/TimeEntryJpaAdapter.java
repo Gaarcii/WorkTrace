@@ -2,17 +2,21 @@ package com.worktrace.worktracebackend.infrastructure.out;
 
 import com.worktrace.worktracebackend.model.TimeEntry;
 import com.worktrace.worktracebackend.model.TimeEntryStatus;
+import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRowProjection;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
-import com.worktrace.worktracebackend.timeentry.domain.model.ActiveTimeEntry;
-import com.worktrace.worktracebackend.timeentry.domain.model.DailyEntryCount;
-import com.worktrace.worktracebackend.timeentry.domain.model.DailyWorkedMinutes;
-import com.worktrace.worktracebackend.timeentry.domain.model.LastTimeEntries;
+import com.worktrace.worktracebackend.shared.model.PageResult;
+import com.worktrace.worktracebackend.timeentry.domain.model.*;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 /**
@@ -191,6 +195,32 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort {
     }
 
     /**
+     * {@inheritDoc}
+     * <p>
+     * Ejecuta la consulta paginada de Spring Data sobre una projection cerrada
+     * ({@link TimeEntryRowProjection}, solo las columnas de la tabla), traduce
+     * cada fila a {@link TimeEntryRow} y empaqueta el resultado en un
+     * {@link PageResult} independiente del framework.
+     */
+    @Override
+    public PageResult<TimeEntryRow> findByEmployeePaged(UUID companyId, UUID employeeId, int page, int size) {
+        Page<TimeEntryRowProjection> p = timeEntryRepository
+                .findByCompany_IdAndEmployee_UserIdAndDeletedAtIsNullOrderByWorkDateDescStartAtDescIdDesc(
+                        companyId, employeeId, PageRequest.of(page, size));
+
+        List<TimeEntryRow> rows = p.getContent().stream()
+                .map(this::toRow)
+                .toList();
+
+        return new PageResult<>(
+                rows,
+                p.getNumber(),
+                p.getSize(),
+                p.getTotalElements(),
+                p.getTotalPages());
+    }
+
+    /**
      * Descompone un fichaje en sus eventos: siempre una "Entrada" y, si ya tiene
      * hora de fin, también una "Salida".
      *
@@ -204,6 +234,24 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort {
             events.add(new LastTimeEntries(te.getId(), "Salida", te.getEndAt()));
         }
         return events.build();
+    }
+
+    /**
+     * Traduce una fila de la projection {@link TimeEntryRowProjection} al modelo
+     * de dominio {@link TimeEntryRow}.
+     *
+     * @param te Projection de la fila de fichaje.
+     * @return La fila de dominio equivalente.
+     */
+    private TimeEntryRow toRow(TimeEntryRowProjection te) {
+        return new TimeEntryRow(
+                te.getId(),
+                te.getWorkDate(),
+                te.getStartAt(),
+                te.getEndAt(),
+                te.getStartLat(), te.getStartLng(),
+                te.getEndLat(), te.getEndLng()
+        );
     }
 
 }

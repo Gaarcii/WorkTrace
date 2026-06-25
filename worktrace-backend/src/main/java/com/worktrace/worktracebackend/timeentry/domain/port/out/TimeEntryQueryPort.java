@@ -1,9 +1,7 @@
 package com.worktrace.worktracebackend.timeentry.domain.port.out;
 
-import com.worktrace.worktracebackend.timeentry.domain.model.ActiveTimeEntry;
-import com.worktrace.worktracebackend.timeentry.domain.model.DailyEntryCount;
-import com.worktrace.worktracebackend.timeentry.domain.model.DailyWorkedMinutes;
-import com.worktrace.worktracebackend.timeentry.domain.model.LastTimeEntries;
+import com.worktrace.worktracebackend.shared.model.PageResult;
+import com.worktrace.worktracebackend.timeentry.domain.model.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -138,4 +136,19 @@ public interface TimeEntryQueryPort {
      * actividad.
      */
     List<DailyWorkedMinutes> getDailyWorkedMinutesInRange(UUID userId, LocalDate start, LocalDate end);
+
+
+    /**
+     * Obtiene de forma paginada los fichajes de un empleado dentro de una empresa.
+     * <p>
+     * Excluye los fichajes borrados y los ordena del más reciente al más antiguo.
+     *
+     * @param companyId  Identificador de la empresa (aislamiento multi-tenant).
+     * @param employeeId Identificador del empleado.
+     * @param page       Índice de la página (base 0).
+     * @param size       Tamaño de página.
+     * @return Una {@link PageResult} de {@link TimeEntryRow} con la página y sus
+     * metadatos de paginación.
+     */
+    PageResult<TimeEntryRow> findByEmployeePaged(UUID companyId, UUID employeeId, int page, int size);
 }
