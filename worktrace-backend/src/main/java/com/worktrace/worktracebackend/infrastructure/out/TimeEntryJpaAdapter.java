@@ -1,8 +1,9 @@
 package com.worktrace.worktracebackend.infrastructure.out;
 
+import com.worktrace.worktracebackend.dto.timeEntry.AdminByDateProjection;
+import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRowProjection;
 import com.worktrace.worktracebackend.model.TimeEntry;
 import com.worktrace.worktracebackend.model.TimeEntryStatus;
-import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRowProjection;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.shared.model.PageResult;
 import com.worktrace.worktracebackend.timeentry.domain.model.*;
@@ -221,6 +222,30 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort {
     }
 
     /**
+     * {@inheritDoc}
+     * <p>
+     * Ejecuta la consulta paginada de Spring Data sobre una projection cerrada
+     * ({@link AdminByDateProjection}), traduce cada fila a {@link AdminByDate} y
+     * empaqueta el resultado en un {@link PageResult} independiente del framework.
+     */
+    @Override
+    public PageResult<AdminByDate> findByCompanyIdAndWorkDate(UUID companyId, LocalDate workDate, int page, int size) {
+        Page<AdminByDateProjection> p = timeEntryRepository.findByCompanyIdAndWorkDate
+                (companyId, workDate, PageRequest.of(page, size));
+
+        List<AdminByDate> timeEntries = p.getContent().stream()
+                .map(this::toAdmin)
+                .toList();
+
+        return new PageResult<>(
+                timeEntries,
+                p.getNumber(),
+                p.getSize(),
+                p.getTotalElements(),
+                p.getTotalPages());
+    }
+
+    /**
      * Descompone un fichaje en sus eventos: siempre una "Entrada" y, si ya tiene
      * hora de fin, también una "Salida".
      *
@@ -251,6 +276,26 @@ public class TimeEntryJpaAdapter implements TimeEntryQueryPort {
                 te.getEndAt(),
                 te.getStartLat(), te.getStartLng(),
                 te.getEndLat(), te.getEndLng()
+        );
+    }
+
+    /**
+     * Traduce una fila de la projection {@link AdminByDateProjection} al modelo de
+     * dominio {@link AdminByDate}.
+     *
+     * @param ad Projection de la fila de fichaje con datos del trabajador.
+     * @return La fila de dominio equivalente.
+     */
+    private AdminByDate toAdmin(AdminByDateProjection ad) {
+        return new AdminByDate(
+                ad.getId(),
+                ad.getEmployeeId(),
+                ad.getWorkerName(),
+                ad.getJobPosition(),
+                ad.getAvatarUrl(),
+                ad.getDate(),
+                ad.getStartAt(),
+                ad.getEndAt()
         );
     }
 

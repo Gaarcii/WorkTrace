@@ -24,6 +24,38 @@
   border-bottom: none;
 }
 
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.pager-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  color: #555;
+  transition: background-color 0.15s ease;
+}
+
+.pager-btn:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+.pager-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 .avatar {
   width: 32px;
   height: 32px;

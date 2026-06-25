@@ -49,6 +49,10 @@
         [fichajesDiaSeleccionado]="fichajesDiaSeleccionado()"
         [diaSeleccionado]="diaSeleccionado()"
         [formatFechaDia]="formatFechaDia"
+        [total]="fichajesDiaTotal()"
+        [pagina]="fichajesDiaPagina()"
+        [pageSize]="fichajesDiaPageSize"
+        (cambiarPagina)="cambiarPaginaFichajes($event)"
       />
 
       <app-admin-active-workers

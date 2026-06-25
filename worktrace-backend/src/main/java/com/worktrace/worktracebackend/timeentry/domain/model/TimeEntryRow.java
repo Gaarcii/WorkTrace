@@ -1,7 +1,6 @@
 package com.worktrace.worktracebackend.timeentry.domain.model;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -40,7 +39,6 @@ public record TimeEntryRow(
      * fichaje aún no tiene entrada o salida.
      */
     public Long workedMinutes() {
-        if (startAt == null || endAt == null) return null;
-        return Duration.between(startAt, endAt).toMinutes();
+        return WorkedMinutesHelper.getWorkedMinutes(startAt, endAt);
     }
 }

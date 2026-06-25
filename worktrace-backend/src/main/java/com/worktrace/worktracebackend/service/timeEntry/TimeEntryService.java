@@ -1,7 +1,10 @@
 package com.worktrace.worktracebackend.service.timeEntry;
 
 import com.worktrace.worktracebackend.dto.auditTimeEntry.AuditRecordDto;
-import com.worktrace.worktracebackend.dto.timeEntry.*;
+import com.worktrace.worktracebackend.dto.timeEntry.EditTimeEntryRequestDto;
+import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRequestDto;
+import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryResponseDto;
+import com.worktrace.worktracebackend.dto.timeEntry.VoidTimeEntryRequestDto;
 import com.worktrace.worktracebackend.exception.NotFoundException;
 import com.worktrace.worktracebackend.model.*;
 import com.worktrace.worktracebackend.repository.TimeEntryRepository;
@@ -18,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -239,43 +241,6 @@ public class TimeEntryService {
         } catch (JacksonException e) {
             throw new RuntimeException("Error al generar los datos de auditoría", e);
         }
-    }
-
-    /**
-     * Obtiene todos los fichajes de una fecha específica para todos los empleados de la empresa.
-     *
-     * @param date La fecha para la cual se quieren obtener los fichajes.
-     * @return Una lista de DTOs {@link AdminTimeEntryByDateResponseDto} con los fichajes del día.
-     */
-    @Transactional(readOnly = true)
-    public List<AdminTimeEntryByDateResponseDto> getTimeEntriesByDateForCompany(LocalDate date) {
-        UserAndCompanyInfo info = userService.getAuthenticatedUserAndCompanyInfo();
-        Company company = info.getCompany();
-
-        List<TimeEntry> timeEntries = timeEntryRepository
-                .findByCompany_IdAndWorkDateOrderByStartAtDesc(company.getId(), date);
-
-        return timeEntries.stream().map(timeEntry -> {
-            Long workedMinutes = null;
-            if (timeEntry.getStartAt() != null && timeEntry.getEndAt() != null) {
-                workedMinutes = Duration.between(timeEntry.getStartAt(), timeEntry.getEndAt()).toMinutes();
-            }
-
-            Profile employee = timeEntry.getEmployee();
-            String jobPositionTitle = employee.getPosition() != null ? employee.getPosition().getTitle() : null;
-
-            return new AdminTimeEntryByDateResponseDto(
-                    timeEntry.getId(),
-                    employee.getUserId(),
-                    employee.getFullName(),
-                    jobPositionTitle,
-                    employee.getAvatarUrl(),
-                    timeEntry.getWorkDate(),
-                    timeEntry.getStartAt(),
-                    timeEntry.getEndAt(),
-                    workedMinutes
-            );
-        }).toList();
     }
 
     /**

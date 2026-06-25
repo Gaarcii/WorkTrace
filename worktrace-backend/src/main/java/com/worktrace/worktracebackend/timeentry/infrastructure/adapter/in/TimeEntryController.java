@@ -52,6 +52,7 @@ public class TimeEntryController {
     private final GetHistoryByDateUseCase getHistoryByDateUseCase;
     private final GetStatisticsUseCase getStatisticsUseCase;
     private final GetTimeEntriesByEmployeeUseCase getTimeEntriesByEmployeeUseCase;
+    private final GetTimeEntriesByDateForCompanyUseCase getTimeEntriesByDateForCompanyUseCase;
     /**
      * Registra un nuevo fichaje (entrada o salida) para el trabajador autenticado.
      * Captura la dirección IP y el User-Agent para fines de auditoría y seguridad.
@@ -294,22 +295,33 @@ public class TimeEntryController {
     }
 
     /**
-     * Obtiene todos los fichajes de una fecha específica para todos los empleados de la empresa.
+     * Obtiene, de forma paginada, los fichajes de una fecha específica para todos los empleados de la empresa.
      * @param date La fecha de la que se quieren obtener los fichajes.
-     * @return Una lista de fichajes para la fecha indicada.
+     * @param pageable Información de paginación.
+     * @return Una página de fichajes para la fecha indicada.
      */
-    @Operation(summary = "Fichajes de la empresa por fecha", description = "Devuelve todos los fichajes de todos los empleados de la empresa para un día concreto")
+    @Operation(summary = "Fichajes de la empresa por fecha", description = "Devuelve, paginados, los fichajes de todos los empleados de la empresa para un día concreto")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Fichajes obtenidos correctamente"),
             @ApiResponse(responseCode = "403", description = "El usuario no tiene rol ADMIN")
     })
     @GetMapping("/admin/by-date")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<AdminTimeEntryByDateResponseDto>> getTimeEntriesByDateForCompany(
+    public ResponseEntity<Page<AdminTimeEntryByDateResponseDto>> getTimeEntriesByDateForCompany(
             @Parameter(description = "Fecha de los fichajes a consultar", example = "2026-06-02")
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<AdminTimeEntryByDateResponseDto> response = timeEntryService.getTimeEntriesByDateForCompany(date);
-        return ResponseEntity.ok(response);
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            Pageable pageable) {
+
+        PageResult<AdminByDate> result = getTimeEntriesByDateForCompanyUseCase
+                .execute(date, pageable.getPageNumber(), pageable.getPageSize());
+
+        List<AdminTimeEntryByDateResponseDto> dtos = result.content().stream()
+                .map(ad -> new AdminTimeEntryByDateResponseDto(
+                        ad.id(), ad.employeeId(), ad.workerName(), ad.jobPosition(), ad.avatarUrl(), ad.date(),
+                        ad.startAt(), ad.endAt(), ad.workedMinutes()
+                )).toList();
+        return ResponseEntity.ok(new PageImpl<>(
+                dtos, PageRequest.of(result.page(), result.size()), result.totalElements()));
     }
 
     /**

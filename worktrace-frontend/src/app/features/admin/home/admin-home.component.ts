@@ -79,6 +79,10 @@ export class AdminHomeComponent implements OnInit {
 
   readonly diaSeleccionado = signal<string | null>(null);
   readonly fichajesDiaSeleccionado = signal<SelectedDayEntry[]>([]);
+  readonly fichajesDiaTotal = signal<number>(0);
+  readonly fichajesDiaPagina = signal<number>(0);
+  readonly fichajesDiaPageSize = 10;
+  private fichajesDiaWorkDate: string | null = null;
 
   readonly dialogoInspector = signal<boolean>(false);
   readonly cargandoInspector = signal<boolean>(false);
@@ -186,7 +190,7 @@ export class AdminHomeComponent implements OnInit {
   semanaAnterior(): void {
     this.semanaSeleccionada.set(this.semanaSeleccionada() + 1);
     this.diaSeleccionado.set(null);
-    this.fichajesDiaSeleccionado.set([]);
+    this.resetFichajesDia();
     this.textoSemanaSeleccionada.set(`Hace ${this.semanaSeleccionada()} semana(s)`);
     void this.cargarGraficaSemanal();
   }
@@ -198,7 +202,7 @@ export class AdminHomeComponent implements OnInit {
 
     this.semanaSeleccionada.set(this.semanaSeleccionada() - 1);
     this.diaSeleccionado.set(null);
-    this.fichajesDiaSeleccionado.set([]);
+    this.resetFichajesDia();
     this.textoSemanaSeleccionada.set(
       this.semanaSeleccionada() === 0 ? 'Esta semana' : 'Semana pasada',
     );
@@ -228,7 +232,7 @@ export class AdminHomeComponent implements OnInit {
 
     this.semanaSeleccionada.set(diferenciaSemanas);
     this.diaSeleccionado.set(null);
-    this.fichajesDiaSeleccionado.set([]);
+    this.resetFichajesDia();
 
     void this.cargarGraficaSemanal();
   }
@@ -389,28 +393,64 @@ export class AdminHomeComponent implements OnInit {
   private async cargarFichajesDia(fechaString: string): Promise<void> {
     const fecha = new Date(fechaString);
     if (Number.isNaN(fecha.getTime())) {
-      this.fichajesDiaSeleccionado.set([]);
+      this.resetFichajesDia();
       return;
     }
 
-    const workDate = this.toIsoDate(fecha);
-    const fichajesDia = await firstValueFrom(this.adminHomeService.getTimeEntriesByDate(workDate));
-    this.fichajesDiaSeleccionado.set(fichajesDia.map((item) => this.mapFichajeDia(item)));
+    await this.cargarFichajesDiaPagina(this.toIsoDate(fecha), 0);
+  }
+
+  /**
+   * Cambia de página en la tabla de fichajes del día seleccionado.
+   * Ignora valores fuera de rango.
+   */
+  cambiarPaginaFichajes(pagina: number): void {
+    const workDate = this.fichajesDiaWorkDate;
+    if (workDate === null || pagina < 0) {
+      return;
+    }
+    const totalPaginas = Math.ceil(this.fichajesDiaTotal() / this.fichajesDiaPageSize);
+    if (pagina >= totalPaginas) {
+      return;
+    }
+    void this.cargarFichajesDiaPagina(workDate, pagina);
+  }
+
+  private async cargarFichajesDiaPagina(workDate: string, pagina: number): Promise<void> {
+    const respuesta = await firstValueFrom(
+      this.adminHomeService.getTimeEntriesByDate(workDate, pagina, this.fichajesDiaPageSize),
+    );
+    const contenido = respuesta.content ?? [];
+
+    this.fichajesDiaWorkDate = workDate;
+    this.fichajesDiaPagina.set(pagina);
+    this.fichajesDiaTotal.set(respuesta.page?.totalElements ?? contenido.length);
+    this.fichajesDiaSeleccionado.set(contenido.map((item) => this.mapFichajeDia(item)));
+  }
+
+  private resetFichajesDia(): void {
+    this.fichajesDiaSeleccionado.set([]);
+    this.fichajesDiaTotal.set(0);
+    this.fichajesDiaPagina.set(0);
+    this.fichajesDiaWorkDate = null;
   }
 
   private async cargarFichajesHoyPorDefecto(): Promise<void> {
     const hoy = new Date();
     const workDate = this.toIsoDate(hoy);
 
-    const fichajesHoy = await firstValueFrom(this.adminHomeService.getTimeEntriesByDate(workDate));
-    if (!fichajesHoy.length) {
-      this.fichajesDiaSeleccionado.set([]);
+    const respuesta = await firstValueFrom(
+      this.adminHomeService.getTimeEntriesByDate(workDate, 0, this.fichajesDiaPageSize),
+    );
+    const contenido = respuesta.content ?? [];
+    if (!contenido.length) {
+      this.resetFichajesDia();
       return;
     }
 
     const diaHoy = this.fichajesSemana().find((item) => item.workDate === workDate);
     if (!diaHoy) {
-      this.fichajesDiaSeleccionado.set([]);
+      this.resetFichajesDia();
       return;
     }
 
@@ -421,7 +461,10 @@ export class AdminHomeComponent implements OnInit {
         seleccionado: item.date === diaHoy.date,
       })),
     );
-    this.fichajesDiaSeleccionado.set(fichajesHoy.map((item) => this.mapFichajeDia(item)));
+    this.fichajesDiaWorkDate = workDate;
+    this.fichajesDiaPagina.set(0);
+    this.fichajesDiaTotal.set(respuesta.page?.totalElements ?? contenido.length);
+    this.fichajesDiaSeleccionado.set(contenido.map((item) => this.mapFichajeDia(item)));
   }
 
   private mapIncidencia(incidencia: AdminIncidenceResponseDto): DashboardAlert {
