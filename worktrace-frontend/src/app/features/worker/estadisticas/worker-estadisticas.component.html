@@ -14,6 +14,12 @@
       />
     }
 
+    @if (errorEstadisticas()) {
+      <div class="error-banner" role="alert">
+        {{ errorEstadisticas() }}
+      </div>
+    }
+
     <app-worker-estadisticas-summary
       [horasTrabajadas]="horasTrabajadas()"
       [balanceHorario]="balanceHorario()"

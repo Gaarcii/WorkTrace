@@ -7,11 +7,20 @@ import {
   computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { take, finalize } from 'rxjs/operators';
 import { WorkerEstadisticasService } from '../../../shared/services/worker/worker-estadisticas.service';
-import { startOfWeek, endOfWeek, addDays, isSameDay, format, parseISO } from 'date-fns';
+import {
+  startOfWeek,
+  endOfWeek,
+  addDays,
+  isSameDay,
+  format,
+  parseISO,
+  differenceInCalendarDays,
+} from 'date-fns';
 import { es } from 'date-fns/locale';
 import { WorkerEstadisticasHeaderComponent } from './worker-estadisticas-header/worker-estadisticas-header.component';
 import { WorkerEstadisticasFilterComponent } from './worker-estadisticas-filter/worker-estadisticas-filter.component';
@@ -78,11 +87,15 @@ export class WorkerEstadisticasComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
 
+  /** Máximo rango permitido por el backend (~4 años, retención legal). */
+  private static readonly MAX_RANGE_DAYS = 1466;
+
   readonly periodoSeleccionado = signal<'semana' | 'mes' | 'todo' | 'custom'>('semana');
   readonly currentWeekIndex = signal<number>(0);
   readonly mostrarFiltroFechas = signal<boolean>(false);
   readonly isDownloadingPdf = signal<boolean>(false);
   readonly diaSeleccionado = signal<DiaGrafico | null>(null);
+  readonly errorEstadisticas = signal<string | null>(null);
 
   readonly estadisticas = this.estadisticasService.estadisticasSignal;
 
@@ -242,10 +255,29 @@ export class WorkerEstadisticasComponent implements OnInit {
   aplicarFiltroPersonalizado(): void {
     if (this.filterForm.invalid) return;
     const { fechaInicio, fechaFin } = this.filterForm.getRawValue();
+
+    // Cortesía: cortar rangos demasiado amplios antes de llamar al backend
+    // (el backend es el guardián real y devolvería 400 igualmente).
+    const dias = differenceInCalendarDays(parseISO(fechaFin), parseISO(fechaInicio));
+    if (dias < 0) {
+      this.errorEstadisticas.set('La fecha de inicio no puede ser posterior a la de fin.');
+      return;
+    }
+    if (dias > WorkerEstadisticasComponent.MAX_RANGE_DAYS) {
+      this.errorEstadisticas.set('El rango es demasiado amplio (máximo 4 años).');
+      return;
+    }
+
     this.periodoSeleccionado.set('custom');
     this.currentWeekIndex.set(0);
     this.mostrarFiltroFechas.set(false);
-    this.estadisticasService.getStatistics(fechaInicio, fechaFin).pipe(take(1)).subscribe();
+    this.estadisticasService
+      .getStatistics(fechaInicio, fechaFin)
+      .pipe(take(1))
+      .subscribe({
+        next: () => this.errorEstadisticas.set(null),
+        error: (err: HttpErrorResponse) => this.mostrarErrorEstadisticas(err),
+      });
   }
 
   mostrarTooltip(dia: DiaGrafico): void {
@@ -314,12 +346,25 @@ export class WorkerEstadisticasComponent implements OnInit {
   }
 
   private cargarDatosPorPeriodo(periodo: 'semana' | 'mes' | 'todo'): void {
-    if (periodo === 'todo') {
-      this.estadisticasService.getStatistics().pipe(take(1)).subscribe();
-    } else {
-      const { start, end } = this.calcularRangoFechas(periodo);
-      this.estadisticasService.getStatistics(start, end).pipe(take(1)).subscribe();
-    }
+    const request$ =
+      periodo === 'todo'
+        ? this.estadisticasService.getStatistics()
+        : (() => {
+            const { start, end } = this.calcularRangoFechas(periodo);
+            return this.estadisticasService.getStatistics(start, end);
+          })();
+
+    request$.pipe(take(1)).subscribe({
+      next: () => this.errorEstadisticas.set(null),
+      error: (err: HttpErrorResponse) => this.mostrarErrorEstadisticas(err),
+    });
+  }
+
+  private mostrarErrorEstadisticas(err: HttpErrorResponse): void {
+    // El backend responde { "error": "..." }; conservamos los datos previos en pantalla.
+    this.errorEstadisticas.set(
+      err.error?.error ?? 'No se pudieron cargar las estadísticas. Inténtalo de nuevo.',
+    );
   }
 
   private calcularRangoFechas(periodo: string): { start: Date; end: Date } {
