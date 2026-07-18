@@ -3,7 +3,9 @@ package com.worktrace.worktracebackend.timeentry.infrastructure.config;
 import com.worktrace.worktracebackend.shared.port.AuthenticatedUserPort;
 import com.worktrace.worktracebackend.timeentry.application.usecase.*;
 import com.worktrace.worktracebackend.timeentry.domain.port.in.*;
+import com.worktrace.worktracebackend.timeentry.domain.port.out.IpAnalysisPort;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.ProfileQueryPort;
+import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryCommandPort;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.TimeEntryQueryPort;
 import com.worktrace.worktracebackend.timeentry.domain.port.out.WorkScheduleQueryPort;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +25,13 @@ import java.time.ZoneId;
  */
 @Configuration
 public class TimeEntryUseCaseConfig {
+
+    @Bean
+    public ProcessTimeEntryUseCase processTimeEntryUseCase(
+            AuthenticatedUserPort authenticatedUserPort, IpAnalysisPort ipAnalysisPort,
+            TimeEntryCommandPort timeEntryCommandPort) {
+        return new ProcessTimeEntryUseCaseImpl(authenticatedUserPort, ipAnalysisPort, timeEntryCommandPort);
+    }
 
     @Bean
     public GetTimeEntryCountTodayUseCase getTimeEntryCountTodayUseCase(

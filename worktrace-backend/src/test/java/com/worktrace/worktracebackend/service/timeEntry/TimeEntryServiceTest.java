@@ -1,8 +1,6 @@
 package com.worktrace.worktracebackend.service.timeEntry;
 
 import com.worktrace.worktracebackend.dto.timeEntry.EditTimeEntryRequestDto;
-import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryRequestDto;
-import com.worktrace.worktracebackend.dto.timeEntry.TimeEntryResponseDto;
 import com.worktrace.worktracebackend.dto.timeEntry.VoidTimeEntryRequestDto;
 import com.worktrace.worktracebackend.exception.NotFoundException;
 import com.worktrace.worktracebackend.model.*;
@@ -10,7 +8,6 @@ import com.worktrace.worktracebackend.repository.TimeEntryRepository;
 import com.worktrace.worktracebackend.service.auditTimeEntry.AuditTimeEntryService;
 import com.worktrace.worktracebackend.service.auth.UserAndCompanyInfo;
 import com.worktrace.worktracebackend.service.auth.UserService;
-import com.worktrace.worktracebackend.service.ip.IpDetectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,9 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tools.jackson.databind.ObjectMapper;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,8 +32,6 @@ class TimeEntryServiceTest {
     private TimeEntryRepository timeEntryRepository;
     @Mock
     private UserService userService;
-    @Mock
-    private IpDetectionService ipDetectionService;
     @Mock
     private AuditTimeEntryService auditTimeEntryService;
     @Mock
@@ -80,60 +73,6 @@ class TimeEntryServiceTest {
         openTimeEntry.setCompany(company);
         openTimeEntry.setStartAt(OffsetDateTime.now().minusHours(1));
         openTimeEntry.setTimeEntryStatus(TimeEntryStatus.OPEN);
-    }
-
-    @Test
-    void testProcessTimeEntryClockInSuccess() {
-        TimeEntryRequestDto requestDto = new TimeEntryRequestDto(BigDecimal.valueOf(40.7128), BigDecimal.valueOf(-74.0060), 10);
-        String realIp = "8.8.8.8";
-        String userAgent = "TestAgent/1.0";
-
-        when(userService.getAuthenticatedUserAndCompanyInfo()).thenReturn(userAndCompanyInfo);
-        when(timeEntryRepository.findByEmployee_UserIdAndEndAtIsNullAndTimeEntryStatus(user.getId(), TimeEntryStatus.OPEN)).thenReturn(Optional.empty());
-        when(ipDetectionService.analyzeIpWithDetails(realIp, company.getId())).thenReturn(new IpDetectionService.IpAnalysisResult(Collections.emptyList(), Collections.emptyMap()));
-        when(timeEntryRepository.save(any(TimeEntry.class))).thenAnswer(invocation -> {
-            TimeEntry entry = invocation.getArgument(0);
-            if (entry.getId() == null) {
-                entry.setId(UUID.randomUUID());
-            }
-            return entry;
-        });
-
-        TimeEntryResponseDto response = timeEntryService.processTimeEntry(requestDto, realIp, userAgent);
-
-        assertAll(
-                () -> assertNotNull(response),
-                () -> assertNotNull(response.getId()),
-                () -> assertNotNull(response.getStartAt()),
-                () -> assertNull(response.getEndAt()),
-                () -> assertEquals(TimeEntryStatus.OPEN.name(), response.getStatus())
-        );
-
-        verify(timeEntryRepository).save(any(TimeEntry.class));
-    }
-
-    @Test
-    void testProcessTimeEntryClockOutSuccess() {
-        TimeEntryRequestDto requestDto = new TimeEntryRequestDto(BigDecimal.valueOf(40.7129), BigDecimal.valueOf(-74.0061), 15);
-        String realIp = "8.8.4.4";
-        String userAgent = "TestAgent/1.0";
-
-        when(userService.getAuthenticatedUserAndCompanyInfo()).thenReturn(userAndCompanyInfo);
-        when(timeEntryRepository.findByEmployee_UserIdAndEndAtIsNullAndTimeEntryStatus(user.getId(), TimeEntryStatus.OPEN)).thenReturn(Optional.of(openTimeEntry));
-        when(ipDetectionService.analyzeIpWithDetails(realIp, company.getId())).thenReturn(new IpDetectionService.IpAnalysisResult(Collections.emptyList(), Collections.emptyMap()));
-        when(timeEntryRepository.save(any(TimeEntry.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        TimeEntryResponseDto response = timeEntryService.processTimeEntry(requestDto, realIp, userAgent);
-
-        assertAll(
-                () -> assertNotNull(response),
-                () -> assertEquals(openTimeEntry.getId(), response.getId()),
-                () -> assertNotNull(response.getStartAt()),
-                () -> assertNotNull(response.getEndAt()),
-                () -> assertEquals(TimeEntryStatus.CLOSED.name(), response.getStatus())
-        );
-
-        verify(timeEntryRepository).save(openTimeEntry);
     }
 
     @Test

@@ -53,6 +53,7 @@ public class TimeEntryController {
     private final GetStatisticsUseCase getStatisticsUseCase;
     private final GetTimeEntriesByEmployeeUseCase getTimeEntriesByEmployeeUseCase;
     private final GetTimeEntriesByDateForCompanyUseCase getTimeEntriesByDateForCompanyUseCase;
+    private final ProcessTimeEntryUseCase processTimeEntryUseCase;
     /**
      * Registra un nuevo fichaje (entrada o salida) para el trabajador autenticado.
      * Captura la dirección IP y el User-Agent para fines de auditoría y seguridad.
@@ -77,7 +78,15 @@ public class TimeEntryController {
         realIp = realIp.replace("/", "");
 
         String userAgent = httpRequest.getHeader("User-Agent");
-        TimeEntryResponseDto response = timeEntryService.processTimeEntry(requestDto, realIp, userAgent);
+
+        ClockEventResult result = processTimeEntryUseCase.execute(new ClockEventRequest(
+                requestDto.getLat(), requestDto.getLng(), requestDto.getAccuracyMeters(), realIp, userAgent));
+
+        TimeEntryResponseDto response = new TimeEntryResponseDto();
+        response.setId(result.id());
+        response.setStartAt(result.startAt());
+        response.setEndAt(result.endAt());
+        response.setStatus(result.status());
         return ResponseEntity.ok(response);
     }
 
